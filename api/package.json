@@ -1,0 +1,31 @@
+{
+  "name": "spike",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "imports": {
+    "#*": "./*"
+  },
+  "dependencies": {
+    "@koa/router": "12",
+    "bootman": "0",
+    "bun": "1",
+    "kysely": "0",
+    "koa": "2",
+    "pave-basic-types": "0",
+    "pave": "0",
+    "pg": "8"
+  },
+  "devDependencies": {
+    "@types/bun": "1",
+    "@types/koa__router": "12",
+    "@types/koa": "2",
+    "@types/pg": "8",
+    "eslint-config-coderiety": "2"
+  },
+  "eslintConfig": {
+    "extends": "coderiety",
+    "globals": { "globalThis": "readonly", "process": "readonly" }
+  },
+  "module": "src/index.ts"
+}

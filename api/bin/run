@@ -1,0 +1,7 @@
+#!/bin/sh -e
+
+if [ "$WATCH" = "1" ]; then
+  bun --watch src/index.ts
+else
+  bun run src/index.ts
+fi
