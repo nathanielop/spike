@@ -11,6 +11,8 @@ const { version } = config;
 const maxPayload = 1024 * 1024;
 
 export default http.createServer(async (request, response) => {
+  response.setHeader('Access-Control-Allow-Origin', '*');
+
   if (request.url === '/version') return response.end(version);
 
   if (request.url === '/pave' && request.method === 'POST') {
@@ -28,7 +30,7 @@ export default http.createServer(async (request, response) => {
         return response.end('Payload too large');
       }
 
-      query = JSON.parse(body);
+      ({query} = JSON.parse(body));
       await pave.validateQuery({ query, schema, type: 'root' });
     } catch (er) {
       response.statusCode = 400;

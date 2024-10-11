@@ -21,10 +21,9 @@ export default () => {
 
   const { data, error, isLoading } = usePave({
     query: {
-      profiles: {
+      players: {
         id: {},
-        name: {},
-        avatarUrl: {}
+        name: {}
       }
     }
   });

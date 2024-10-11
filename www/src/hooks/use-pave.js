@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useRef, useState } from 'endr';
+import { useCallback, useEffect, useRef, useState } from 'endr';
 import mergeRefs from 'pave/src/merge-refs.js';
 
 import pave from '#src/constants/pave.js';
@@ -20,12 +20,12 @@ export default ({ query: _query, skip }) => {
     setIsLoading(false);
   }, []);
 
-  useLayoutEffect(
+  useEffect(
     () => (query.current = mergeRefs(_query, query.current)),
     [_query]
   );
 
-  useLayoutEffect(() => !skip && execute(), [execute, skip]);
+  useEffect(() => !skip && execute(), [execute, skip]);
 
   return { data, isLoading, execute, error };
 };

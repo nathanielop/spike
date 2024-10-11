@@ -13,7 +13,7 @@ export default {
     transformers: [
       {
         name: 'esbuild',
-        only: '**/*.+js',
+        only: '**/*.js',
         options: {
           define: { 'process.env.NODE_ENV': env.VERSION },
           format: 'cjs',

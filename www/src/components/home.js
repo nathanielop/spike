@@ -114,7 +114,7 @@ export default ({
       <div className='w-1/6 min-w-0 p-4 bg-purple-700'>
         <img
           onClick={() => window.location.reload()}
-          src='#src/assets/spikelogo.png'
+          src='/spikelogo.png'
           className='w-full'
         />
       </div>
