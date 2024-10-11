@@ -23,9 +23,6 @@ const createField = ({ field, table, ref, type, ...rest }) => ({
 });
 
 export default ({ table, local = {}, references = {}, ...rest }) => ({
-  cost: ({ cost, query }) =>
-    // Add 1 for each field in the query that is not the id
-    cost + Object.keys(query).filter(key => key !== 'id').length,
   ...rest,
   object: {
     id: createField({ field: 'id', table, type: 'id' }),
