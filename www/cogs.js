@@ -15,7 +15,6 @@ export default {
         name: 'esbuild',
         only: '**/*.js',
         options: {
-          define: { 'process.env.NODE_ENV': env.VERSION },
           format: 'cjs',
           jsx: 'automatic',
           jsxDev: env.VERSION === 'development',
