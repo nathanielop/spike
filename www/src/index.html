@@ -1,14 +1,16 @@
+<% const manifest = JSON.parse(await readFile('dist/manifest.json')); %>
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/spike.png" />
-    <link href="/src/index.css" rel="stylesheet">
+    <link rel="preconnect" href=<%= process.env.API_URL %> />
+    <link rel='stylesheet' href='<%= manifest['src/index.css'][0].slice(4) %>'>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Spikeball</title>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <script><%= await readFile('dist/inline-entry.js') %></script>
   </body>
 </html>

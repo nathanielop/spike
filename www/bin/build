@@ -1,0 +1,8 @@
+#!/bin/sh -e
+
+if [ "$WATCH" = "1" ]; then
+  TAILWIND_MODE=watch JEST_WORKER_ID=1 exec 'node_modules/.bin/cogs' -w 'src/**' &
+  wait
+else
+  exec 'node_modules/.bin/cogs'
+fi

@@ -1,9 +1,31 @@
-FROM node:22.0.0-alpine3.18
-
-CMD ["vite"]
+FROM node:22.2.0-alpine3.20
 
 WORKDIR /code
 
+CMD ["bin/run"]
+
+# Install nginx and packages required to build it
+RUN apk add --no-cache curl pcre && \
+  apk add --no-cache --virtual tmp g++ pcre-dev brotli-dev make zlib-dev && \
+  cd /tmp && \
+  mkdir nginx && \
+  curl -L https://nginx.org/download/nginx-1.21.3.tar.gz | \
+    tar xz --strip-components 1 -C nginx && \
+  cd nginx && \
+  ./configure --with-http_gzip_static_module && \
+  make && \
+  make install && \
+  ln -s /usr/local/nginx/sbin/nginx /usr/local/bin/nginx && \
+  rm -fr nginx && \
+  apk del --purge tmp
+
 COPY package*.json ./
+
+RUN npm install
+RUN npm cache clean --force
+
 COPY src src
-RUN npm i
+COPY cogs.js ./
+COPY bin bin
+
+RUN bin/build

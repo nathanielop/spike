@@ -1,0 +1,11 @@
+#!/bin/sh -e
+
+if [ "$WATCH" = '1' ]; then
+  trap 'kill 0' TERM INT
+  node_modules/.bin/watchy -d 0.5 -w /usr/local/nginx/conf/nginx.conf -- nginx &
+  bin/build &
+  wait
+else
+  [ "$VERSION" = 'development' ] && bin/build
+  exec nginx
+fi
