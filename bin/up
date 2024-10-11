@@ -1,3 +1,0 @@
-#/bin/sh -e
-
-docker compose up -d --force-recreate --build

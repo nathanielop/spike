@@ -1,13 +1,15 @@
-FROM oven/bun
+FROM node:22.2.0-alpine3.20
 
 WORKDIR /code
 
 CMD ["bin/run"]
 
-RUN apt-get update
+ENV \
+  ID_ALPHABET='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789' \
+  ID_SIZE='12'
 
 COPY *.json ./
 COPY src src
 COPY bin bin
 
-RUN bun install
+RUN npm i

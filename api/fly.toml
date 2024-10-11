@@ -1,0 +1,33 @@
+app = 'jtspike-api'
+primary_region = 'dfw'
+
+[build]
+
+[deploy]
+  strategy = 'bluegreen'
+
+[env]
+  VERSION = 'production'
+
+[http_service]
+  internal_port = 80
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[checks]
+  [checks.alive]
+    port = 80
+    type = 'http'
+    interval = '15s'
+    timeout = '10s'
+    grace_period = '30s'
+    method = 'get'
+    path = '/version'
+
+[[vm]]
+  memory = '512mb'
+  cpu_kind = 'shared'
+  cpus = 1

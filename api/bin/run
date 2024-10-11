@@ -1,7 +1,7 @@
 #!/bin/sh -e
 
 if [ "$WATCH" = "1" ]; then
-  bun --watch src/index.ts
+  exec node --watch src
 else
-  bun run src/index.ts
+  exec node src
 fi
