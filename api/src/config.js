@@ -11,5 +11,8 @@ export default {
     alphabet: env.ID_ALPHABET,
     size: parseInt(env.ID_SIZE)
   },
+  jtspike: {
+    sharedKey: env.SHARED_KEY
+  },
   version: env.VERSION
 };

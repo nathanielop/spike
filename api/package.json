@@ -7,8 +7,10 @@
     "#*": "./*"
   },
   "dependencies": {
+    "bcrypt": "5",
     "bootman": "0",
     "knex": "3",
+    "jsonwebtoken": "9",
     "nanoid": "5",
     "pave-basic-types": "0",
     "pave": "0",

@@ -49,6 +49,7 @@ services:
     environment:
       POSTGRES_CONNECTION_STRING: 'pg://postgres:postgres@postgres/spike'
       POSTGRES_DATABASE_NAME: 'spike'
+      SHARED_KEY: 'development'
       VERSION: 'development'
       WATCH: 1
 

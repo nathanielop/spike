@@ -4,8 +4,7 @@ import groupBy from '#src/functions/group-by.js';
 import unique from '#src/functions/unique.js';
 
 export default {
-  type: { createdSeries: 'series', createdGame: 'game' },
-  cost: 100,
+  type: 'root',
   input: {
     object: {
       format: 'format',
@@ -35,7 +34,16 @@ export default {
       return value;
     }
   },
-  resolve: async ({ context: { load }, input: { format, players } }) => {
+  resolve: async ({
+    context: { load, player },
+    input: { format, players }
+  }) => {
+    if (!player?.isAdmin) {
+      throw new PublicError(
+        'You do not have permission to create a new series'
+      );
+    }
+
     if (
       (
         await load.tx
