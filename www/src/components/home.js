@@ -2,33 +2,11 @@ import clsx from 'clsx';
 import { useEffect, useState } from 'endr';
 
 import Button from '#src/components/button.js';
+import useRootContext from '#src/hooks/use-root-context.js';
 
 const { clearInterval, window, setInterval, setTimeout } = globalThis;
 
 const initialRadius = 120;
-
-const ProfileTile = ({ profile, itemCount, index, onclick, size }) => (
-  <div
-    className='absolute w-[5rem] p-1 items-center justify-center active:w-[4.8rem]'
-    style={{
-      left: `calc(50% + ${
-        Math.cos((2 * Math.PI * index) / itemCount) * size.width
-      }px)`,
-      top: `calc(50% + ${
-        Math.sin((2 * Math.PI * index) / itemCount) * size.height
-      }px)`,
-      transform: 'translate(-50%, -50%)'
-    }}
-  >
-    <img
-      className='animate-ccw-spin rounded-xl shadow-md shadow-slate-600 active:shadow-sm'
-      key={profile.id}
-      src={profile.avatarUrl}
-      alt={profile.name}
-      onclick={onclick}
-    />
-  </div>
-);
 
 export default ({
   profiles,
@@ -38,6 +16,7 @@ export default ({
   randomize,
   setRandomize
 }) => {
+  const { player } = useRootContext();
   const [size, setSize] = useState({
     width: window.innerWidth / 2,
     height: window.innerHeight / 2
@@ -108,14 +87,28 @@ export default ({
       <div className='relative h-screen w-3/4 items-center justify-center'>
         <div className='flex h-screen self-center animate-cw-spin'>
           {profiles.map((profile, index) => (
-            <ProfileTile
+            <div
               key={profile.id}
-              profile={profile}
-              itemCount={profiles.length}
-              index={index}
-              onclick={() => handleProfileClick(profile)}
-              size={size}
-            />
+              className='absolute w-[5rem] p-1 items-center justify-center active:w-[4.8rem]'
+              style={{
+                left: `calc(50% + ${
+                  Math.cos((2 * Math.PI * index) / profiles.length) * size.width
+                }px)`,
+                top: `calc(50% + ${
+                  Math.sin((2 * Math.PI * index) / profiles.length) *
+                  size.height
+                }px)`,
+                transform: 'translate(-50%, -50%)'
+              }}
+            >
+              <img
+                className='animate-ccw-spin rounded-xl shadow-md shadow-slate-600 active:shadow-sm'
+                key={profile.id}
+                src={profile.avatarUrl}
+                alt={profile.name}
+                onclick={() => handleProfileClick(profile)}
+              />
+            </div>
           ))}
         </div>
         <div className='absolute flex w-full h-full top-0 right-0 items-center justify-center pointer-events-none'>
@@ -163,12 +156,21 @@ export default ({
         </div>
       </div>
       <div className='w-1/6 bg-purple-700 p-4'>
-        <Button
-          onclick={() => setRandomize(!randomize)}
-          className={clsx(randomize && 'bg-green-500')}
-        >
-          Random
-        </Button>
+        <div className='flex grow justify-between'>
+          <Button
+            onclick={() => setRandomize(!randomize)}
+            className={clsx(randomize && 'bg-green-500')}
+          >
+            Random
+          </Button>
+          <a href='/profile' className='block'>
+            <img
+              className='h-10 w-10 rounded-xl shadow-md shadow-slate-600 active:shadow-sm'
+              src={player.avatarUrl}
+              alt={player.name}
+            />
+          </a>
+        </div>
       </div>
     </div>
   );

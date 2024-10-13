@@ -24,13 +24,7 @@ export default () => {
   useNotification(completeError);
 
   const { data, error, isLoading } = usePave({
-    query: {
-      players: {
-        id: {},
-        name: {},
-        avatarUrl: {}
-      }
-    }
+    query: { players: { id: {}, name: {}, nickname: {}, avatarUrl: {} } }
   });
 
   const shuffleProfiles = profiles => {

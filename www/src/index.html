@@ -1,16 +1,27 @@
-<% const manifest = JSON.parse(await readFile('dist/manifest.json')); %>
 <!doctype html>
 <html class="h-full w-full" lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/spike.png" />
     <link rel="preconnect" href=<%= process.env.API_URL %> />
-    <link rel='stylesheet' href='<%= manifest['src/index.css'][0].slice(4) %>'>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Spikeball</title>
+    <style>
+      <%= await readFile('dist/index.css') %>
+    </style>
   </head>
   <body class="h-full w-full">
     <div id="root" class="h-full w-full"></div>
-    <script><%= await readFile('dist/inline-entry.js') %></script>
+    <script>
+      <%
+      const manifest = JSON.parse(await readFile('dist/manifest.json'));
+      const urlManifest = Object.fromEntries(Object.entries(manifest).map(([key, paths]) => [key, paths.map(path => path.slice(4))]));
+      %>
+
+      globalThis.spike = { manifest: <%= JSON.stringify(urlManifest) %> };
+      window.env = { API_URL: '<%= process.env.API_URL %>', VERSION: '<%= process.env.VERSION %>' }; 
+
+      <% for (const path of manifest['src/entry.js']) print(await readFile(path)); %>
+    </script>
   </body>
 </html>

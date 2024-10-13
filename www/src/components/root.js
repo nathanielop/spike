@@ -2,9 +2,10 @@ import { useEffect } from 'endr';
 
 import App from '#src/components/app.js';
 import LoadingArea from '#src/components/loading-area.js';
-import LoginOrSignup from '#src/components/login/index.js';
+import LoginOrSignup from '#src/components/login.js';
 import Notice from '#src/components/notice.js';
 import Notifications from '#src/components/notifications.js';
+import Profile from '#src/components/profile.js';
 import disk from '#src/constants/disk.js';
 import history from '#src/constants/history.js';
 import rootContextQuery from '#src/constants/root-context-query.js';
@@ -30,6 +31,7 @@ export default () => {
   useEffect(() => {
     if (unauthenticatedPaths.has(urlLocation.pathname)) {
       if (data?.currentGrant) history.replace('/');
+      else return;
     } else if (!grantKey && !unauthenticatedPaths.has(urlLocation.pathname)) {
       history.replace('/login');
     }
@@ -49,7 +51,14 @@ export default () => {
     >
       <div className='flex w-full h-full grow flex-col'>
         <Notifications />
-        {unauthenticated ? <LoginOrSignup onLogin={execute} /> : <App />}
+        {unauthenticated ? (
+          <LoginOrSignup onLogin={execute} />
+        ) : !data.currentGrant.player.isAdmin ||
+          urlLocation.pathname === '/profile' ? (
+          <Profile reload={execute} />
+        ) : (
+          <App />
+        )}
       </div>
     </RootContext>
   );

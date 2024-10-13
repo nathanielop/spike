@@ -50,13 +50,7 @@ export default {
     },
     manifestPath: 'dist/manifest.json'
   },
-  inlineEntry: {
-    requires: 'main',
-    transformers: ['underscore-template'],
-    builds: { 'src/inline-entry.js': { base: 'src', dir: 'dist' } }
-  },
-  indexAndNginx: {
-    requires: 'inlineEntry',
+  index: {
     transformers: 'underscore-template',
     builds: {
       'src/index.html': { base: 'src', dir: 'dist' },

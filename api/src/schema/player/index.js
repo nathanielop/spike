@@ -7,7 +7,8 @@ export default createDbType({
   local: {
     id: 'id',
     isAdmin: 'boolean',
-    name: 'string'
+    name: 'string',
+    nickname: { nullable: 'string' }
   },
   fields: {
     avatarUrl,
