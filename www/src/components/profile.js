@@ -16,7 +16,10 @@ export default ({ reload }) => {
   });
 
   const { execute, error } = useAsync(async () => {
-    if (details.password !== details.passwordConfirmation) {
+    if (
+      details.password?.trim() &&
+      details.password !== details.passwordConfirmation
+    ) {
       throw new Error('Passwords do not match');
     }
 
@@ -27,7 +30,7 @@ export default ({ reload }) => {
             id: player.id,
             name: details.name,
             nickname: details.nickname,
-            password: details.password
+            password: details.password?.trim() || null
           }
         }
       }
