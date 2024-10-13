@@ -1,14 +1,12 @@
 app = 'jtspike-app'
 primary_region = 'dfw'
 
-[build]
+[build.args]
+  API_URL = 'https://api.jtspike.com'
+  VERSION = 'production'
 
 [deploy]
   strategy = 'bluegreen'
-
-[env]
-  API_URL = 'https://api.jtspike.com'
-  VERSION = 'production'
 
 [http_service]
   internal_port = 80

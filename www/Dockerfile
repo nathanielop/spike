@@ -28,4 +28,6 @@ COPY src src
 COPY cogs.js ./
 COPY bin bin
 
+ARG API_URL
+ARG VERSION
 RUN bin/build
