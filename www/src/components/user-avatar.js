@@ -6,7 +6,7 @@ export default ({ player, className, ...props }) => (
       <div className='text-xs'>{player.name}</div>
     </div>
     <img
-      className='rounded-xl shadow-md shadow-slate-600 active:shadow-sm'
+      className='relative rounded-xl shadow-md shadow-slate-600 active:shadow-sm z-10'
       key={player.id}
       src={player.avatarUrl}
       alt={player.name}
