@@ -39,7 +39,9 @@ export default () => {
 
   if (error) return <Notice>{error}</Notice>;
 
-  if (grantKey && !data && isLoading) return <LoadingArea />;
+  if (grantKey && !data && isLoading) {
+    return <LoadingArea className='w-full h-full' />;
+  }
 
   return (
     <RootContext

@@ -50,7 +50,7 @@ export default ({ reload }) => {
           className='block cursor-pointer text-orange-500 hover:text-orange-600'
         >
           <ArrowLeftIcon className='h-4 inline-block text-orange-500 align-[-0.125rem]' />{' '}
-          Back to App
+          Back
         </a>
       )}
       <div className='space-y-2'>
