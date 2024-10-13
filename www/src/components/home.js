@@ -4,7 +4,14 @@ import { useEffect, useState } from 'endr';
 import Button from '#src/components/button.js';
 import useRootContext from '#src/hooks/use-root-context.js';
 
-const { clearInterval, window, setInterval, setTimeout } = globalThis;
+const {
+  clearInterval,
+  window,
+  setInterval,
+  setTimeout,
+  SpeechSynthesisUtterance,
+  speechSynthesis
+} = globalThis;
 
 const initialRadius = 120;
 
@@ -65,6 +72,12 @@ export default ({
   }, [expanding]);
 
   const handleProfileClick = profile => {
+    const utterance = new SpeechSynthesisUtterance(
+      `${profile.name}${profile.nickname ? `the ${profile.nickname}` : ''}`
+    );
+    utterance.voice = speechSynthesis.getVoices()[201];
+    speechSynthesis.speak(utterance);
+
     if (selectedProfiles.length < 4 && !selectedProfiles.includes(profile)) {
       setSelectedProfiles([...selectedProfiles, profile]);
     }

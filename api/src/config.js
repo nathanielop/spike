@@ -15,5 +15,8 @@ export default {
     allowedEmailDomains: env.ALLOWED_EMAIL_DOMAINS.split(','),
     sharedKey: env.SHARED_KEY
   },
+  slack: {
+    webhookUrl: env.SLACK_WEBHOOK_URL
+  },
   version: env.VERSION
 };
