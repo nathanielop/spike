@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import { useEffect, useState } from 'endr';
 
 import Button from '#src/components/button.js';
+import UserAvatar from '#src/components/user-avatar.js';
 import useRootContext from '#src/hooks/use-root-context.js';
 
 const {
@@ -114,11 +115,9 @@ export default ({
                 transform: 'translate(-50%, -50%)'
               }}
             >
-              <img
-                className='animate-ccw-spin rounded-xl shadow-md shadow-slate-600 active:shadow-sm'
-                key={profile.id}
-                src={profile.avatarUrl}
-                alt={profile.name}
+              <UserAvatar
+                player={profile}
+                className='animate-ccw-spin'
                 onclick={() => handleProfileClick(profile)}
               />
             </div>
