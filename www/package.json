@@ -14,7 +14,6 @@
     "cogs-transformer-underscore-template": "2",
     "core-js": "3",
     "endr": "0",
-    "lucide-static": "0",
     "pave": "0.13",
     "postcss": "8",
     "tailwindcss": "3",

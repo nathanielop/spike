@@ -1,6 +1,6 @@
 import { useState } from 'endr';
 
-import Icon from '#src/components/icon.js';
+import ArrowLeftIcon from '#src/components/icons/arrow-left.js';
 import Input from '#src/components/input.js';
 import notificationsApi from '#src/constants/notifications.js';
 import pave from '#src/constants/pave.js';
@@ -49,10 +49,7 @@ export default ({ reload }) => {
           href='/'
           className='block cursor-pointer text-orange-500 hover:text-orange-600'
         >
-          <Icon
-            name='arrow-left'
-            className='h-4 inline-block stroke-currentColor align-[-0.125rem]'
-          />{' '}
+          <ArrowLeftIcon className='h-4 inline-block text-orange-500 align-[-0.125rem]' />{' '}
           Back to App
         </a>
       )}

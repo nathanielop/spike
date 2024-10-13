@@ -18,7 +18,7 @@ export default ({ color, size }) => (
             : size === 'medium'
               ? 'w-5 h-5 border-2'
               : 'w-8 h-8 border-4 m-1',
-          color === 'white' ? 'border-t-white' : 'border-t-propelBlue'
+          color === 'white' ? 'border-t-white' : 'border-t-orange-500'
         )}
       />
     ))}

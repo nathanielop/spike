@@ -1,7 +1,9 @@
 import clsx from 'clsx';
 import { useCallback, useEffect, useState } from 'endr';
 
-import Icon from '#src/components/icon.js';
+import CircleAlert from '#src/components/icons/circle-alert.js';
+import CircleCheck from '#src/components/icons/circle-check.js';
+import CircleHelp from '#src/components/icons/circle-help.js';
 import notificationsApi from '#src/constants/notifications.js';
 
 const { setTimeout } = globalThis;
@@ -17,6 +19,9 @@ const Notification = ({ notification }) => {
     [duration, id]
   );
 
+  const IconComponent =
+    type === 'error' ? CircleAlert : type === 'info' ? CircleHelp : CircleCheck;
+
   return (
     <div className='max-w-full w-96 p-2'>
       <div
@@ -30,16 +35,7 @@ const Notification = ({ notification }) => {
         )}
       >
         <div className='p-2 space-x-1 w-full font-bold flex items-center'>
-          <Icon
-            name={
-              type === 'error'
-                ? 'circle-alert'
-                : type === 'info'
-                  ? 'circle-help'
-                  : 'circle-check'
-            }
-            className='h-5 text-white'
-          />{' '}
+          <IconComponent className='h-5 text-white' />{' '}
           <span className='leading-none'>
             {type.slice(0, 1).toUpperCase() + type.slice(1)}
           </span>
