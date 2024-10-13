@@ -125,7 +125,7 @@ export default ({
               selectedProfiles.length === 4 && 'animate-exp-spin'
             )}
             style={{
-              backgroundImage: `url("#src/components/assets/jtlogo.png")`,
+              backgroundImage: `url("/jtlogo.png")`,
               backgroundSize: 'cover'
             }}
           >

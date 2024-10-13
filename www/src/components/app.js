@@ -48,7 +48,7 @@ export default () => {
       {data && (
         <>
           <Home
-            profiles={data?.profiles ?? []}
+            profiles={data?.players ?? []}
             selectedProfiles={selectedProfiles}
             setSelectedProfiles={setSelectedProfiles}
             setLoadThunderdome={setLoadThunderdome}
