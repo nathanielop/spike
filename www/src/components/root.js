@@ -1,0 +1,56 @@
+import { useEffect } from 'endr';
+
+import App from '#src/components/app.js';
+import LoadingArea from '#src/components/loading-area.js';
+import LoginOrSignup from '#src/components/login/index.js';
+import Notice from '#src/components/notice.js';
+import Notifications from '#src/components/notifications.js';
+import disk from '#src/constants/disk.js';
+import rootContextQuery from '#src/constants/root-context-query.js';
+import RootContext from '#src/constants/root-context.js';
+import useLocation from '#src/hooks/use-location.js';
+import usePave from '#src/hooks/use-pave.js';
+
+const { location, Set } = globalThis;
+
+const unauthenticatedPaths = new Set(['/login', '/register']);
+
+export default () => {
+  const urlLocation = useLocation();
+  const grantKey = disk.get('grantKey');
+
+  const { data, error, isLoading, execute } = usePave({
+    query: rootContextQuery,
+    skip: !grantKey
+  });
+
+  const unauthenticated = !grantKey || !data.currentGrant;
+
+  useEffect(() => {
+    if (unauthenticatedPaths.has(urlLocation.pathname)) {
+      if (data?.currentGrant?.user.verifiedAt) location.href = '/';
+      else return;
+    } else if (!grantKey && !unauthenticatedPaths.has(urlLocation.pathname)) {
+      location.href = '/login';
+    }
+  }, [urlLocation.pathname, data, grantKey]);
+
+  if (error) return <Notice>{error}</Notice>;
+
+  if (grantKey && !data && isLoading) return <LoadingArea />;
+
+  return (
+    <RootContext
+      value={{
+        location: urlLocation,
+        player: data?.currentGrant?.player,
+        grant: data?.currentGrant
+      }}
+    >
+      <div className='flex w-full h-full grow flex-col'>
+        <Notifications />
+        {unauthenticated ? <LoginOrSignup onLogin={execute} /> : <App />}
+      </div>
+    </RootContext>
+  );
+};

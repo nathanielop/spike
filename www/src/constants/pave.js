@@ -19,7 +19,12 @@ const client = pave.createClient({
 
     if (res.ok) return res.json();
 
-    throw new Error(await res.text());
+    const text = await res.text();
+    if (text.startsWith('Invalid grant key')) {
+      disk.set('grantKey', null);
+      disk.set('paveCache', null);
+      pave.cache = {};
+    } else throw new Error(text);
   },
   getKey: ({ _type, id }) => {
     if (!_type) return null;
@@ -33,6 +38,13 @@ const client = pave.createClient({
     }
 
     return `${_type}:${id}`;
+  },
+  transformQuery: ({ key, query }) => {
+    if (key) return pave.injectType(query);
+    return pave.injectType({
+      ...query,
+      $: { ...query.$, grantKey: disk.get('grantKey') ?? null }
+    });
   }
 });
 

@@ -1,6 +1,6 @@
 <% const manifest = JSON.parse(await readFile('dist/manifest.json')); %>
 <!doctype html>
-<html lang="en">
+<html class="h-full w-full" lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/spike.png" />
@@ -9,8 +9,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Spikeball</title>
   </head>
-  <body>
-    <div id="root"></div>
+  <body class="h-full w-full">
+    <div id="root" class="h-full w-full"></div>
     <script><%= await readFile('dist/inline-entry.js') %></script>
   </body>
 </html>

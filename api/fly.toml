@@ -1,7 +1,8 @@
 app = 'jtspike-api'
 primary_region = 'dfw'
 
-[build]
+[env]
+  ALLOWED_EMAIL_DOMAINS = 'jobtread.com'
 
 [deploy]
   strategy = 'bluegreen'

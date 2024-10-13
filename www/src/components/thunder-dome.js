@@ -13,7 +13,7 @@ const Keypad = ({ type, onComplete, onClose, slideDirection = 'up' }) => {
       )}
     >
       <div className='relative bg-white p-8 rounded-lg shadow-lg'>
-        <button onClick={onClose} className='absolute top-2 right-2 text-3xl'>
+        <button onclick={onClose} className='absolute top-2 right-2 text-3xl'>
           &times;
         </button>
         <h2 className='text-xl font-semibold mb-4'>
@@ -30,7 +30,7 @@ const Keypad = ({ type, onComplete, onClose, slideDirection = 'up' }) => {
             <button
               key={num + 1}
               className='bg-blue-500 text-white text-2xl p-3 rounded hover:bg-blue-700 transition'
-              onClick={() => setInput(input + (num + 1))}
+              onclick={() => setInput(input + (num + 1))}
             >
               {num + 1}
             </button>
@@ -40,20 +40,20 @@ const Keypad = ({ type, onComplete, onClose, slideDirection = 'up' }) => {
           <button
             key={0}
             className='w-full bg-blue-500 text-white text-2xl p-3 rounded hover:bg-blue-700 transition'
-            onClick={() => setInput(input + 0)}
+            onclick={() => setInput(input + 0)}
           >
             0
           </button>
           <button
             className='bg-yellow-300 text-white text-2xl p-3 rounded hover:bg-gray-700 transition'
-            onClick={() => setInput(input.slice(0, -1))}
+            onclick={() => setInput(input.slice(0, -1))}
           >
             ←
           </button>
         </div>
         <button
           className='ml-2 bg-green-500 text-white p-2 rounded-full w-full hover:bg-green-700 transition'
-          onClick={() => onComplete({ score: input })}
+          onclick={() => onComplete({ score: input })}
         >
           Next →
         </button>
@@ -126,7 +126,7 @@ export default ({
       >
         <div
           className='p-4'
-          onClick={() =>
+          onclick={() =>
             handleScoreEntry({
               winnerTeam: [selectedProfiles[0].id, selectedProfiles[1].id],
               loserTeam: [selectedProfiles[2].id, selectedProfiles[3].id]
@@ -147,7 +147,7 @@ export default ({
       >
         <div
           className='p-4'
-          onClick={() =>
+          onclick={() =>
             handleScoreEntry({
               winnerTeam: [selectedProfiles[2].id, selectedProfiles[3].id],
               loserTeam: [selectedProfiles[0].id, selectedProfiles[1].id]
@@ -173,7 +173,7 @@ export default ({
           slideDirection='left'
         />
       )}
-      <Button className='absolute top-2 left-2' onClick={handleClose}>
+      <Button className='absolute top-2 left-2' onclick={handleClose}>
         Back
       </Button>
     </div>

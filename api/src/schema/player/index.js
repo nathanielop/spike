@@ -6,6 +6,7 @@ export default createDbType({
   table: 'players',
   local: {
     id: 'id',
+    isAdmin: 'boolean',
     name: 'string'
   },
   fields: {

@@ -1,9 +1,9 @@
 import { render } from 'endr';
 
-import App from '#src/components/app.js';
+import Root from '#src/components/root.js';
 
 const { document } = globalThis;
 
 export default () => {
-  render(<App />, document.getElementById('root'));
-}
+  render(<Root />, document.getElementById('root'));
+};

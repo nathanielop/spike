@@ -7,41 +7,28 @@ const { clearInterval, window, setInterval, setTimeout } = globalThis;
 
 const initialRadius = 120;
 
-const ProfileTile = ({ profile, itemCount, index, onClick, size }) => {
-  const [isPressed, setIsPressed] = useState(false);
-
-  return (
-    <div
-      className={clsx(
-        'absolute w-[5rem] p-1 items-center justify-center',
-        isPressed && 'w-[4.8rem]'
-      )}
-      style={{
-        left: `calc(50% + ${
-          Math.cos((2 * Math.PI * index) / itemCount) * size.width
-        }px)`,
-        top: `calc(50% + ${
-          Math.sin((2 * Math.PI * index) / itemCount) * size.height
-        }px)`,
-        transform: 'translate(-50%, -50%)'
-      }}
-    >
-      <img
-        className={clsx(
-          'animate-ccw-spin rounded-xl shadow-md shadow-slate-600',
-          isPressed && 'shadow-sm'
-        )}
-        key={profile.id}
-        src={profile.avatarUrl}
-        alt={profile.name}
-        onClick={onClick}
-        onPointerDown={() => setIsPressed(true)}
-        onPointerUp={() => setIsPressed(false)}
-        onPointerLeave={() => setIsPressed(false)}
-      />
-    </div>
-  );
-};
+const ProfileTile = ({ profile, itemCount, index, onclick, size }) => (
+  <div
+    className='absolute w-[5rem] p-1 items-center justify-center active:w-[4.8rem]'
+    style={{
+      left: `calc(50% + ${
+        Math.cos((2 * Math.PI * index) / itemCount) * size.width
+      }px)`,
+      top: `calc(50% + ${
+        Math.sin((2 * Math.PI * index) / itemCount) * size.height
+      }px)`,
+      transform: 'translate(-50%, -50%)'
+    }}
+  >
+    <img
+      className='animate-ccw-spin rounded-xl shadow-md shadow-slate-600 active:shadow-sm'
+      key={profile.id}
+      src={profile.avatarUrl}
+      alt={profile.name}
+      onclick={onclick}
+    />
+  </div>
+);
 
 export default ({
   profiles,
@@ -113,7 +100,7 @@ export default ({
     <div className='flex overflow-hidden'>
       <div className='w-1/6 min-w-0 p-4 bg-purple-700'>
         <img
-          onClick={() => window.location.reload()}
+          onclick={() => window.location.reload()}
           src='/spikelogo.png'
           className='w-full'
         />
@@ -126,7 +113,7 @@ export default ({
               profile={profile}
               itemCount={profiles.length}
               index={index}
-              onClick={() => handleProfileClick(profile)}
+              onclick={() => handleProfileClick(profile)}
               size={size}
             />
           ))}
@@ -145,7 +132,7 @@ export default ({
             {selectedProfiles.length > 0 && selectedProfiles.length !== 4 && (
               <Button
                 className='absolute px-[0.7rem] py-[0.3rem] -bottom-1 -right-1 text-xl z-10 pointer-events-auto opacity-80'
-                onClick={() => setSelectedProfiles([])}
+                onclick={() => setSelectedProfiles([])}
               >
                 &times;
               </Button>
@@ -177,7 +164,7 @@ export default ({
       </div>
       <div className='w-1/6 bg-purple-700 p-4'>
         <Button
-          onClick={() => setRandomize(!randomize)}
+          onclick={() => setRandomize(!randomize)}
           className={clsx(randomize && 'bg-green-500')}
         >
           Random

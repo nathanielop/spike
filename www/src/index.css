@@ -2,3 +2,59 @@
 @tailwind components;
 @tailwind utilities;
 
+a, input, textarea {
+  appearance: none;
+}
+
+*:focus {
+  outline: 0;
+}
+
+@layer utilities {
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .pr-safe {
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+
+  .pl-safe {
+    padding-left: env(safe-area-inset-left, 0px);
+  }
+
+  .loader-ring-piece {
+    animation: loader 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  }
+
+  .loader-part-a {
+    animation-delay: -0.3s;
+  }
+
+  .loader-part-b {
+    animation-delay: -0.2s;
+  }
+
+  .loader-part-c {
+    animation-delay: -0.1s;
+  }
+
+  @keyframes loader {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+}
+
+@layer components {
+  .p-safe {
+    @apply pt-safe pb-safe pl-safe pr-safe;
+  }
+}

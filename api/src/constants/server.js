@@ -3,6 +3,7 @@ import http from 'http';
 import pave from 'pave';
 
 import config from '#src/config.js';
+import PublicError from '#src/constants/public-error.js';
 import createLoad from '#src/functions/create-load.js';
 import schema from '#src/schema/index.js';
 
@@ -30,25 +31,33 @@ export default http.createServer(async (request, response) => {
         return response.end('Payload too large');
       }
 
-      ({query} = JSON.parse(body));
-      await pave.validateQuery({ query, schema, type: 'root' });
+      ({ query } = JSON.parse(body));
+
+      query = pave.validateQuery({ query, schema, type: 'root' });
     } catch (er) {
       response.statusCode = 400;
       return response.end(er.message);
     }
 
-    response.setHeader('Content-Type', 'application/json');
-    response.statusCode = 200;
-    return response.end(
-      JSON.stringify(
-        await pave.execute({
-          query,
-          context: { load: createLoad() },
-          schema,
-          type: 'root'
-        })
-      )
-    );
+    try {
+      const data = await pave.execute({
+        query,
+        context: { load: createLoad() },
+        schema,
+        type: 'root'
+      });
+      response.setHeader('Content-Type', 'application/json');
+      response.statusCode = 200;
+      return response.end(JSON.stringify(data));
+    } catch (er) {
+      const isPublic = er instanceof PublicError;
+      response.statusCode = isPublic ? 400 : 500;
+      return response.end(
+        isPublic
+          ? er.message
+          : 'Something went wrong on our end. Please try again later.'
+      );
+    }
   }
 
   response.statusCode = 404;

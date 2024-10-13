@@ -47,6 +47,7 @@ services:
       - ../api/package.json:/code/package.json
       - ../api/src:/code/src
     environment:
+      ALLOWED_EMAIL_DOMAINS: 'example.com'
       POSTGRES_CONNECTION_STRING: 'pg://postgres:postgres@postgres/spike'
       POSTGRES_DATABASE_NAME: 'spike'
       SHARED_KEY: 'development'

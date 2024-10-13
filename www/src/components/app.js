@@ -23,7 +23,8 @@ export default () => {
     query: {
       players: {
         id: {},
-        name: {}
+        name: {},
+        avatarUrl: {}
       }
     }
   });

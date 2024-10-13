@@ -12,6 +12,7 @@ export default {
     size: parseInt(env.ID_SIZE)
   },
   jtspike: {
+    allowedEmailDomains: env.ALLOWED_EMAIL_DOMAINS.split(','),
     sharedKey: env.SHARED_KEY
   },
   version: env.VERSION

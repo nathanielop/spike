@@ -5,6 +5,7 @@ export default {
         t.dropColumn('avatarStorageKey');
         t.boolean('isActive').notNullable();
         t.boolean('isAdmin').notNullable();
+        t.text('nickname');
         t.text('emailAddress').notNullable();
         t.text('passwordHash').notNullable();
         t.unique('emailAddress');
@@ -36,6 +37,8 @@ export default {
       .table('players', t => {
         t.text('avatarStorageKey');
         t.dropColumn('isActive');
+        t.dropColumn('isAdmin');
+        t.dropColumn('nickname');
         t.dropColumn('emailAddress');
         t.dropColumn('passwordHash');
       })

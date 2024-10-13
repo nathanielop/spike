@@ -9,6 +9,14 @@ export default {
   public: {
     builds: { 'src/public/**/*': { base: 'src/public', dir: 'dist' } }
   },
+  icons: {
+    builds: {
+      'node_modules/lucide-static/icons/**/*': {
+        base: 'node_modules/lucide-static/icons',
+        dir: 'dist/icons'
+      }
+    }
+  },
   main: {
     transformers: [
       {
