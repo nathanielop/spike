@@ -55,7 +55,7 @@ export default http.createServer(async (request, response) => {
       const isPublic = er instanceof PublicError;
       const statusCode = isPublic ? 400 : 500;
       response.statusCode = statusCode;
-      if (version === 'development' && statusCode === 500) console.log(er);
+      if (statusCode === 500) console.log(er);
       return response.end(
         isPublic
           ? er.message
