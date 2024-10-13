@@ -6,10 +6,12 @@ import createGame from '#src/schema/root/create-game.js';
 import createGrant from '#src/schema/root/create-grant.js';
 import createPlayer from '#src/schema/root/create-player.js';
 import createSeriesAndGame from '#src/schema/root/create-series-and-game.js';
+import currentGrant from '#src/schema/root/current-grant.js';
 import deleteGrant from '#src/schema/root/delete-grant.js';
 import player from '#src/schema/root/player.js';
 import players from '#src/schema/root/players.js';
 import updateGame from '#src/schema/root/update-game.js';
+import updatePlayer from '#src/schema/root/update-player.js';
 
 const { sharedKey } = config.jtspike;
 
@@ -25,10 +27,12 @@ export default {
       createGrant,
       createPlayer,
       createSeriesAndGame,
+      currentGrant,
       deleteGrant,
       players,
       player,
-      updateGame
+      updateGame,
+      updatePlayer
     }
   },
   input: {
@@ -46,7 +50,7 @@ export default {
       try {
         const token = jwt.verify(grantKey, sharedKey);
         const grant = await context.load('grants', token.data.id);
-        const player = await context.load('players', grant.player.id);
+        const player = await context.load('players', token.data.player.id);
         context.grant = grant;
         context.player = player;
       } catch (er) {

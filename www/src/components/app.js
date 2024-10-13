@@ -1,9 +1,12 @@
-import { Fragment, useState } from 'endr';
+import { useState } from 'endr';
 
 import Home from '#src/components/home.js';
+import LoadingArea from '#src/components/loading-area.js';
+import Notice from '#src/components/notice.js';
 import ThunderDome from '#src/components/thunder-dome.js';
 import pave from '#src/constants/pave.js';
 import useAsync from '#src/hooks/use-async.js';
+import useNotification from '#src/hooks/use-notification.js';
 import usePave from '#src/hooks/use-pave.js';
 
 export default () => {
@@ -18,6 +21,7 @@ export default () => {
       }
     });
   });
+  useNotification(completeError);
 
   const { data, error, isLoading } = usePave({
     query: {
@@ -37,30 +41,34 @@ export default () => {
     return profiles;
   };
 
-  if (isLoading) return <h1>...Loading</h1>;
-
   return (
-    <Fragment>
-      <Home
-        profiles={data?.profiles ?? []}
-        selectedProfiles={selectedProfiles}
-        setSelectedProfiles={setSelectedProfiles}
-        setLoadThunderdome={setLoadThunderdome}
-        randomize={randomize}
-        setRandomize={setRandomize}
-      />
-      {loadThunderdome && (
-        <ThunderDome
-          selectedProfiles={
-            randomize
-              ? shuffleProfiles([...selectedProfiles])
-              : selectedProfiles
-          }
-          setLoadThunderdome={setLoadThunderdome}
-          setSelectedProfiles={setSelectedProfiles}
-          onCompleteGame={onComplete}
-        />
+    <>
+      {isLoading && <LoadingArea />}
+      {error && <Notice>{error}</Notice>}
+      {data && (
+        <>
+          <Home
+            profiles={data?.profiles ?? []}
+            selectedProfiles={selectedProfiles}
+            setSelectedProfiles={setSelectedProfiles}
+            setLoadThunderdome={setLoadThunderdome}
+            randomize={randomize}
+            setRandomize={setRandomize}
+          />
+          {loadThunderdome && (
+            <ThunderDome
+              selectedProfiles={
+                randomize
+                  ? shuffleProfiles([...selectedProfiles])
+                  : selectedProfiles
+              }
+              setLoadThunderdome={setLoadThunderdome}
+              setSelectedProfiles={setSelectedProfiles}
+              onCompleteGame={onComplete}
+            />
+          )}
+        </>
       )}
-    </Fragment>
+    </>
   );
 };

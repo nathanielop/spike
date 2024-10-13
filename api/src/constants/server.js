@@ -7,6 +7,8 @@ import PublicError from '#src/constants/public-error.js';
 import createLoad from '#src/functions/create-load.js';
 import schema from '#src/schema/index.js';
 
+const { console } = globalThis;
+
 const { version } = config;
 
 const maxPayload = 1024 * 1024;
@@ -51,7 +53,9 @@ export default http.createServer(async (request, response) => {
       return response.end(JSON.stringify(data));
     } catch (er) {
       const isPublic = er instanceof PublicError;
-      response.statusCode = isPublic ? 400 : 500;
+      const statusCode = isPublic ? 400 : 500;
+      response.statusCode = statusCode;
+      if (version === 'development' && statusCode === 500) console.log(er);
       return response.end(
         isPublic
           ? er.message

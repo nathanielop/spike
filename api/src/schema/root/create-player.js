@@ -25,17 +25,28 @@ export default {
           name,
           passwordHash: await bcrypt.hash(password, 10),
           isAdmin: false,
-          isActive: true
+          isActive: true,
+          createdAt: new Date()
         })
         .into('players');
     } catch (er) {
       if (
-        er.message.contains(
+        er.message.includes(
+          'duplicate key value violates unique constraint "players_name_unique"'
+        )
+      ) {
+        throw new PublicError('This name is already in use');
+      }
+
+      if (
+        er.message.includes(
           'duplicate key value violates unique constraint "players_emailaddress_unique"'
         )
       ) {
         throw new PublicError('This email address is already in use');
       }
+
+      throw er;
     }
 
     return { createdPlayer: { id } };

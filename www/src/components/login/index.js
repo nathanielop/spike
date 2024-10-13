@@ -8,7 +8,7 @@ import useAsync from '#src/hooks/use-async.js';
 import useNotification from '#src/hooks/use-notification.js';
 import useRootContext from '#src/hooks/use-root-context.js';
 
-export default ({ reload }) => {
+export default ({ onLogin }) => {
   const {
     location: { pathname }
   } = useRootContext();
@@ -16,8 +16,9 @@ export default ({ reload }) => {
   const isLogin = pathname === '/login';
 
   const { execute, error } = useAsync(async () => {
+    let data;
     if (isLogin) {
-      const data = await pave.execute({
+      data = await pave.execute({
         query: {
           createGrant: {
             $: {
@@ -28,31 +29,38 @@ export default ({ reload }) => {
           }
         }
       });
-      disk.set('grantKey', data.createGrant.createdGrant.secret);
     } else {
       if (details.password !== details.passwordConfirmation) {
         throw new Error('Passwords do not match');
       }
 
-      const data = await pave.execute({
+      await pave.execute({
         query: {
-          createUser: {
-            $: details,
-            createGrant: {
-              $: {
-                emailAddress: details.emailAddress,
-                password: details.password
-              },
-              createdGrant: { ...rootContextQuery.currentGrant, secret: {} }
+          createPlayer: {
+            $: {
+              name: details.name,
+              emailAddress: details.emailAddress,
+              password: details.password
             }
           }
         }
       });
 
-      disk.set('grantKey', data.createUser.createGrant.createdGrant.secret);
+      data = await pave.execute({
+        query: {
+          createGrant: {
+            $: {
+              emailAddress: details.emailAddress,
+              password: details.password
+            },
+            createdGrant: { ...rootContextQuery.currentGrant, secret: {} }
+          }
+        }
+      });
     }
 
-    reload();
+    disk.set('grantKey', data.createGrant.createdGrant.secret);
+    onLogin();
   });
   useNotification(error);
 

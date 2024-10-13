@@ -6,12 +6,13 @@ import LoginOrSignup from '#src/components/login/index.js';
 import Notice from '#src/components/notice.js';
 import Notifications from '#src/components/notifications.js';
 import disk from '#src/constants/disk.js';
+import history from '#src/constants/history.js';
 import rootContextQuery from '#src/constants/root-context-query.js';
 import RootContext from '#src/constants/root-context.js';
 import useLocation from '#src/hooks/use-location.js';
 import usePave from '#src/hooks/use-pave.js';
 
-const { location, Set } = globalThis;
+const { Set } = globalThis;
 
 const unauthenticatedPaths = new Set(['/login', '/register']);
 
@@ -24,14 +25,13 @@ export default () => {
     skip: !grantKey
   });
 
-  const unauthenticated = !grantKey || !data.currentGrant;
+  const unauthenticated = !grantKey || !data?.currentGrant;
 
   useEffect(() => {
     if (unauthenticatedPaths.has(urlLocation.pathname)) {
-      if (data?.currentGrant?.user.verifiedAt) location.href = '/';
-      else return;
+      if (data?.currentGrant) history.replace('/');
     } else if (!grantKey && !unauthenticatedPaths.has(urlLocation.pathname)) {
-      location.href = '/login';
+      history.replace('/login');
     }
   }, [urlLocation.pathname, data, grantKey]);
 
