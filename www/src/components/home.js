@@ -74,7 +74,7 @@ export default ({
 
   const handleProfileClick = profile => {
     const utterance = new SpeechSynthesisUtterance(
-      `${profile.name}${profile.nickname ? `the ${profile.nickname}` : ''}`
+      `${profile.name}${profile.nickname ? ` the ${profile.nickname}` : ''}`
     );
     utterance.voice = speechSynthesis.getVoices()[201];
     speechSynthesis.speak(utterance);
