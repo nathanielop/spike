@@ -56,7 +56,7 @@ export default {
       throw new PublicError('Players do not exist');
     }
 
-    if (!players[0].team) {
+    if (players[0].team == null) {
       const toAssign = players.sort((a, b) => (a.elo < b.elo ? 1 : -1));
       toAssign[0].team = 0;
       toAssign[3].team = 0;
