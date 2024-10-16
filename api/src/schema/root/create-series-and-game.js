@@ -22,13 +22,8 @@ export default {
 
       if (hasTeams) {
         const teams = unique(value.players.map(({ team }) => team));
-        if (hasTeams && teams.length < 2) {
-          throw new PublicError('Teams must be unique');
-        }
-
-        const teamGroups = groupBy(value.players, 'team');
-        if (Object.keys(teamGroups).length !== 2) {
-          throw new PublicError('Must be two teams');
+        if (teams.length < 2) {
+          throw new PublicError('There must be two teams');
         }
       }
 
