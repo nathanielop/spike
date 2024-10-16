@@ -11,7 +11,7 @@ export default {
       players: {
         arrayOf: { object: { id: 'id', team: { nullable: 'integer' } } },
         minLength: 2,
-        maxLength: 10
+        maxLength: 2
       }
     },
     validate: ({ value }) => {
@@ -64,7 +64,10 @@ export default {
 
     if (!players[0].team) {
       const toAssign = players.sort((a, b) => (a.elo < b.elo ? 1 : -1));
-      for (let i = 0; i < toAssign.length; i++) toAssign[i].team = i % 2;
+      toAssign[0].team = 0;
+      toAssign[3].team = 0;
+      toAssign[1].team = 1;
+      toAssign[2].team = 1;
     }
 
     const seriesId = createId();
