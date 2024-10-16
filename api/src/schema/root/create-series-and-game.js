@@ -10,8 +10,8 @@ export default {
       bestOf: 'format',
       players: {
         arrayOf: { object: { id: 'id', team: { nullable: 'integer' } } },
-        minLength: 2,
-        maxLength: 2
+        minLength: 4,
+        maxLength: 4
       }
     },
     validate: ({ value }) => {
@@ -27,9 +27,8 @@ export default {
         }
 
         const teamGroups = groupBy(value.players, 'team');
-        const teamSizes = Object.values(teamGroups).map(group => group.length);
-        if (teamSizes.some(size => size !== teamSizes[0])) {
-          throw new PublicError('Teams must have the same number of players');
+        if (Object.keys(teamGroups).length !== 2) {
+          throw new PublicError('Must be two teams');
         }
       }
 
