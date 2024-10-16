@@ -88,6 +88,12 @@ export default {
             autoprefixer
           ]
         }
+      },
+      {
+        only: 'src/index.css',
+        fn: ({ file: { links } }) => ({
+          links: [...links, 'src/**/*.+(html|js)']
+        })
       }
     ],
     builds: {

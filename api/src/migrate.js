@@ -1,7 +1,8 @@
 import migrate from '#src/functions/migrate.js';
 import services from '#src/services/index.js';
 
-services
-  .start('db')
-  .then(migrate)
-  .then(() => services.stop());
+await services.start('db');
+await migrate();
+await services.stop();
+
+process.exit(0);
