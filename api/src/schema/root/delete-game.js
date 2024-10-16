@@ -18,7 +18,7 @@ export default {
     }
 
     await load.tx.transaction(async tx => {
-      await tx.table('games').update({ completedAt: new Date() }).where({ id });
+      await load.tx.delete().from('games').where({ id });
 
       await tx
         .table('series')
