@@ -15,8 +15,8 @@ export default {
       }
     },
     validate: ({ value }) => {
-      const hasTeams = !!value.players[0].team;
-      if (value.players.some(({ team }) => !!team !== hasTeams)) {
+      const hasTeams = value.players[0].team !== null;
+      if (value.players.some(({ team }) => (team !== null) !== hasTeams)) {
         throw new PublicError('Players must all have a team or none');
       }
 
