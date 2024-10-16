@@ -151,7 +151,7 @@ export default ({ players, reload }) => {
                   const utterance = new SpeechSynthesisUtterance(
                     `${player.name}${player.nickname ? ` the ${player.nickname}` : ''}`
                   );
-                  utterance.voice = speechSynthesis.getVoices()[0];
+                  utterance.voice = speechSynthesis.getVoices()[201];
                   speechSynthesis.speak(utterance);
 
                   if (
@@ -210,7 +210,7 @@ export default ({ players, reload }) => {
         </div>
       </div>
       <div className='w-1/6 bg-purple-700 flex flex-col p-4'>
-        <a href='/player' className='block ml-auto'>
+        <a href='/profile' className='block ml-auto'>
           <UserAvatar player={player} className='h-10 w-10' />
         </a>
         <div className='mt-auto space-y-2'>

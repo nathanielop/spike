@@ -16,9 +16,24 @@ export default {
       );
     }
 
-    const [{ count }] = await load.tx.count().from('games').where({ seriesId });
+    const [{ count }] = await load.tx
+      .count()
+      .from('games')
+      .where({ seriesId })
+      .whereNotNull('completedAt');
     if (series.isCompleted || series.bestOf === count) {
       throw new PublicError('This series has already been completed');
+    }
+
+    const inProgress = await load.tx
+      .first()
+      .from('games')
+      .where({ seriesId })
+      .whereNull('completedAt');
+    if (inProgress) {
+      throw new PublicError(
+        'There is already a game in progress for this series'
+      );
     }
 
     const id = createId();
