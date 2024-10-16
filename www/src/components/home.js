@@ -224,7 +224,7 @@ export default ({ players, reload }) => {
             {[1, 3, 5].map(format => (
               <Button
                 key={format}
-                onclick={() => setBestOf(bestOf)}
+                onclick={() => setBestOf(format)}
                 resetRounding
                 className={clsx(
                   'w-full first:rounded-l-md last:rounded-r-md',
