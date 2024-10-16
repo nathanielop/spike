@@ -5,6 +5,7 @@ import streaks from '#src/schema/player/streaks.js';
 export default createDbType({
   table: 'players',
   local: {
+    credits: 'integer',
     id: 'id',
     isAdmin: 'boolean',
     name: 'string',

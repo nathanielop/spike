@@ -11,22 +11,42 @@ const { setTimeout } = globalThis;
 let id = 0;
 
 const Notification = ({ notification }) => {
+  const [shouldUnmount, setShouldUnmount] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
   const { id, message, type, duration } = notification;
 
-  useEffect(
-    () =>
-      void setTimeout(() => notificationsApi.remove({ id }), duration * 1000),
-    [duration, id]
-  );
+  useEffect(() => {
+    setTimeout(() => {
+      setIsVisible(false);
+      setShouldUnmount(true);
+    }, duration * 1000);
+  }, [setIsVisible, duration]);
+
+  // Trigger slide in animation
+  useEffect(() => {
+    setTimeout(() => {
+      setIsVisible(true);
+      setHasMounted(true);
+    }, 100);
+  }, []);
 
   const IconComponent =
     type === 'error' ? CircleAlert : type === 'info' ? CircleHelp : CircleCheck;
 
   return (
-    <div className='max-w-full w-96 p-2'>
+    <div
+      className='max-w-full w-96 p-2 transition-all relative'
+      style={
+        isVisible ? { opacity: 1, left: '0px' } : { opacity: 0, left: '400px' }
+      }
+      ontransitionend={
+        shouldUnmount ? () => notificationsApi.remove({ id }) : undefined
+      }
+    >
       <div
         className={clsx(
-          'w-full shadow-lg rounded text-white',
+          'w-full shadow-lg rounded overflow-hidden text-white',
           type === 'error'
             ? 'bg-red-500'
             : type === 'success'
@@ -41,6 +61,13 @@ const Notification = ({ notification }) => {
           </span>
         </div>
         <div className='p-2 bg-black bg-opacity-10'>{message}</div>
+        <div
+          className='bg-black bg-opacity-50 h-1 ease-linear transition-all'
+          style={{
+            transitionDuration: `${duration}s`,
+            width: hasMounted ? '0%' : '100%'
+          }}
+        />
       </div>
     </div>
   );

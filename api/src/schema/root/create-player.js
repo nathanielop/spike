@@ -21,6 +21,8 @@ export default {
       await load.tx
         .insert({
           id,
+          elo: 1000,
+          credits: 1000,
           emailAddress,
           name,
           passwordHash: await bcrypt.hash(password, 10),

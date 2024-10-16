@@ -16,6 +16,11 @@ export default {
       );
     }
 
+    const [{ count }] = await load.tx.count().from('games').where({ seriesId });
+    if (series.isCompleted || series.bestOf === count) {
+      throw new PublicError('This series has already been completed');
+    }
+
     const id = createId();
     await load.tx.insert({ id, seriesId, createdAt: new Date() }).into('games');
 

@@ -2,15 +2,17 @@ import jwt from 'jsonwebtoken';
 
 import config from '#src/config.js';
 import PublicError from '#src/constants/public-error.js';
+import completeGame from '#src/schema/root/complete-game.js';
 import createGame from '#src/schema/root/create-game.js';
 import createGrant from '#src/schema/root/create-grant.js';
 import createPlayer from '#src/schema/root/create-player.js';
 import createSeriesAndGame from '#src/schema/root/create-series-and-game.js';
 import currentGrant from '#src/schema/root/current-grant.js';
+import deleteGame from '#src/schema/root/delete-game.js';
 import deleteGrant from '#src/schema/root/delete-grant.js';
 import player from '#src/schema/root/player.js';
 import players from '#src/schema/root/players.js';
-import updateGame from '#src/schema/root/update-game.js';
+import series from '#src/schema/root/series.js';
 import updatePlayer from '#src/schema/root/update-player.js';
 
 const { sharedKey } = config.jtspike;
@@ -19,6 +21,7 @@ export default {
   defaultValue: {},
   type: {
     object: {
+      completeGame,
       createdGame: { nullable: 'game' },
       createdGrant: { nullable: 'grant' },
       createdPlayer: { nullable: 'player' },
@@ -28,10 +31,11 @@ export default {
       createPlayer,
       createSeriesAndGame,
       currentGrant,
+      deleteGame,
       deleteGrant,
       players,
       player,
-      updateGame,
+      series,
       updatePlayer
     }
   },

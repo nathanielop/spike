@@ -3,6 +3,7 @@ import date from '#src/schema/date/index.js';
 import datetime from '#src/schema/datetime/index.js';
 import email from '#src/schema/email/index.js';
 import format from '#src/schema/format/index.js';
+import game from '#src/schema/game/index.js';
 import grant from '#src/schema/grant/index.js';
 import id from '#src/schema/id/index.js';
 import integer from '#src/schema/integer/index.js';
@@ -20,6 +21,7 @@ export default {
   date,
   email,
   format,
+  game,
   grant,
   id,
   integer,

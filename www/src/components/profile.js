@@ -2,6 +2,7 @@ import { useState } from 'endr';
 
 import ArrowLeftIcon from '#src/components/icons/arrow-left.js';
 import Input from '#src/components/input.js';
+import UserAvatar from '#src/components/user-avatar.js';
 import notificationsApi from '#src/constants/notifications.js';
 import pave from '#src/constants/pave.js';
 import useAsync from '#src/hooks/use-async.js';
@@ -58,11 +59,7 @@ export default ({ reload }) => {
       )}
       <div className='space-y-2'>
         <div className='text-xl font-semibold'>Profile</div>
-        <img
-          className='h-24 w-24 rounded-xl shadow-md shadow-slate-600 active:shadow-sm'
-          src={player.avatarUrl}
-          alt={player.name}
-        />
+        <UserAvatar player={player} className='h-24 w-24' />
         <a
           href='https://gravatar.com/profile'
           className='bg-white block text-xs hover:bg-gray-50 rounded border px-2 py-1 w-24 text-center'

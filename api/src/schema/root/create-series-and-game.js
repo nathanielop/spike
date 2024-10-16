@@ -7,17 +7,30 @@ export default {
   type: 'root',
   input: {
     object: {
-      format: 'format',
+      bestOf: 'format',
       players: {
-        arrayOf: { object: { id: 'id', team: 'int' } },
+        arrayOf: { object: { id: 'id', team: { nullable: 'integer' } } },
         minLength: 2,
         maxLength: 10
       }
     },
     validate: ({ value }) => {
-      const teams = unique(value.players.map(({ team }) => team));
-      if (teams.length < 2) {
-        throw new PublicError('Teams must be unique');
+      const hasTeams = !!value.players[0].team;
+      if (value.players.some(({ team }) => !!team !== hasTeams)) {
+        throw new PublicError('Players must all have a team or none');
+      }
+
+      if (hasTeams) {
+        const teams = unique(value.players.map(({ team }) => team));
+        if (hasTeams && teams.length < 2) {
+          throw new PublicError('Teams must be unique');
+        }
+
+        const teamGroups = groupBy(value.players, 'team');
+        const teamSizes = Object.values(teamGroups).map(group => group.length);
+        if (teamSizes.some(size => size !== teamSizes[0])) {
+          throw new PublicError('Teams must have the same number of players');
+        }
       }
 
       const playerIds = unique(value.players.map(({ id }) => id));
@@ -25,18 +38,12 @@ export default {
         throw new PublicError('Players must be unique');
       }
 
-      const teamGroups = groupBy(value.players, 'team');
-      const teamSizes = Object.values(teamGroups).map(group => group.length);
-      if (teamSizes.some(size => size !== teamSizes[0])) {
-        throw new PublicError('Teams must have the same number of players');
-      }
-
       return value;
     }
   },
   resolve: async ({
     context: { load, player },
-    input: { format, players }
+    input: { bestOf, players: _players }
   }) => {
     if (!player?.isAdmin) {
       throw new PublicError(
@@ -44,25 +51,27 @@ export default {
       );
     }
 
-    if (
-      (
-        await load.tx
-          .select()
-          .from('players')
-          .whereIn(
-            'id',
-            players.map(({ id }) => id)
-          )
-      ).length !== players.length
-    ) {
+    const players = await load.tx
+      .select()
+      .from('players')
+      .whereIn(
+        'id',
+        _players.map(({ id }) => id)
+      );
+    if (players.length !== _players.length) {
       throw new PublicError('Players do not exist');
+    }
+
+    if (!players[0].team) {
+      const toAssign = players.sort((a, b) => (a.elo < b.elo ? 1 : -1));
+      for (let i = 0; i < toAssign.length; i++) toAssign[i].team = i % 2;
     }
 
     const seriesId = createId();
     const gameId = createId();
     await load.tx.transaction(async tx => {
       await tx
-        .insert({ format, id: seriesId, createdAt: new Date() })
+        .insert({ bestOf, id: seriesId, createdAt: new Date() })
         .into('series');
 
       await tx
@@ -70,9 +79,17 @@ export default {
         .into('games');
 
       const teams = groupBy(players, 'team');
-      const teamIds = Object.keys(teams).map(() => createId());
+      const teamIds = Object.fromEntries(
+        Object.keys(teams).map(teamId => [teamId, createId()])
+      );
       await tx
-        .insert(teamIds.map(id => ({ id, seriesId, createdAt: new Date() })))
+        .insert(
+          Object.values(teamIds).map(id => ({
+            id,
+            seriesId,
+            createdAt: new Date()
+          }))
+        )
         .into('seriesTeams');
 
       await tx
@@ -80,7 +97,7 @@ export default {
           players.map(({ id, team }) => ({
             id: createId(),
             playerId: id,
-            seriesTeamId: teamIds[team - 1],
+            seriesTeamId: teamIds[team],
             createdAt: new Date()
           }))
         )

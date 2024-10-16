@@ -2,8 +2,13 @@ import clsx from 'clsx';
 import { useEffect, useState } from 'endr';
 
 import Button from '#src/components/button.js';
+import ThunderDome from '#src/components/thunder-dome/index.js';
 import UserAvatar from '#src/components/user-avatar.js';
+import pave from '#src/constants/pave.js';
+import useAsync from '#src/hooks/use-async.js';
+import useNotification from '#src/hooks/use-notification.js';
 import useRootContext from '#src/hooks/use-root-context.js';
+import useToggle from '#src/hooks/use-toggle.js';
 
 const {
   clearInterval,
@@ -16,14 +21,7 @@ const {
 
 const initialRadius = 120;
 
-export default ({
-  profiles,
-  selectedProfiles,
-  setSelectedProfiles,
-  setLoadThunderdome,
-  randomize,
-  setRandomize
-}) => {
+export default ({ players, reload }) => {
   const { player } = useRootContext();
   const [size, setSize] = useState({
     width: window.innerWidth / 2,
@@ -31,6 +29,10 @@ export default ({
   });
   const [radius, setRadius] = useState(initialRadius); // Initial radius
   const [expanding, setExpanding] = useState(false);
+  const [matchDetails, setMatchDetails] = useState();
+  const [selectedPlayers, setSelectedPlayers] = useState([]);
+  const [randomize, , , toggleRandomize] = useToggle(true);
+  const [bestOf, setBestOf] = useState(3);
 
   useEffect(() => {
     const updateSize = () => {
@@ -72,53 +74,93 @@ export default ({
     };
   }, [expanding]);
 
-  const handleProfileClick = profile => {
-    const utterance = new SpeechSynthesisUtterance(
-      `${profile.name}${profile.nickname ? ` the ${profile.nickname}` : ''}`
+  const { execute: createGame, error: createGameError } = useAsync(async () => {
+    const {
+      createSeriesAndGame: { createdGame, createdSeries }
+    } = await pave.execute({
+      query: {
+        createSeriesAndGame: {
+          $: {
+            bestOf,
+            players: selectedPlayers.map(({ id }, i) => ({
+              id,
+              team: randomize ? null : Math.floor(i / 2)
+            }))
+          },
+          createdGame: { id: {} },
+          createdSeries: {
+            id: {},
+            bestOf: {},
+            teams: {
+              id: {},
+              players: { id: {}, name: {}, avatarUrl: { $: { size: 200 } } }
+            }
+          }
+        }
+      }
+    });
+
+    setTimeout(() => setExpanding(true), 500);
+    setTimeout(
+      () => setMatchDetails({ series: createdSeries, game: createdGame }),
+      4000
     );
-    utterance.voice = speechSynthesis.getVoices()[201];
-    speechSynthesis.speak(utterance);
+  });
+  useNotification(createGameError);
 
-    if (selectedProfiles.length < 4 && !selectedProfiles.includes(profile)) {
-      setSelectedProfiles([...selectedProfiles, profile]);
-    }
-
-    if (selectedProfiles.length === 3) {
-      setTimeout(() => setExpanding(true), 500);
-      setTimeout(() => setLoadThunderdome(true), 4000);
-    }
-  };
+  useEffect(() => {
+    if (selectedPlayers.length === 4) createGame();
+  }, [selectedPlayers.length, createGame]);
 
   return (
     <div className='flex overflow-hidden'>
-      <div className='w-1/6 min-w-0 p-4 bg-purple-700'>
-        <img
-          onclick={() => window.location.reload()}
-          src='/spikelogo.png'
-          className='w-full'
+      {matchDetails && (
+        <ThunderDome
+          matchDetails={matchDetails}
+          onComplete={reload}
+          onExit={() => {
+            setMatchDetails();
+            setSelectedPlayers([]);
+          }}
+          setMatchDetails={setMatchDetails}
         />
+      )}
+      <div className='w-1/6 min-w-0 p-4 bg-purple-700'>
+        <img src='/spikelogo.png' className='w-full' />
       </div>
       <div className='relative h-screen w-3/4 items-center justify-center'>
         <div className='flex h-screen self-center animate-cw-spin'>
-          {profiles.map((profile, index) => (
+          {players.map((player, index) => (
             <div
-              key={profile.id}
+              key={player.id}
               className='absolute w-[5rem] p-1 items-center justify-center active:w-[4.8rem]'
               style={{
                 left: `calc(50% + ${
-                  Math.cos((2 * Math.PI * index) / profiles.length) * size.width
+                  Math.cos((2 * Math.PI * index) / players.length) * size.width
                 }px)`,
                 top: `calc(50% + ${
-                  Math.sin((2 * Math.PI * index) / profiles.length) *
-                  size.height
+                  Math.sin((2 * Math.PI * index) / players.length) * size.height
                 }px)`,
                 transform: 'translate(-50%, -50%)'
               }}
             >
               <UserAvatar
-                player={profile}
+                player={player}
                 className='animate-ccw-spin'
-                onclick={() => handleProfileClick(profile)}
+                onclick={() => {
+                  const utterance = new SpeechSynthesisUtterance(
+                    `${player.name}${player.nickname ? ` the ${player.nickname}` : ''}`
+                  );
+                  utterance.voice = speechSynthesis.getVoices()[0];
+                  speechSynthesis.speak(utterance);
+
+                  if (
+                    selectedPlayers.length < 4 &&
+                    !selectedPlayers.includes(player)
+                  ) {
+                    setSelectedPlayers([...selectedPlayers, player]);
+                  }
+                }}
               />
             </div>
           ))}
@@ -127,27 +169,27 @@ export default ({
           <div
             className={clsx(
               'relative flex h-24 w-24 rounded-full',
-              selectedProfiles.length === 4 && 'animate-exp-spin'
+              selectedPlayers.length === 4 && 'animate-exp-spin'
             )}
             style={{
               backgroundImage: `url("/jtlogo.png")`,
               backgroundSize: 'cover'
             }}
           >
-            {selectedProfiles.length > 0 && selectedProfiles.length !== 4 && (
+            {selectedPlayers.length > 0 && selectedPlayers.length !== 4 && (
               <Button
                 className='absolute px-[0.7rem] py-[0.3rem] -bottom-1 -right-1 text-xl z-10 pointer-events-auto opacity-80'
-                onclick={() => setSelectedProfiles([])}
+                onclick={() => setSelectedPlayers([])}
               >
                 &times;
               </Button>
             )}
-            {selectedProfiles.map((profile, index) => (
-              <img
-                key={profile.id}
-                src={profile.avatarUrl}
-                alt={profile.name}
-                className='absolute w-18 h-18 rounded-3xl shadow-lg shadow-slate-600'
+            {selectedPlayers.map((player, index) => (
+              <UserAvatar
+                key={player.id}
+                player={player}
+                resetDisplay
+                className='absolute w-20 h-20'
                 style={{
                   left: `calc(50% + ${
                     radius * Math.cos((2 * Math.PI * index) / 4)
@@ -167,21 +209,32 @@ export default ({
           </div>
         </div>
       </div>
-      <div className='w-1/6 bg-purple-700 p-4'>
-        <div className='flex grow justify-between'>
+      <div className='w-1/6 bg-purple-700 flex flex-col p-4'>
+        <a href='/player' className='block ml-auto'>
+          <UserAvatar player={player} className='h-10 w-10' />
+        </a>
+        <div className='mt-auto space-y-2'>
           <Button
-            onclick={() => setRandomize(!randomize)}
-            className={clsx(randomize && 'bg-green-500')}
+            onclick={toggleRandomize}
+            className={clsx('w-full', randomize && 'bg-green-500')}
           >
             Random
           </Button>
-          <a href='/profile' className='block'>
-            <img
-              className='h-10 w-10 rounded-xl shadow-md shadow-slate-600 active:shadow-sm'
-              src={player.avatarUrl}
-              alt={player.name}
-            />
-          </a>
+          <div className='flex'>
+            {[1, 3, 5].map(format => (
+              <Button
+                key={format}
+                onclick={() => setBestOf(bestOf)}
+                resetRounding
+                className={clsx(
+                  'w-full first:rounded-l-md last:rounded-r-md',
+                  format === bestOf && 'bg-green-500'
+                )}
+              >
+                BO{format}
+              </Button>
+            ))}
+          </div>
         </div>
       </div>
     </div>
