@@ -175,7 +175,6 @@ export default {
         }
       }
 
-      console.log(playersToElo);
       for (const [id, elo] of Object.entries(playersToElo)) {
         await tx
           .table('players')

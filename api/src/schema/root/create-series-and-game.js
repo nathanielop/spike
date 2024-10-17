@@ -3,6 +3,7 @@ import PublicError from '#src/constants/public-error.js';
 import createId from '#src/functions/create-id.js';
 import getGameOdds from '#src/functions/get-game-odds.js';
 import groupBy from '#src/functions/group-by.js';
+import indexBy from '#src/functions/index-by.js';
 import postToSlack from '#src/functions/post-to-slack.js';
 import unique from '#src/functions/unique.js';
 
@@ -52,7 +53,8 @@ export default {
       );
     }
 
-    const players = await load.tx
+    const byId = indexBy(_players, 'id');
+    let players = await load.tx
       .select()
       .from('players')
       .whereIn(
@@ -62,6 +64,11 @@ export default {
     if (players.length !== _players.length) {
       throw new PublicError('Players do not exist');
     }
+
+    players = players.map(player => ({
+      ...player,
+      team: byId[player.id].team
+    }));
 
     if (players[0].team == null) {
       const toAssign = players.sort((a, b) => (a.elo < b.elo ? 1 : -1));

@@ -77,9 +77,11 @@ export default {
       if (!games[i - 1]) series.push([games[i]]);
       else {
         const prevIds = getPlayerIds(games[i - 1])
-          .flat()
-          .sort();
-        const currentIds = getPlayerIds(games[i]).flat().sort();
+          .map(ids => ids.sort())
+          .flat();
+        const currentIds = getPlayerIds(games[i])
+          .map(ids => ids.sort())
+          .flat();
         if (JSON.stringify(prevIds) === JSON.stringify(currentIds)) {
           series.at(-1).push(games[i]);
         } else series.push([games[i]]);
@@ -112,8 +114,6 @@ export default {
           createdGame: { id: {} }
         }
       });
-
-      console.log(createdSeries, winnerIds, loserIds);
 
       await paveExecute({
         completeGame: {
