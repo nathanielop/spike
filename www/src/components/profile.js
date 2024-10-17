@@ -42,6 +42,8 @@ export default ({ reload }) => {
         $: { id: player.id },
         id: {},
         credits: {},
+        name: {},
+        avatarUrl: { $: { size: 200 } },
         stats: {
           wins: {},
           losses: {},
@@ -104,7 +106,10 @@ export default ({ reload }) => {
           />
         )}
         <div className='text-3xl font-bold'>Profile</div>
-        <UserAvatar player={player} className='h-32 w-32' />
+        <UserAvatar
+          player={profileData?.player ?? player}
+          className='h-32 w-32'
+        />
         <a
           href='https://gravatar.com/profile'
           className='bg-white block hover:bg-gray-50 rounded border p-2 w-32 text-center'
