@@ -43,7 +43,7 @@ export default {
     }
   },
   resolve: async ({
-    context: { load, player },
+    context: { load, player, shouldNotify },
     input: { bestOf, players: _players }
   }) => {
     if (!player?.isAdmin) {
@@ -108,21 +108,23 @@ export default {
         .into('seriesTeamMembers');
     });
 
-    try {
-      const odds = getGameOdds(...Object.values(teams));
-      await postToSlack({
-        subject: Object.values(teams)
-          .map(
-            (players, i) =>
-              `${players.map(({ name }) => name).join(' & ')} (${Math.round(odds[i] * 100)}%)`
-          )
-          .join(' vs '),
-        title: `*GAME STARTING*`,
-        linkText: 'Place your bets',
-        linkUrl: `${appUrl}/profile?${new URLSearchParams({ bet: true, seriesId })}`
-      });
-    } catch (er) {
-      console.log('Error sending slack message', er);
+    if (shouldNotify !== false) {
+      try {
+        const odds = getGameOdds(...Object.values(teams));
+        await postToSlack({
+          subject: Object.values(teams)
+            .map(
+              (players, i) =>
+                `${players.map(({ name }) => name).join(' & ')} (${Math.round(odds[i] * 100)}%)`
+            )
+            .join(' vs '),
+          title: `*GAME STARTING*`,
+          linkText: 'Place your bets',
+          linkUrl: `${appUrl}/profile?${new URLSearchParams({ bet: true, seriesId })}`
+        });
+      } catch (er) {
+        console.log('Error sending slack message', er);
+      }
     }
 
     return { createdSeries: { id: seriesId }, createdGame: { id: gameId } };

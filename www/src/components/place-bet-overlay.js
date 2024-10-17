@@ -1,9 +1,10 @@
 import clsx from 'clsx';
-import { useState } from 'endr';
+import { useEffect, useState } from 'endr';
 
 import LoadingArea from '#src/components/loading-area.js';
 import Notice from '#src/components/notice.js';
 import UserAvatar from '#src/components/user-avatar.js';
+import notificationsApi from '#src/constants/notifications.js';
 import pave from '#src/constants/pave.js';
 import rootContextQuery from '#src/constants/root-context-query.js';
 import useAsync from '#src/hooks/use-async.js';
@@ -26,6 +27,7 @@ export default ({ onClose, onPlaced, seriesId }) => {
       series: {
         $: { id: seriesId },
         id: {},
+        completedAt: {},
         teams: {
           id: {},
           players: { id: {}, name: {}, avatarUrl: {} },
@@ -50,10 +52,26 @@ export default ({ onClose, onPlaced, seriesId }) => {
         }
       }
     });
+    notificationsApi.add({
+      type: 'success',
+      children: 'Bet placed successfully.'
+    });
     onPlaced();
     onClose();
   });
   useNotification(placeBetError);
+
+  useEffect(() => {
+    if (!series) return;
+
+    if (series.completedAt) {
+      notificationsApi.add({
+        type: 'error',
+        children: 'This series has already been completed.'
+      });
+      onClose();
+    }
+  }, [series, onClose]);
 
   return (
     <div className='absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50 animate-slideInUp'>

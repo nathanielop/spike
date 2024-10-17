@@ -38,7 +38,7 @@ export default {
       winningTeamId,
       winningTeamScore
     },
-    context: { load, player }
+    context: { load, player, shouldNotify }
   }) => {
     const game = await load('games', id);
     if (!game || !player?.isAdmin) {
@@ -189,14 +189,16 @@ export default {
       }
     });
 
-    try {
-      await postToSlack({
-        subject: `${teams[winningTeamId].map(({ name }) => name).join(' & ')} defeated ${teams[losingTeamId].map(({ name }) => name).join(' & ')}`,
-        message: totalPaidOut ? `*${totalPaidOut} credits paid out*` : '',
-        title: `*WE 🙂 WIN \`${winningTeamScore}-${losingTeamScore}\`*`
-      });
-    } catch (er) {
-      console.log('Error sending slack message', er);
+    if (shouldNotify !== false) {
+      try {
+        await postToSlack({
+          subject: `${teams[winningTeamId].map(({ name }) => name).join(' & ')} defeated ${teams[losingTeamId].map(({ name }) => name).join(' & ')}`,
+          message: totalPaidOut ? `*${totalPaidOut} credits paid out*` : '',
+          title: `*WE 🙂 WIN \`${winningTeamScore}-${losingTeamScore}\`*`
+        });
+      } catch (er) {
+        console.log('Error sending slack message', er);
+      }
     }
   }
 };
