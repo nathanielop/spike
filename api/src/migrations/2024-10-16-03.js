@@ -113,6 +113,8 @@ export default {
         }
       });
 
+      console.log(createdSeries, winnerIds, loserIds);
+
       await paveExecute({
         completeGame: {
           $: {
