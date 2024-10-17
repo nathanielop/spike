@@ -83,7 +83,7 @@ export default {
     }
 
     for (const player of losingTeam) {
-      playersToElo[player.id] = player.elo - kFactor * amplifier;
+      playersToElo[player.id] = Math.max(player.elo - kFactor * amplifier, 0);
     }
 
     let totalPaidOut = 0;
