@@ -74,8 +74,8 @@ export default ({ onClose, onPlaced, seriesId }) => {
   }, [series, onClose]);
 
   return (
-    <div className='absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50 animate-slideInUp'>
-      <div className='relative bg-white p-8 flex flex-col gap-4 rounded-lg shadow-lg'>
+    <div className='fixed inset-0 p-8 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50 animate-slideInUp'>
+      <div className='relative bg-white p-8 max-w-full flex flex-col gap-4 rounded-lg shadow-lg'>
         <button
           onclick={onClose}
           className='absolute leading-none top-2 right-2 text-3xl'
@@ -83,7 +83,7 @@ export default ({ onClose, onPlaced, seriesId }) => {
           &times;
         </button>
         <h2 className='text-xl font-semibold'>Place Bet</h2>
-        <div className='flex items-center gap-4'>
+        <div className='flex md:flex-row flex-col justify-center items-center gap-4'>
           {seriesError && <Notice>{seriesError}</Notice>}
           {seriesIsLoading && <LoadingArea />}
           {seriesData && (
@@ -96,7 +96,7 @@ export default ({ onClose, onPlaced, seriesId }) => {
                   }))
                 }
                 className={clsx(
-                  'relative flex p-4 hover:bg-gray-50 border-2 cursor-pointer rounded justify-between gap-2 w-full',
+                  'relative flex p-4 hover:bg-gray-50 border-2 cursor-pointer rounded justify-between gap-4 md:w-full',
                   betDetails.team?.id === series.teams[0].id &&
                     'border-orange-500'
                 )}
@@ -105,7 +105,7 @@ export default ({ onClose, onPlaced, seriesId }) => {
                   <UserAvatar
                     key={player.id}
                     player={player}
-                    className='h-16 pointer-events-none'
+                    className='h-24 md:h-16 pointer-events-none'
                   />
                 ))}
                 <div className='absolute border -top-2 -right-2 bg-white rounded p-1 text-xs'>
@@ -123,7 +123,7 @@ export default ({ onClose, onPlaced, seriesId }) => {
                   }))
                 }
                 className={clsx(
-                  'relative flex p-4 hover:bg-gray-50 border-2 cursor-pointer rounded justify-between gap-2 w-full',
+                  'relative flex p-4 hover:bg-gray-50 border-2 cursor-pointer rounded justify-between gap-4 md:w-full',
                   betDetails.team?.id === series.teams[1].id &&
                     'border-orange-500'
                 )}
@@ -132,7 +132,7 @@ export default ({ onClose, onPlaced, seriesId }) => {
                   <UserAvatar
                     key={player.id}
                     player={player}
-                    className='h-16 pointer-events-none'
+                    className='h-24 md:h-16 pointer-events-none'
                   />
                 ))}
                 <div className='absolute border -top-2 -left-2 bg-white rounded p-1 text-xs'>
@@ -147,7 +147,7 @@ export default ({ onClose, onPlaced, seriesId }) => {
             type='number'
             value={betDetails.amount}
             placeholder='Enter bet amount...'
-            onChange={e =>
+            onchange={e =>
               setBetDetails(prev => ({
                 ...prev,
                 amount: Math.min(Math.round(e.target.value), player.credits)
