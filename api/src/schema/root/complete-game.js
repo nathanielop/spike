@@ -87,6 +87,9 @@ export default {
     }
 
     let totalPaidOut = 0;
+    let totalPlayersPaid = 0;
+    let totalLost = 0;
+    let totalPlayersLost = 0;
     await load.tx.transaction(async tx => {
       await tx
         .table('games')
@@ -139,10 +142,14 @@ export default {
                 : null;
             if (paidOutAmount) {
               totalPaidOut += paidOutAmount;
+              totalPlayersPaid++;
               playerValues.push([
                 bet.playerId,
                 paidOutAmount + bet.playerCredits
               ]);
+            } else {
+              totalPlayersLost++;
+              totalLost += bet.amount;
             }
             return [bet.id, paidOutAmount, false];
           });
@@ -191,9 +198,19 @@ export default {
 
     if (shouldNotify !== false) {
       try {
+        const bettingMessage = [].concat(
+          totalPaidOut
+            ? `${totalPaidOut} credits paid out to ${totalPlayersPaid} player${totalPlayersPaid > 1 ? 's' : ''}`
+            : [],
+          totalLost
+            ? `${totalLost} credits lost by ${totalPlayersLost} player${totalPlayersLost > 1 ? 's' : ''}`
+            : []
+        );
         await postToSlack({
           subject: `${teams[winningTeamId].map(({ name }) => name).join(' & ')} defeated ${teams[losingTeamId].map(({ name }) => name).join(' & ')}`,
-          message: totalPaidOut ? `*${totalPaidOut} credits paid out*` : '',
+          message: bettingMessage.length
+            ? bettingMessage.join(' and ')
+            : undefined,
           title: `*WE 🙂 WIN \`${winningTeamScore}-${losingTeamScore}\`*`
         });
       } catch (er) {
