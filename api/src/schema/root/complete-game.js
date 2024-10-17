@@ -6,7 +6,7 @@ import postToSlack from '#src/functions/post-to-slack.js';
 
 const { console } = globalThis;
 
-const kFactor = 16;
+const kFactor = 32;
 
 export default {
   type: 'root',
@@ -75,14 +75,15 @@ export default {
 
     const odds = getGameOdds(winningTeam, losingTeam);
 
+    const expectedDifference = (odds[0] - odds[1]) * 11;
+    const actualDifference = winningTeamScore - losingTeamScore;
+    const amplifier = 1 + (actualDifference - expectedDifference) / 10;
     for (const player of winningTeam) {
-      playersToElo[player.id] =
-        player.elo + kFactor * (winningTeamScore - odds[0] * 11);
+      playersToElo[player.id] = player.elo + kFactor * amplifier;
     }
 
     for (const player of losingTeam) {
-      playersToElo[player.id] =
-        player.elo + kFactor * (losingTeamScore - odds[1] * 11);
+      playersToElo[player.id] = player.elo - kFactor * amplifier;
     }
 
     let totalPaidOut = 0;
