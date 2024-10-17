@@ -14,54 +14,28 @@ export default {
   resolve: async ({ context: { load, player }, object: { id } }) => {
     if (player.id !== id) return;
 
-    // TODO This logic is definitely more complicated than it needs to be
-
     let [{ count: wins }] = await load.tx
       .count()
-      .from('games')
-      .join('series', 'series.id', 'games.seriesId')
-      .join('seriesTeams', 'seriesTeams.seriesId', 'series.id')
-      .join(
-        'seriesTeamMembers',
-        'seriesTeamMembers.seriesTeamId',
-        'seriesTeams.id'
-      )
-      .whereIn('winningTeamId', query =>
+      .from('seriesTeamMembers')
+      .join('seriesTeams', 'seriesTeams.id', 'seriesTeamMembers.seriesTeamId')
+      .where({ playerId: id })
+      .whereExists(query =>
         query
-          .select('seriesTeams.id')
+          .select()
           .from('games')
-          .join('series', 'series.id', 'games.seriesId')
-          .join('seriesTeams', 'seriesTeams.seriesId', 'series.id')
-          .join(
-            'seriesTeamMembers',
-            'seriesTeamMembers.seriesTeamId',
-            'seriesTeams.id'
-          )
-          .where({ playerId: id })
+          .whereColumn('winningTeamId', 'seriesTeams.id')
       );
 
     let [{ count: losses }] = await load.tx
       .count()
-      .from('games')
-      .join('series', 'series.id', 'games.seriesId')
-      .join('seriesTeams', 'seriesTeams.seriesId', 'series.id')
-      .join(
-        'seriesTeamMembers',
-        'seriesTeamMembers.seriesTeamId',
-        'seriesTeams.id'
-      )
-      .whereIn('losingTeamId', query =>
+      .from('seriesTeamMembers')
+      .join('seriesTeams', 'seriesTeams.id', 'seriesTeamMembers.seriesTeamId')
+      .where({ playerId: id })
+      .whereExists(query =>
         query
-          .select('seriesTeams.id')
+          .select()
           .from('games')
-          .join('series', 'series.id', 'games.seriesId')
-          .join('seriesTeams', 'seriesTeams.seriesId', 'series.id')
-          .join(
-            'seriesTeamMembers',
-            'seriesTeamMembers.seriesTeamId',
-            'seriesTeams.id'
-          )
-          .where({ playerId: id })
+          .whereColumn('losingTeamId', 'seriesTeams.id')
       );
 
     wins = Number(wins);
