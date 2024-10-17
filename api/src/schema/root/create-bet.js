@@ -15,7 +15,7 @@ export default {
   },
   resolve: async ({ context: { load, player }, input: { amount, teamId } }) => {
     const team = await load('seriesTeams', teamId);
-    if (!team || !player?.isAdmin) {
+    if (!team || !player) {
       throw new PublicError(
         'You do not have permission to place a bet on this series'
       );
