@@ -22,7 +22,15 @@ export default {
     }
 
     const series = await load('series', team.seriesId);
-    if (series.completedAt || series.createdAt < Date.now() - betTimeLimit) {
+    const seriesGame = await load.tx
+      .first()
+      .from('games')
+      .where({ seriesId: series.id });
+    if (
+      !!seriesGame ||
+      series.completedAt ||
+      series.createdAt < Date.now() - betTimeLimit
+    ) {
       throw new PublicError('Betting is closed for this series');
     }
 
