@@ -25,7 +25,8 @@ export default {
     const seriesGame = await load.tx
       .first()
       .from('games')
-      .where({ seriesId: series.id });
+      .where({ seriesId: series.id })
+      .whereNotNull('completedAt');
     if (
       !!seriesGame ||
       series.completedAt ||
