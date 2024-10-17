@@ -200,16 +200,16 @@ export default {
       try {
         const bettingMessage = [].concat(
           totalPaidOut
-            ? `${totalPaidOut} credits paid out to ${totalPlayersPaid} player${totalPlayersPaid > 1 ? 's' : ''}`
+            ? `*${totalPaidOut} credits paid out to ${totalPlayersPaid} player${totalPlayersPaid > 1 ? 's' : ''}*`
             : [],
           totalLost
-            ? `${totalLost} credits lost by ${totalPlayersLost} player${totalPlayersLost > 1 ? 's' : ''}`
+            ? `*${totalLost} credits lost by ${totalPlayersLost} player${totalPlayersLost > 1 ? 's' : ''}*`
             : []
         );
         await postToSlack({
           subject: `${teams[winningTeamId].map(({ name }) => name).join(' & ')} defeated ${teams[losingTeamId].map(({ name }) => name).join(' & ')}`,
           message: bettingMessage.length
-            ? bettingMessage.join(' and ')
+            ? bettingMessage.join('\n')
             : undefined,
           title: `*WE 🙂 WIN \`${winningTeamScore}-${losingTeamScore}\`*`
         });
