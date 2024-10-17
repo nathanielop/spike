@@ -75,7 +75,6 @@ export default {
 
     const odds = getGameOdds(winningTeam, losingTeam);
 
-    console.log(odds);
     for (const player of winningTeam) {
       playersToElo[player.id] =
         player.elo + kFactor * (winningTeamScore - odds[0] * 11);
@@ -86,6 +85,7 @@ export default {
         player.elo + kFactor * (losingTeamScore - odds[1] * 11);
     }
 
+    let totalPaidOut = 0;
     await load.tx.transaction(async tx => {
       await tx
         .table('games')
@@ -111,17 +111,67 @@ export default {
         .where({ seriesId: game.seriesId });
 
       const byWinningTeamId = groupBy(games, 'winningTeamId');
+      const seriesWinner = Object.entries(byWinningTeamId).find(
+        ([, games]) => games.length >= Math.ceil(bestOf / 2)
+      );
+      if (bestOf === gameCount || seriesWinner) {
+        const [seriesWinnerTeamId] = seriesWinner;
 
-      if (
-        bestOf === gameCount ||
-        Object.values(byWinningTeamId).some(
-          games => games.length >= Math.ceil(bestOf / 2)
-        )
-      ) {
         await tx
           .table('series')
           .update({ completedAt: new Date() })
           .where({ id: game.seriesId });
+
+        const bets = await tx
+          .select('bets.*', 'players.credits as playerCredits')
+          .from('bets')
+          .join('seriesTeams', 'seriesTeams.id', 'bets.seriesTeamId')
+          .where({ seriesId: game.seriesId })
+          .join('players', 'players.id', 'bets.playerId');
+
+        if (bets.length) {
+          const playerValues = [];
+          const betValues = bets.map(bet => {
+            const paidOutAmount =
+              bet.seriesTeamId === seriesWinnerTeamId
+                ? Math.round(bet.amount * bet.payRate)
+                : null;
+            if (paidOutAmount) {
+              totalPaidOut += paidOutAmount;
+              playerValues.push([
+                bet.playerId,
+                paidOutAmount + bet.playerCredits
+              ]);
+            }
+            return [bet.id, paidOutAmount, false];
+          });
+
+          if (playerValues.length) {
+            await tx.raw(
+              `
+              update players
+              set credits = data.credits::integer
+              from (values ${Array.from(playerValues, () => '(?, ?)').join(
+                ', '
+              )}) as data (id, credits)
+              where players.id = data.id
+              `,
+              playerValues.flat()
+            );
+          }
+
+          await tx.raw(
+            `
+            update bets
+            set "paidOutAmount" = data."paidOutAmount"::integer, "isActive" = data."isActive"::boolean
+            from (values ${Array.from(betValues, () => '(?, ?, ?)').join(
+              ', '
+            )}) as data (id, "paidOutAmount", "isActive")
+            where bets.id = data.id
+            `,
+            betValues.flat()
+          );
+        }
       }
 
       console.log(playersToElo);
@@ -142,6 +192,7 @@ export default {
     try {
       await postToSlack({
         subject: `${teams[winningTeamId].map(({ name }) => name).join(' & ')} defeated ${teams[losingTeamId].map(({ name }) => name).join(' & ')}`,
+        message: totalPaidOut ? `*${totalPaidOut} credits paid out*` : '',
         title: `*WE 🙂 WIN \`${winningTeamScore}-${losingTeamScore}\`*`
       });
     } catch (er) {

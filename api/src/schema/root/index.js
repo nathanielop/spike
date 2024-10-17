@@ -3,11 +3,13 @@ import jwt from 'jsonwebtoken';
 import config from '#src/config.js';
 import PublicError from '#src/constants/public-error.js';
 import completeGame from '#src/schema/root/complete-game.js';
+import createBet from '#src/schema/root/create-bet.js';
 import createGame from '#src/schema/root/create-game.js';
 import createGrant from '#src/schema/root/create-grant.js';
 import createPlayer from '#src/schema/root/create-player.js';
 import createSeriesAndGame from '#src/schema/root/create-series-and-game.js';
 import currentGrant from '#src/schema/root/current-grant.js';
+import deleteBet from '#src/schema/root/delete-bet.js';
 import deleteGame from '#src/schema/root/delete-game.js';
 import deleteGrant from '#src/schema/root/delete-grant.js';
 import player from '#src/schema/root/player.js';
@@ -22,6 +24,8 @@ export default {
   type: {
     object: {
       completeGame,
+      createBet,
+      createdBet: { nullable: 'bet' },
       createdGame: { nullable: 'game' },
       createdGrant: { nullable: 'grant' },
       createdPlayer: { nullable: 'player' },
@@ -31,6 +35,7 @@ export default {
       createPlayer,
       createSeriesAndGame,
       currentGrant,
+      deleteBet,
       deleteGame,
       deleteGrant,
       players,

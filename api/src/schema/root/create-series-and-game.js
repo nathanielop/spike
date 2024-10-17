@@ -1,7 +1,14 @@
+import config from '#src/config.js';
 import PublicError from '#src/constants/public-error.js';
 import createId from '#src/functions/create-id.js';
+import getGameOdds from '#src/functions/get-game-odds.js';
 import groupBy from '#src/functions/group-by.js';
+import postToSlack from '#src/functions/post-to-slack.js';
 import unique from '#src/functions/unique.js';
+
+const { console, URLSearchParams } = globalThis;
+
+const { appUrl } = config.jtspike;
 
 export default {
   type: 'root',
@@ -64,6 +71,7 @@ export default {
       toAssign[2].team = 1;
     }
 
+    const teams = groupBy(players, 'team');
     const seriesId = createId();
     const gameId = createId();
     await load.tx.transaction(async tx => {
@@ -75,7 +83,6 @@ export default {
         .insert({ id: gameId, seriesId, createdAt: new Date() })
         .into('games');
 
-      const teams = groupBy(players, 'team');
       const teamIds = Object.fromEntries(
         Object.keys(teams).map(teamId => [teamId, createId()])
       );
@@ -100,6 +107,23 @@ export default {
         )
         .into('seriesTeamMembers');
     });
+
+    try {
+      const odds = getGameOdds(...Object.values(teams));
+      await postToSlack({
+        subject: Object.values(teams)
+          .map(
+            (players, i) =>
+              `${players.map(({ name }) => name).join(' & ')} (${Math.round(odds[i] * 100)}%)`
+          )
+          .join(' vs '),
+        title: `*GAME STARTING*`,
+        linkText: 'Place your bets',
+        linkUrl: `${appUrl}/profile?${new URLSearchParams({ bet: true, seriesId })}`
+      });
+    } catch (er) {
+      console.log('Error sending slack message', er);
+    }
 
     return { createdSeries: { id: seriesId }, createdGame: { id: gameId } };
   }
