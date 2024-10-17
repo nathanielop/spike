@@ -9,7 +9,7 @@ export default ({
 }) => (
   <div
     className={clsx(
-      'rounded-xl shadow-md shadow-slate-600 active:shadow-sm overflow-hidden',
+      'rounded-xl shadow-md aspect-square shadow-slate-600 active:shadow-sm overflow-hidden',
       !resetDisplay && 'relative',
       className
     )}

@@ -48,6 +48,7 @@ services:
       - ../api/src:/code/src
     environment:
       ALLOWED_EMAIL_DOMAINS: 'example.com'
+      APP_URL: 'https://www.dev.jtspike.com'
       POSTGRES_CONNECTION_STRING: 'pg://postgres:postgres@postgres/spike'
       POSTGRES_DATABASE_NAME: 'spike'
       SHARED_KEY: 'development'

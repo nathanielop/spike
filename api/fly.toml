@@ -6,6 +6,7 @@ primary_region = 'dfw'
 
 [env]
   ALLOWED_EMAIL_DOMAINS = 'jobtread.com'
+  APP_URL = 'https://www.jtspike.com'
   VERSION = 'production'
 
 [http_service]

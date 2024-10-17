@@ -13,6 +13,7 @@ export default {
   },
   jtspike: {
     allowedEmailDomains: env.ALLOWED_EMAIL_DOMAINS.split(','),
+    appUrl: env.APP_URL,
     sharedKey: env.SHARED_KEY
   },
   slack: {
