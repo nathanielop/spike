@@ -18,6 +18,8 @@ import useNotification from '#src/hooks/use-notification.js';
 import usePave from '#src/hooks/use-pave.js';
 import useRootContext from '#src/hooks/use-root-context.js';
 
+const { window } = globalThis;
+
 export default ({ reload }) => {
   const {
     player,
@@ -172,7 +174,7 @@ export default ({ reload }) => {
           onclick={() => {
             disk.set('grantKey', null);
             disk.set('paveCache', null);
-            history.push('/login');
+            window.location.reload();
           }}
           className='block cursor-pointer text-orange-500 hover:text-orange-600'
         >
