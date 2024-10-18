@@ -147,7 +147,7 @@ export default ({ onClose, onPlaced, seriesId }) => {
             type='number'
             value={betDetails.amount}
             placeholder='Enter bet amount...'
-            onchange={e =>
+            oninput={e =>
               setBetDetails(prev => ({
                 ...prev,
                 amount: Math.min(Math.round(e.target.value), player.credits)
