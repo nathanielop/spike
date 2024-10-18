@@ -65,7 +65,7 @@ export default ({ onLogin }) => {
   useNotification(error);
 
   return (
-    <div className='flex flex-col items-center justify-center grow'>
+    <div className='absolute inset-0 flex flex-col items-center justify-center grow'>
       <form
         onsubmit={ev => {
           ev.preventDefault();

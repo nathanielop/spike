@@ -59,11 +59,14 @@ export default {
         type: 'root'
       });
 
-    const backfill = await fs.readFile('src/migrations/backfill.txt', {
-      encoding: 'utf8'
-    });
-
-    if (!backfill) return console.log('No backfill data found, continuing...');
+    let backfill;
+    try {
+      backfill = await fs.readFile('src/migrations/backfill.txt', {
+        encoding: 'utf8'
+      });
+    } catch {
+      return console.log('No backfill data found, continuing...');
+    }
 
     const games = JSON.parse(
       `[${backfill

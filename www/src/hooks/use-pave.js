@@ -20,10 +20,7 @@ export default ({ query: _query, skip }) => {
     setIsLoading(false);
   }, []);
 
-  useEffect(
-    () => (query.current = mergeRefs(_query, query.current)),
-    [_query]
-  );
+  useEffect(() => (query.current = mergeRefs(_query, query.current)), [_query]);
 
   useEffect(() => !skip && execute(), [execute, skip]);
 
