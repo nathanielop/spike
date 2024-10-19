@@ -1,4 +1,5 @@
 import config from '#src/config.js';
+import currentSeason from '#src/constants/current-season.js';
 import PublicError from '#src/constants/public-error.js';
 import createId from '#src/functions/create-id.js';
 import getGameOdds from '#src/functions/get-game-odds.js';
@@ -83,7 +84,12 @@ export default {
     const gameId = createId();
     await load.tx.transaction(async tx => {
       await tx
-        .insert({ bestOf, id: seriesId, createdAt: new Date() })
+        .insert({
+          bestOf,
+          id: seriesId,
+          season: currentSeason,
+          createdAt: new Date()
+        })
         .into('series');
 
       await tx

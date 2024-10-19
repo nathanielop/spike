@@ -54,10 +54,11 @@ export default {
       .join('seriesTeams', 'seriesTeams.id', 'seriesTeamMembers.seriesTeamId')
       .join('players', 'players.id', 'seriesTeamMembers.playerId')
       .where({ seriesId: series.id });
-    if (seriesPlayers.some(({ playerId }) => playerId === player.id)) {
-      throw new PublicError(
-        'You cannot place a bet on a series you are participating in'
-      );
+    const matchingSeriesPlayer = seriesPlayers.find(
+      ({ playerId }) => playerId === player.id
+    );
+    if (matchingSeriesPlayer && matchingSeriesPlayer.seriesTeamId !== teamId) {
+      throw new PublicError('You cannot bet against yourself');
     }
 
     const byTeamId = groupBy(seriesPlayers, 'seriesTeamId');
