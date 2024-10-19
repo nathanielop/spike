@@ -60,6 +60,12 @@ export default ({ reload }) => {
         }
         // games: {
         //   id: {},
+        //   winningTeam
+        //   teams: {
+        //     id: {},
+        //     players: { id: {}, name: {}, avatarUrl: {} },
+        //     odds: {}
+        //   }
         // }
       }
     }
@@ -118,6 +124,7 @@ export default ({ reload }) => {
             Change
           </a>
           <form
+            autocomplete='off'
             onsubmit={ev => {
               ev.preventDefault();
               execute();
@@ -128,6 +135,7 @@ export default ({ reload }) => {
               placeholder='Name'
               required
               className='w-full'
+              autocomplete='spikeball-name'
               value={details.name ?? ''}
               onchange={({ target: { value } }) =>
                 setDetails(prev => ({ ...prev, name: value }))
@@ -136,6 +144,7 @@ export default ({ reload }) => {
             <Input
               placeholder='Nickname'
               className='w-full'
+              autocomplete='spikeball-nickname'
               value={details.nickname ?? ''}
               onchange={({ target: { value } }) =>
                 setDetails(prev => ({ ...prev, nickname: value }))
@@ -144,6 +153,7 @@ export default ({ reload }) => {
             <Input
               placeholder='Password'
               className='w-full'
+              autocomplete='spikeball-password'
               value={details.password ?? ''}
               type='password'
               onchange={({ target: { value } }) =>
@@ -153,6 +163,7 @@ export default ({ reload }) => {
             <Input
               placeholder='Confirm Password'
               className='w-full'
+              autocomplete='spikeball-password-confirmation'
               value={details.passwordConfirmation ?? ''}
               type='password'
               onchange={({ target: { value } }) =>
@@ -241,28 +252,38 @@ export default ({ reload }) => {
                   ))}
                 </div>
               </div>
-              {/* <div className='text-3xl font-bold'>Recent Games</div>
-            <div className='border rounded p-4 w-full'>
-              <div className='text-2xl font-bold'>Recent Games</div>
-              <div className='grid grid-cols-2 gap-4'>
-                <div className='flex flex-col gap-2'>
-                  <div className='text-lg'>Wins</div>
-                  <div className='text-3xl font-bold'>0</div>
+              {/* <div className='space-y-2'>
+                <div className='text-2xl font-bold'>Games</div>
+                <div className='border rounded w-full'>
+                  <div className='grid grid-cols-4'>
+                    <div className='p-2'>Amount</div>
+                    <div className='p-2'>Paid Out Amount</div>
+                    <div className='p-2 text-center'>Final</div>
+                    <div className='p-2'>Placed On</div>
+                  </div>
+                  {!profileData.recentGames.length && (
+                    <div className='px-4 py-12 text-center w-full border-t'>
+                      No games played yet
+                    </div>
+                  )}
+                  {profileData.player.bets.slice(0, 10).map(bet => (
+                    <div className='border-t grid grid-cols-4' key={bet.id}>
+                      <div className='p-2'>{bet.amount}</div>
+                      <div className='p-2'>{bet.paidOutAmount ?? '-'}</div>
+                      <div className='p-2 text-center'>
+                        {!bet.isActive && (
+                          <CircleCheckIcon className='inline-block align-[-0.125rem] h-5 text-green-500' />
+                        )}
+                      </div>
+                      <div className='flex'>
+                        <div className='p-2'>
+                          {new Date(bet.createdAt).toDateString()}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div className='flex flex-col gap-2'>
-                  <div className='text-lg'>Losses</div>
-                  <div className='text-3xl font-bold'>0</div>
-                </div>
-                <div className='flex flex-col gap-2'>
-                  <div className='text-lg'>Win Rate</div>
-                  <div className='text-3xl font-bold'>0%</div>
-                </div>
-                <div className='flex flex-col gap-2'>
-                  <div className='text-lg'>ELO</div>
-                  <div className='text-3xl font-bold'>0</div>
-                </div>
-              </div>
-            </div> */}
+              </div> */}
             </>
           )}
         </div>
