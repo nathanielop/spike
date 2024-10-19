@@ -16,27 +16,25 @@ export default {
 
     let [{ count: wins }] = await load.tx
       .count()
-      .from('seriesTeamMembers')
-      .join('seriesTeams', 'seriesTeams.id', 'seriesTeamMembers.seriesTeamId')
-      .where({ playerId: id })
-      .whereExists(query =>
-        query
-          .select()
-          .from('games')
-          .whereColumn('winningTeamId', 'seriesTeams.id')
-      );
+      .from('games')
+      .join('seriesTeams', 'seriesTeams.id', 'games.winningTeamId')
+      .join(
+        'seriesTeamMembers',
+        'seriesTeamMembers.seriesTeamId',
+        'seriesTeams.id'
+      )
+      .where({ playerId: id });
 
     let [{ count: losses }] = await load.tx
       .count()
-      .from('seriesTeamMembers')
-      .join('seriesTeams', 'seriesTeams.id', 'seriesTeamMembers.seriesTeamId')
-      .where({ playerId: id })
-      .whereExists(query =>
-        query
-          .select()
-          .from('games')
-          .whereColumn('losingTeamId', 'seriesTeams.id')
-      );
+      .from('games')
+      .join('seriesTeams', 'seriesTeams.id', 'games.losingTeamId')
+      .join(
+        'seriesTeamMembers',
+        'seriesTeamMembers.seriesTeamId',
+        'seriesTeams.id'
+      )
+      .where({ playerId: id });
 
     wins = Number(wins);
     losses = Number(losses);

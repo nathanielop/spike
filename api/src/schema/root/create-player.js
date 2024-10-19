@@ -23,6 +23,7 @@ export default {
           id,
           elo: 1000,
           credits: 1000,
+          points: 0,
           emailAddress,
           name,
           passwordHash: await bcrypt.hash(password, 10),
