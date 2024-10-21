@@ -230,17 +230,17 @@ export default ({ reload }) => {
                     </div>
                   )}
                   {profileData.player.series.map(series => {
-                    const gamesByWinnerIds = series.games.reduce(
-                      (obj, game) => {
-                        const ids = game.winners.map(({ id }) => id).join(':');
-                        return { ...obj, [ids]: (obj[ids] ?? []).concat(game) };
-                      },
-                      {}
-                    );
-                    const winnerIds = Object.entries(gamesByWinnerIds).sort(
-                      ([, a], [, b]) => b.length - a.length
-                    )[0];
-                    const [winnerId, games] = winnerIds;
+                    // const gamesByWinnerIds = series.games.reduce(
+                    //   (obj, game) => {
+                    //     const ids = game.winners.map(({ id }) => id).join(':');
+                    //     return { ...obj, [ids]: (obj[ids] ?? []).concat(game) };
+                    //   },
+                    //   {}
+                    // );
+                    // const winnerIds = Object.entries(gamesByWinnerIds).sort(
+                    //   ([, a], [, b]) => b.length - a.length
+                    // )[0];
+                    // const [winnerId, games] = winnerIds;
                     return (
                       <div
                         className='border-t grid grid-cols-4'
