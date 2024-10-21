@@ -1,12 +1,11 @@
 export default {
-  type: { arrayOf: 'game' },
+  type: { arrayOf: 'series' },
   resolve: async ({ context: { load, player }, object: { id } }) => {
     if (player.id !== id) return [];
 
     return await load.tx
-      .select('games.*')
-      .from('games')
-      .join('series', 'series.id', 'games.seriesId')
+      .select('series.*')
+      .from('series')
       .join('seriesTeams', 'seriesTeams.seriesId', 'series.id')
       .join(
         'seriesTeamMembers',
@@ -14,6 +13,7 @@ export default {
         'seriesTeams.id'
       )
       .where({ playerId: id })
-      .orderBy('games.createdAt', 'desc');
+      .limit(10)
+      .orderBy('series.createdAt', 'desc');
   }
 };

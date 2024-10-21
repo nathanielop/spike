@@ -6,12 +6,15 @@ import completeGame from '#src/schema/root/complete-game.js';
 import createBet from '#src/schema/root/create-bet.js';
 import createGame from '#src/schema/root/create-game.js';
 import createGrant from '#src/schema/root/create-grant.js';
+import createItemPurchase from '#src/schema/root/create-item-purchase.js';
 import createPlayer from '#src/schema/root/create-player.js';
 import createSeriesAndGame from '#src/schema/root/create-series-and-game.js';
 import currentGrant from '#src/schema/root/current-grant.js';
+import currentSeason from '#src/schema/root/current-season.js';
 import deleteBet from '#src/schema/root/delete-bet.js';
 import deleteGame from '#src/schema/root/delete-game.js';
 import deleteGrant from '#src/schema/root/delete-grant.js';
+import items from '#src/schema/root/items.js';
 import player from '#src/schema/root/player.js';
 import players from '#src/schema/root/players.js';
 import series from '#src/schema/root/series.js';
@@ -32,12 +35,15 @@ export default {
       createdSeries: { nullable: 'series' },
       createGame,
       createGrant,
+      createItemPurchase,
       createPlayer,
       createSeriesAndGame,
       currentGrant,
+      currentSeason,
       deleteBet,
       deleteGame,
       deleteGrant,
+      items,
       players,
       player,
       series,

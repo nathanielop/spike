@@ -7,6 +7,7 @@ export default {
       .select()
       .from('bets')
       .where({ playerId: id })
-      .orderBy('createdAt', 'desc');
+      .orderBy('createdAt', 'desc')
+      .limit(10);
   }
 };

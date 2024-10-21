@@ -11,5 +11,4 @@ export default createDbType({
   references: {
     player: 'player'
   }
-  // TODO Add series/team references/fields
 });

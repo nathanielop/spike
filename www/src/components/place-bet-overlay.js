@@ -192,7 +192,7 @@ export default ({ onClose, onPlaced, seriesId }) => {
           </div>
         </div>
         <button
-          className='bg-green-500 text-white p-2 rounded w-full hover:bg-green-700 transition'
+          className='bg-green-500 text-white p-2 rounded w-full hover:bg-green-700 transition cursor-pointer'
           disabled={!betDetails.amount || !betDetails.team || placeBetIsLoading}
           onclick={() => {
             if (

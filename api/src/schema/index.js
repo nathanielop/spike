@@ -8,6 +8,8 @@ import game from '#src/schema/game/index.js';
 import grant from '#src/schema/grant/index.js';
 import id from '#src/schema/id/index.js';
 import integer from '#src/schema/integer/index.js';
+import item from '#src/schema/item/index.js';
+import itemType from '#src/schema/item-type/index.js';
 import number from '#src/schema/number/index.js';
 import player from '#src/schema/player/index.js';
 import rank from '#src/schema/rank/index.js';
@@ -28,6 +30,8 @@ export default {
   grant,
   id,
   integer,
+  item,
+  itemType,
   number,
   player,
   rank,

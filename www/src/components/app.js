@@ -5,7 +5,15 @@ import usePave from '#src/hooks/use-pave.js';
 
 export default () => {
   const { data, error, isLoading, execute } = usePave({
-    query: { players: { id: {}, name: {}, nickname: {}, avatarUrl: {} } }
+    query: {
+      players: {
+        $: { size: 100 },
+        id: {},
+        name: {},
+        nickname: {},
+        avatarUrl: {}
+      }
+    }
   });
 
   return (
