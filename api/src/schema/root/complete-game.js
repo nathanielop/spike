@@ -184,13 +184,16 @@ export default {
       }
 
       for (const [id, elo] of Object.entries(playersToElo)) {
-        const toAdd = 10 + (winningTeamIds.includes(id) ? 10 : 0);
         await tx
           .table('players')
           .update({
             elo: Math.round(elo),
-            points: playersById[id].points + toAdd,
-            credits: playersById[id].credits + toAdd
+            points:
+              playersById[id].points + (winningTeamIds.includes(id) ? 10 : 0),
+            credits:
+              playersById[id].credits +
+              10 +
+              (winningTeamIds.includes(id) ? 10 : 0)
           })
           .where({ id });
       }
