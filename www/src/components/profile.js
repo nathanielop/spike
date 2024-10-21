@@ -246,7 +246,9 @@ export default ({ reload }) => {
                         className='border-t grid grid-cols-4'
                         key={series.id}
                       >
-                        <div className='p-2 col-span-3'>{series.bestOf}</div>
+                        <div className='p-2 col-span-3'>
+                          {/* {series.bestOf} */}-
+                        </div>
                         <div className='p-2'>
                           {new Date(series.completedAt).toDateString()}
                         </div>
