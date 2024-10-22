@@ -10,6 +10,7 @@ export default createDbType({
   table: 'players',
   local: {
     credits: 'integer',
+    dailyRewardLastClaimedAt: { nullable: 'datetime' },
     id: 'id',
     isAdmin: 'boolean',
     name: 'string',

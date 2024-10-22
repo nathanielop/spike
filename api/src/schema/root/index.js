@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 
 import config from '#src/config.js';
 import PublicError from '#src/constants/public-error.js';
+import claimDailyReward from '#src/schema/root/claim-daily-reward.js';
 import completeGame from '#src/schema/root/complete-game.js';
 import createBet from '#src/schema/root/create-bet.js';
 import createGame from '#src/schema/root/create-game.js';
@@ -26,6 +27,7 @@ export default {
   defaultValue: {},
   type: {
     object: {
+      claimDailyReward,
       completeGame,
       createBet,
       createdBet: { nullable: 'bet' },
