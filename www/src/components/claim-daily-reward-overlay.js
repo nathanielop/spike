@@ -45,21 +45,18 @@ export default ({ onClose, onClaimed }) => {
     );
 
     const degrees =
-      (index / slices.length) * 360 + // Result
-      90 + // Initial rotation of wheel (since origin is at 9 o' clock)
+      90 - // Offset
+      index * (360 / slices.length) + /// Result
       360 * 10 + // Additional rotations
-      Math.random() * (360 / slices.length); // Random offset
+      0.9 * (-1 + Math.random() * 2) * (360 / slices.length / 2); // Random offset
 
-    wheelRef.current.animate(
-      [{ transform: `rotate(0deg)` }, { transform: `rotate(${degrees}deg)` }],
-      {
-        duration,
-        direction: 'normal',
-        easing: 'cubic-bezier(.41,.88,.49,1.03)',
-        fill: 'forwards',
-        iterations: 1
-      }
-    );
+    wheelRef.current.animate([{ transform: `rotate(${degrees}deg)` }], {
+      duration,
+      direction: 'normal',
+      easing: 'cubic-bezier(.41,.88,.49,1.03)',
+      fill: 'forwards',
+      iterations: 1
+    });
 
     setTimeout(() => {
       onClaimed();
@@ -68,7 +65,7 @@ export default ({ onClose, onClaimed }) => {
         type: 'success',
         children: `You have won ${result} credits from your daily reward.`
       });
-    }, duration + 500);
+    }, duration + 1000);
   }, [result, onClose, onClaimed]);
 
   return (
@@ -109,7 +106,7 @@ export default ({ onClose, onClaimed }) => {
                   alignContent: 'center',
                   fontSize: '5cqi',
                   width: '50cqi',
-                  transformOrigin: 'center right',
+                  transformOrigin: 'right',
                   rotate: `calc(360deg / ${slices.length} * ${i})`,
                   background: `hsl(calc(360deg / ${slices.length} * ${i}), 100%, 75%)`,
                   height: `calc((2 * pi * 50cqi) / ${slices.length})`,
