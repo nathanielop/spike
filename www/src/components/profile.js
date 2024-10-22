@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import { useState } from 'endr';
 
+import ClaimDailyRewardOverlay from '#src/components/claim-daily-reward-overlay.js';
 import BackpackIcon from '#src/components/icons/backpack.js';
 import CircleCheckIcon from '#src/components/icons/circle-check.js';
 import LogOutIcon from '#src/components/icons/log-out.js';
@@ -65,6 +66,7 @@ export default ({ reload }) => {
       },
       player: {
         $: { id: player.id },
+        dailyRewardLastClaimedAt: {},
         id: {},
         items: {
           item: {
@@ -106,6 +108,13 @@ export default ({ reload }) => {
     }
   });
 
+  const [dailyRewardIsOpen, , closeDailyReward] = useToggle(
+    !(
+      profileData?.player.dailyRewardLastClaimedAt >
+      new Date() - 60 * 60 * 24 * 1000
+    )
+  );
+
   const { execute, error } = useAsync(async () => {
     if (
       details.password?.trim() &&
@@ -141,6 +150,12 @@ export default ({ reload }) => {
 
   return (
     <div className='p-8 gap-4 flex grow flex-col w-screen h-screen overflow-y-auto'>
+      {dailyRewardIsOpen && (
+        <ClaimDailyRewardOverlay
+          onClose={closeDailyReward}
+          onClaimed={reloadProfileData}
+        />
+      )}
       {profileDataError && <Notice>{profileDataError}</Notice>}
       {profileData && (
         <>

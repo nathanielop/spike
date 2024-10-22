@@ -25,10 +25,10 @@ export default {
       .table('players')
       .update({
         credits: credits + reward,
-        dailyRewardLastClaimedAt: Date.now()
+        dailyRewardLastClaimedAt: new Date()
       })
       .where({ id: player.id });
 
-    return { reward, result };
+    return reward;
   }
 };

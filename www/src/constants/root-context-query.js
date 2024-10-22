@@ -4,6 +4,7 @@ export default {
     player: {
       id: {},
       name: {},
+      dailyRewardLastClaimedAt: {},
       avatarUrl: {},
       nickname: {},
       isAdmin: {},
