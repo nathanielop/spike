@@ -110,8 +110,8 @@ export default ({ reload }) => {
 
   const [dailyRewardIsOpen, , closeDailyReward] = useToggle(
     profileData &&
-      (!profileData?.player.dailyRewardLastClaimedAt ||
-        new Date(profileData?.player.dailyRewardLastClaimedAt) <
+      (!profileData.player.dailyRewardLastClaimedAt ||
+        new Date(profileData.player.dailyRewardLastClaimedAt) <
           Date.now() - 60 * 60 * 24 * 1000)
   );
 
