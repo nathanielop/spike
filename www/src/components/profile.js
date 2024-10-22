@@ -223,13 +223,13 @@ export default ({ reload }) => {
                   <div
                     key={name}
                     className={clsx(
-                      'w-full p-2 text-center border-t first:rounded-l last:rounded-r border-b-2 first:border-l border-r cursor-pointer hover:bg-gray-50',
+                      'w-full p-2 flex md:flex-row flex-col items-center justify-center gap-0.5 border-t first:rounded-l last:rounded-r border-b-2 first:border-l border-r cursor-pointer hover:bg-gray-50',
                       tab === name && 'border-b-orange-500'
                     )}
                     onclick={() => setTab(name)}
                   >
-                    <Icon className='h-4 inline-block align-[-0.125rem]' />{' '}
-                    {titleize(name)}
+                    <Icon className='h-4' />
+                    <div>{titleize(name)}</div>
                   </div>
                 ))}
               </div>
