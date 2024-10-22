@@ -109,10 +109,9 @@ export default ({ reload }) => {
   });
 
   const [dailyRewardIsOpen, , closeDailyReward] = useToggle(
-    !(
-      profileData?.player.dailyRewardLastClaimedAt >
-      new Date() - 60 * 60 * 24 * 1000
-    )
+    !profileData?.player.dailyRewardLastClaimedAt ||
+      new Date(profileData?.player.dailyRewardLastClaimedAt) <
+        new Date() - 60 * 60 * 24 * 1000
   );
 
   const { execute, error } = useAsync(async () => {
