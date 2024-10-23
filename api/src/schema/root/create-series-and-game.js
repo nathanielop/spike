@@ -72,11 +72,7 @@ export default {
     }));
 
     if (players[0].team == null) {
-      const toAssign = players.sort((a, b) => (a.elo < b.elo ? 1 : -1));
-      toAssign[0].team = 0;
-      toAssign[3].team = 0;
-      toAssign[1].team = 1;
-      toAssign[2].team = 1;
+      players.forEach((player, i) => (player.team = Math.floor(i / 2)));
     }
 
     const teams = groupBy(players, 'team');
