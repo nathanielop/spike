@@ -72,7 +72,9 @@ export default {
     }));
 
     if (players[0].team == null) {
-      players.forEach((player, i) => (player.team = Math.floor(i / 2)));
+      players
+        .sort(() => Math.random() - 0.5)
+        .forEach((player, i) => (player.team = Math.floor(i / 2)));
     }
 
     const teams = groupBy(players, 'team');
