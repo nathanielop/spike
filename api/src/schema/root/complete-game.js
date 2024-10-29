@@ -91,6 +91,7 @@ export default {
     let totalPlayersPaid = 0;
     let totalLost = 0;
     let totalPlayersLost = 0;
+    const paidPlayerAmounts = {};
     await load.tx.transaction(async tx => {
       await tx
         .table('games')
@@ -144,10 +145,14 @@ export default {
             if (paidOutAmount) {
               totalPaidOut += paidOutAmount;
               totalPlayersPaid++;
-              playerValues.push([
-                bet.playerId,
-                paidOutAmount + bet.playerCredits
-              ]);
+              if (bet.playerId in playersToElo) {
+                paidPlayerAmounts[bet.playerId] = paidOutAmount;
+              } else {
+                playerValues.push([
+                  bet.playerId,
+                  paidOutAmount + bet.playerCredits
+                ]);
+              }
             } else {
               totalPlayersLost++;
               totalLost += bet.amount;
@@ -193,6 +198,7 @@ export default {
             credits:
               playersById[id].credits +
               10 +
+              (paidPlayerAmounts[id] || 0) +
               (winningTeamIds.includes(id) ? 10 : 0)
           })
           .where({ id });
