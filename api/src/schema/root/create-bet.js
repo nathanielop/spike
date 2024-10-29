@@ -2,8 +2,11 @@ import PublicError from '#src/constants/public-error.js';
 import createId from '#src/functions/create-id.js';
 import getGameOdds from '#src/functions/get-game-odds.js';
 import groupBy from '#src/functions/group-by.js';
+import postToSlack from '#src/functions/post-to-slack.js';
 
 const betTimeLimit = 1000 * 60 * 5;
+
+const { console } = globalThis;
 
 export default {
   type: 'root',
@@ -49,7 +52,7 @@ export default {
     }
 
     const seriesPlayers = await load.tx
-      .select('seriesTeamMembers.*', 'players.elo')
+      .select('seriesTeamMembers.*', 'players.name', 'players.elo')
       .from('seriesTeamMembers')
       .join('seriesTeams', 'seriesTeams.id', 'seriesTeamMembers.seriesTeamId')
       .join('players', 'players.id', 'seriesTeamMembers.playerId')
@@ -90,6 +93,15 @@ export default {
         })
         .into('bets');
     });
+
+    try {
+      await postToSlack({
+        subject: `${amount} credits on team ${byTeamId[teamId].map(({ name }) => name).join(' & ')} by ${player.name}`,
+        title: `*BET PLACED*`
+      });
+    } catch (er) {
+      console.log('Error sending slack message', er);
+    }
 
     return { createdBet: { id } };
   }
