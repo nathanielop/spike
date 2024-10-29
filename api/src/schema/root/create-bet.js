@@ -60,10 +60,8 @@ export default {
     const matchingSeriesPlayer = seriesPlayers.find(
       ({ playerId }) => playerId === player.id
     );
-    if (matchingSeriesPlayer) {
-      throw new PublicError(
-        'You cannot bet on a game you are a participant in'
-      );
+    if (matchingSeriesPlayer && matchingSeriesPlayer.seriesTeamId !== teamId) {
+      throw new PublicError('You cannot bet against yourself');
     }
 
     const byTeamId = groupBy(seriesPlayers, 'seriesTeamId');
