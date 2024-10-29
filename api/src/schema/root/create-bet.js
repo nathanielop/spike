@@ -96,7 +96,7 @@ export default {
 
     try {
       await postToSlack({
-        subject: `${amount} credits on team ${byTeamId[teamId].map(({ name }) => name).join(' & ')} by ${player.name}`,
+        subject: `${player.name} bet ${amount} credits on ${byTeamId[teamId].map(({ name }) => name).join(' & ')} to win ${Math.round(amount * (1 / oddsByTeamId[teamId]))}`,
         title: `*BET PLACED*`
       });
     } catch (er) {
