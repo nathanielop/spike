@@ -6,7 +6,7 @@ import postToSlack from '#src/functions/post-to-slack.js';
 
 const { console } = globalThis;
 
-const kFactor = 32;
+const kFactor = 64;
 
 export default {
   type: 'root',
@@ -91,6 +91,7 @@ export default {
     let totalPlayersPaid = 0;
     let totalLost = 0;
     let totalPlayersLost = 0;
+    let totalBets;
     const paidPlayerAmounts = {};
     await load.tx.transaction(async tx => {
       await tx
@@ -186,6 +187,14 @@ export default {
             betValues.flat()
           );
         }
+      } else if (gameCount === 0 && bestOf !== 1) {
+        totalBets = (
+          await tx
+            .sum('amount')
+            .from('bets')
+            .join('seriesTeams', 'seriesTeams.id', 'bets.seriesTeamId')
+            .where({ seriesId: game.seriesId })
+        )[0].sum;
       }
 
       for (const [id, elo] of Object.entries(playersToElo)) {
@@ -213,7 +222,8 @@ export default {
             : [],
           totalLost
             ? `*${totalLost} credits lost by ${totalPlayersLost} player${totalPlayersLost > 1 ? 's' : ''}*`
-            : []
+            : [],
+          totalBets ? `*${totalBets} total credits at stake*` : []
         );
         await postToSlack({
           subject: `${teams[winningTeamId].map(({ name }) => name).join(' & ')} defeated ${teams[losingTeamId].map(({ name }) => name).join(' & ')}`,
