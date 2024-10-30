@@ -1,3 +1,4 @@
+import currentSeason from '#src/constants/current-season.js';
 import ranks from '#src/constants/ranks.js';
 
 export default {
@@ -18,23 +19,25 @@ export default {
       .count()
       .from('games')
       .join('seriesTeams', 'seriesTeams.id', 'games.winningTeamId')
+      .join('series', 'series.id', 'seriesTeams.seriesId')
       .join(
         'seriesTeamMembers',
         'seriesTeamMembers.seriesTeamId',
         'seriesTeams.id'
       )
-      .where({ playerId: id });
+      .where({ playerId: id, season: currentSeason });
 
     let [{ count: losses }] = await load.tx
       .count()
       .from('games')
       .join('seriesTeams', 'seriesTeams.id', 'games.losingTeamId')
+      .join('series', 'series.id', 'seriesTeams.seriesId')
       .join(
         'seriesTeamMembers',
         'seriesTeamMembers.seriesTeamId',
         'seriesTeams.id'
       )
-      .where({ playerId: id });
+      .where({ playerId: id, season: currentSeason });
 
     wins = Number(wins);
     losses = Number(losses);
