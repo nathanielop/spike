@@ -11,6 +11,13 @@ export default {
     object: {
       amount: { type: 'integer', typeArgs: { min: 0 } },
       teamId: 'id'
+    },
+    validate: ({ value }) => {
+      if (value.amount > 5000) {
+        throw new PublicError('You cannot bet more than 5000 credits');
+      }
+
+      return value;
     }
   },
   resolve: async ({ context: { load, player }, input: { amount, teamId } }) => {
