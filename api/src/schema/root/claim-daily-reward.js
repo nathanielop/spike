@@ -27,7 +27,10 @@ export default {
       .table('players')
       .update({
         credits: credits + reward,
-        dailyRewardLastClaimedAt: DateTime.now().startOf('day').toISO()
+        dailyRewardLastClaimedAt: DateTime.now()
+          .setZone('America/Chicago')
+          .startOf('day')
+          .toISO()
       })
       .where({ id: player.id });
 
