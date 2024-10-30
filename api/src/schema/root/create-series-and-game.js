@@ -61,7 +61,8 @@ export default {
       .whereIn(
         'id',
         _players.map(({ id }) => id)
-      );
+      )
+      .orderByRaw('random()');
     if (players.length !== _players.length) {
       throw new PublicError('Players do not exist');
     }
@@ -72,9 +73,7 @@ export default {
     }));
 
     if (players[0].team == null) {
-      players
-        .sort(() => Math.random() - 0.5)
-        .forEach((player, i) => (player.team = Math.floor(i / 2)));
+      players.forEach((player, i) => (player.team = Math.floor(i / 2)));
     }
 
     const teams = groupBy(players, 'team');
