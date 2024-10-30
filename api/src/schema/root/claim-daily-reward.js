@@ -25,7 +25,7 @@ export default {
       .table('players')
       .update({
         credits: credits + reward,
-        dailyRewardLastClaimedAt: new Date()
+        dailyRewardLastClaimedAt: new Date().setUTCHours(0, 0, 0, 0)
       })
       .where({ id: player.id });
 
