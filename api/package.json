@@ -11,10 +11,12 @@
     "bootman": "0",
     "knex": "3",
     "jsonwebtoken": "9",
+    "luxon": "3",
     "nanoid": "5",
     "pave-basic-types": "0",
     "pave": "0",
-    "pg": "8"
+    "pg": "8",
+    "ws": "8"
   },
   "devDependencies": {
     "eslint-config-coderiety": "2"

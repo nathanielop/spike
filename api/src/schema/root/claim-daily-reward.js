@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon';
+
 import dailyRewardRanges from '#src/constants/daily-reward-ranges.js';
 import PublicError from '#src/constants/public-error.js';
 
@@ -25,7 +27,7 @@ export default {
       .table('players')
       .update({
         credits: credits + reward,
-        dailyRewardLastClaimedAt: new Date().setUTCHours(0, 0, 0, 0)
+        dailyRewardLastClaimedAt: DateTime.now().startOf('day').toISO()
       })
       .where({ id: player.id });
 
