@@ -4,6 +4,6 @@
 export default (obj, a, b) => {
   for (const key in a) {
     if (!(key in b)) continue;
-    if (a[key] !== b[key]) obj[key] = b[key];
+    if (b[key] !== undefined && a[key] !== b[key]) obj[key] = b[key];
   }
 };

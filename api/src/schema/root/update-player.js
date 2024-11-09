@@ -63,13 +63,26 @@ export default {
       }
 
       if (equippedItemIds) {
+        const itemPurchases = await tx
+          .select()
+          .from('itemPurchases')
+          .where({ playerId: id });
+
+        const values = itemPurchases.map(itemPurchase => [
+          itemPurchase.id,
+          equippedItemIds.includes(itemPurchase.itemId)
+        ]);
+
         await tx.raw(
           `
-          update "itemPurchases"
-          set "isEquipped" = ("itemId" in ?)
-          where "playerId" = ?
-          `,
-          [equippedItemIds, player.id]
+            update "itemPurchases"
+            set "isEquipped" = data."isEquipped"::boolean
+            from (values ${Array.from(values, () => '(?, ?)').join(
+              ', '
+            )}) as data (id, "isEquipped")
+            where "itemPurchases".id = data.id
+            `,
+          values.flat()
         );
       }
     });
