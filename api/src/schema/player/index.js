@@ -13,6 +13,7 @@ export default createDbType({
     dailyRewardLastClaimedAt: { nullable: 'datetime' },
     id: 'id',
     isAdmin: 'boolean',
+    isSuperAdmin: 'boolean',
     name: 'string',
     nickname: { nullable: 'string' },
     points: 'integer'

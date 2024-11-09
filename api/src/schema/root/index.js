@@ -8,6 +8,7 @@ import createBet from '#src/schema/root/create-bet.js';
 import createGame from '#src/schema/root/create-game.js';
 import createGrant from '#src/schema/root/create-grant.js';
 import createItemPurchase from '#src/schema/root/create-item-purchase.js';
+import createItem from '#src/schema/root/create-item.js';
 import createPlayer from '#src/schema/root/create-player.js';
 import createSeriesAndGame from '#src/schema/root/create-series-and-game.js';
 import currentGrant from '#src/schema/root/current-grant.js';
@@ -19,6 +20,7 @@ import items from '#src/schema/root/items.js';
 import player from '#src/schema/root/player.js';
 import players from '#src/schema/root/players.js';
 import series from '#src/schema/root/series.js';
+import updateItem from '#src/schema/root/update-item.js';
 import updatePlayer from '#src/schema/root/update-player.js';
 
 const { sharedKey } = config.jtspike;
@@ -31,6 +33,7 @@ export default {
       completeGame,
       createBet,
       createdBet: { nullable: 'bet' },
+      createdItem: { nullable: 'item' },
       createdGame: { nullable: 'game' },
       createdGrant: { nullable: 'grant' },
       createdPlayer: { nullable: 'player' },
@@ -38,6 +41,7 @@ export default {
       createGame,
       createGrant,
       createItemPurchase,
+      createItem,
       createPlayer,
       createSeriesAndGame,
       currentGrant,
@@ -49,6 +53,7 @@ export default {
       players,
       player,
       series,
+      updateItem,
       updatePlayer
     }
   },

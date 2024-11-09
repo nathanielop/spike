@@ -9,7 +9,7 @@ export default {
   },
   resolve: async ({ context: { load }, object: { id } }) => {
     const purchasedItems = await load.tx
-      .select('itemPurchases.itemId')
+      .select('itemPurchases.itemId', 'itemPurchases.isEquipped')
       .from('itemPurchases')
       .where({ playerId: id });
 

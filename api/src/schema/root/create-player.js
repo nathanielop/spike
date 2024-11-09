@@ -28,6 +28,7 @@ export default {
           name,
           passwordHash: await bcrypt.hash(password, 10),
           isAdmin: false,
+          isSuperAdmin: false,
           isActive: true,
           createdAt: new Date()
         })
