@@ -131,7 +131,7 @@ export default ({ onClose, onPlaced, seriesId }) => {
                     className='h-24 md:h-16 pointer-events-none'
                   />
                 ))}
-                <div className='absolute border -top-2 -right-2 bg-white rounded p-1 text-xs'>
+                <div className='absolute border -top-2 z-10 -right-2 bg-white rounded p-1 text-xs'>
                   {Math.round(series.teams[0].odds * 100)}%
                 </div>
               </div>
@@ -159,7 +159,7 @@ export default ({ onClose, onPlaced, seriesId }) => {
                     className='h-24 md:h-16 pointer-events-none'
                   />
                 ))}
-                <div className='absolute border -top-2 -left-2 bg-white rounded p-1 text-xs'>
+                <div className='absolute border z-10 -top-2 -left-2 bg-white rounded p-1 text-xs'>
                   {Math.round(series.teams[1].odds * 100)}%
                 </div>
               </div>
