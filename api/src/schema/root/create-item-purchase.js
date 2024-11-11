@@ -51,7 +51,7 @@ export default {
         })
         .into('itemPurchases');
 
-      if (item.limitedTo && purchaseCount + 1 === item.limitedTo) {
+      if (item.limitedTo && Number(purchaseCount) + 1 === item.limitedTo) {
         await tx
           .table('items')
           .update({ isForSale: false })
