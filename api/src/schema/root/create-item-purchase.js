@@ -58,7 +58,10 @@ export default {
           .where({ id: itemId });
       }
 
-      await tx.table('players').update({ credits: player.credits - itemPrice });
+      await tx
+        .table('players')
+        .update({ credits: player.credits - itemPrice })
+        .where({ id: player.id });
     });
   }
 };
