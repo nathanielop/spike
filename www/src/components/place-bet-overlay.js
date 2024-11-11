@@ -14,6 +14,8 @@ import useRootContext from '#src/hooks/use-root-context.js';
 
 const { confirm } = globalThis;
 
+const maxPayout = 5000;
+
 export default ({ onClose, onPlaced, seriesId }) => {
   const { player } = useRootContext();
   const [betDetails, setBetDetails] = useState({});
@@ -30,7 +32,15 @@ export default ({ onClose, onPlaced, seriesId }) => {
         completedAt: {},
         teams: {
           id: {},
-          players: { id: {}, name: {}, avatarUrl: {} },
+          players: {
+            id: {},
+            name: {},
+            avatarUrl: {},
+            items: {
+              item: { id: {}, type: {}, attributes: {} },
+              isEquipped: {}
+            }
+          },
           odds: {}
         }
       }
@@ -73,6 +83,18 @@ export default ({ onClose, onPlaced, seriesId }) => {
     }
   }, [series, onClose]);
 
+  const maxBet =
+    betDetails.team?.odds &&
+    Math.min(
+      player.credits,
+      Math.floor(maxPayout / (1 / betDetails.team.odds))
+    );
+
+  const payout =
+    betDetails.amount &&
+    betDetails.team?.odds &&
+    Math.round(betDetails.amount * (1 / betDetails.team.odds));
+
   return (
     <div className='fixed inset-0 p-8 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50 animate-slideInUp'>
       <div className='relative bg-white p-8 max-w-full flex flex-col gap-4 rounded-lg shadow-lg'>
@@ -105,6 +127,7 @@ export default ({ onClose, onPlaced, seriesId }) => {
                   <UserAvatar
                     key={player.id}
                     player={player}
+                    showItems
                     className='h-24 md:h-16 pointer-events-none'
                   />
                 ))}
@@ -132,6 +155,7 @@ export default ({ onClose, onPlaced, seriesId }) => {
                   <UserAvatar
                     key={player.id}
                     player={player}
+                    showItems
                     className='h-24 md:h-16 pointer-events-none'
                   />
                 ))}
@@ -150,7 +174,7 @@ export default ({ onClose, onPlaced, seriesId }) => {
             oninput={e =>
               setBetDetails(prev => ({
                 ...prev,
-                amount: Math.min(Math.round(e.target.value), player.credits)
+                amount: Math.min(Math.round(e.target.value), maxBet)
               }))
             }
             className='p-2 border rounded w-full'
@@ -163,7 +187,7 @@ export default ({ onClose, onPlaced, seriesId }) => {
                 onclick={() =>
                   setBetDetails(prev => ({
                     ...prev,
-                    amount: Math.min(amount, player.credits)
+                    amount: Math.min(amount, maxBet)
                   }))
                 }
               >
@@ -173,10 +197,7 @@ export default ({ onClose, onPlaced, seriesId }) => {
             <button
               className='p-2 hover:bg-gray-100 shrink-0 transition-colors'
               onclick={() =>
-                setBetDetails(prev => ({
-                  ...prev,
-                  amount: player.credits
-                }))
+                setBetDetails(prev => ({ ...prev, amount: maxBet }))
               }
             >
               Max
@@ -185,11 +206,7 @@ export default ({ onClose, onPlaced, seriesId }) => {
         </div>
         <div className='border rounded flex items-center justify-between p-2 gap-2'>
           <div>Expected Payout</div>
-          <div>
-            {betDetails.amount && betDetails.team?.odds
-              ? Math.round(betDetails.amount * (1 / betDetails.team.odds))
-              : '-'}
-          </div>
+          <div>{payout || '-'}</div>
         </div>
         <button
           className='bg-green-500 text-white p-2 rounded w-full hover:bg-green-700 transition cursor-pointer'

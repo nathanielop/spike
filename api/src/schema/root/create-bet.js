@@ -5,19 +5,14 @@ import groupBy from '#src/functions/group-by.js';
 
 const betTimeLimit = 1000 * 60 * 5;
 
+const maxPayout = 5000;
+
 export default {
   type: 'root',
   input: {
     object: {
       amount: { type: 'integer', typeArgs: { min: 0 } },
       teamId: 'id'
-    },
-    validate: ({ value }) => {
-      if (value.amount > 5000) {
-        throw new PublicError('You cannot bet more than 5000 credits');
-      }
-
-      return value;
     }
   },
   resolve: async ({ context: { load, player }, input: { amount, teamId } }) => {
@@ -75,6 +70,13 @@ export default {
         odds
       ])
     );
+
+    const payRate = 1 / oddsByTeamId[teamId];
+    if (payRate * amount > maxPayout) {
+      throw new PublicError(
+        'You cannot place a bet with a payout greater than 5000 credits'
+      );
+    }
 
     const id = createId();
     await load.tx.transaction(async tx => {
