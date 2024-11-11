@@ -43,7 +43,7 @@ export default ({
       />
       {showItems && borderItem && (
         <div
-          className='absolute inset-0 rounded-xl'
+          className='absolute z-10 inset-0 rounded-xl'
           style={borderItem.attributes}
         />
       )}
