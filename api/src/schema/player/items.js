@@ -7,11 +7,15 @@ export default {
       }
     }
   },
-  resolve: async ({ context: { load }, object: { id } }) => {
-    const purchasedItems = await load.tx
+  resolve: async ({ context: { load, player }, object: { id } }) => {
+    const query = load.tx
       .select('itemPurchases.itemId', 'itemPurchases.isEquipped')
       .from('itemPurchases')
       .where({ playerId: id });
+
+    if (player?.id !== id) query.where({ isEquipped: true });
+
+    const purchasedItems = await query;
 
     return purchasedItems.map(({ itemId, isEquipped }) => ({
       item: { id: itemId },

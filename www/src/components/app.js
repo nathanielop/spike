@@ -11,7 +11,8 @@ export default () => {
         id: {},
         name: {},
         nickname: {},
-        avatarUrl: {}
+        avatarUrl: {},
+        items: { item: { id: {}, type: {}, attributes: {} }, isEquipped: {} }
       }
     }
   });

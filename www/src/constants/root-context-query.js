@@ -8,6 +8,7 @@ export default {
       avatarUrl: {},
       nickname: {},
       isAdmin: {},
+      isSuperAdmin: {},
       credits: {}
     }
   }

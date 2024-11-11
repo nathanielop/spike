@@ -3,15 +3,19 @@ import { useState } from 'endr';
 
 import ClaimDailyRewardOverlay from '#src/components/claim-daily-reward-overlay.js';
 import BackpackIcon from '#src/components/icons/backpack.js';
+import ChevronRightIcon from '#src/components/icons/chevron-right.js';
 import CircleCheckIcon from '#src/components/icons/circle-check.js';
 import LogOutIcon from '#src/components/icons/log-out.js';
 import ReceiptIcon from '#src/components/icons/receipt.js';
 import SettingsIcon from '#src/components/icons/settings.js';
+import SquareCheckIcon from '#src/components/icons/square-check.js';
 import SquarePenIcon from '#src/components/icons/square-pen.js';
+import SquareIcon from '#src/components/icons/square.js';
 import StoreIcon from '#src/components/icons/store.js';
 import SwordsIcon from '#src/components/icons/swords.js';
 import TabletIcon from '#src/components/icons/tablet.js';
 import Input from '#src/components/input.js';
+import ItemPreview from '#src/components/item-preview.js';
 import LoadingArea from '#src/components/loading-area.js';
 import Notice from '#src/components/notice.js';
 import PlaceBetOverlay from '#src/components/place-bet-overlay.js';
@@ -36,6 +40,41 @@ const tabs = [
   { name: 'inventory', Icon: BackpackIcon },
   { name: 'settings', Icon: SettingsIcon }
 ];
+
+const Result = ({ series }) => {
+  const [isOpen, , , toggle] = useToggle();
+  // const gamesByWinnerIds = series.games.reduce(
+  //   (obj, game) => {
+  //     const ids = game.winners.map(({ id }) => id).join(':');
+  //     return { ...obj, [ids]: (obj[ids] ?? []).concat(game) };
+  //   },
+  //   {}
+  // );
+  // const winnerIds = Object.entries(gamesByWinnerIds).sort(
+  //   ([, a], [, b]) => b.length - a.length
+  // )[0];
+  // const [winnerId, games] = winnerIds;
+  return (
+    <div className='border-t divide-y' key={series.id}>
+      <div
+        className='grid grid-cols-4 cursor-pointer hover:bg-gray-50 group'
+        onclick={toggle}
+      >
+        <div className='p-2 col-span-3'>
+          <ChevronRightIcon
+            className={clsx(
+              'inline-block align-[-0.125rem] h-4 transition-[all] w-4',
+              isOpen && 'rotate-90'
+            )}
+          />
+          {/* {series.bestOf} */}
+        </div>
+        <div className='p-2'>{new Date(series.completedAt).toDateString()}</div>
+      </div>
+      {}
+    </div>
+  );
+};
 
 export default ({ reload }) => {
   const {
@@ -72,6 +111,7 @@ export default ({ reload }) => {
           item: {
             id: {},
             name: {},
+            type: {},
             limitedTo: {},
             description: {},
             attributes: {}
@@ -112,7 +152,7 @@ export default ({ reload }) => {
     profileData &&
       (!profileData.player.dailyRewardLastClaimedAt ||
         new Date(profileData.player.dailyRewardLastClaimedAt) <
-          Date.now() - 60 * 60 * 24 * 1000)
+          new Date() - 60 * 60 * 24 * 1000)
   );
 
   const { execute, error } = useAsync(async () => {
@@ -146,7 +186,30 @@ export default ({ reload }) => {
   });
   useNotification(error);
 
-  if (profileDataIsLoading) return <LoadingArea className='absolute inset-0' />;
+  const { execute: updateEquippedItems, error: updateEquippedItemsError } =
+    useAsync(async item => {
+      await pave.execute({
+        query: {
+          updatePlayer: {
+            $: {
+              id: player.id,
+              equippedItemIds: profileData.player.items.flatMap(
+                ({ item: { id, type }, isEquipped }) => {
+                  if (id === item.id) return !isEquipped ? id : [];
+                  return isEquipped && type !== item.type ? id : [];
+                }
+              )
+            }
+          }
+        }
+      });
+      reloadProfileData();
+    });
+  useNotification(updateEquippedItemsError);
+
+  if (!profileData && profileDataIsLoading) {
+    return <LoadingArea className='absolute inset-0' />;
+  }
 
   return (
     <div className='p-8 gap-4 flex grow flex-col w-screen h-screen overflow-y-auto'>
@@ -244,37 +307,29 @@ export default ({ reload }) => {
                       No games played yet
                     </div>
                   )}
-                  {profileData.player.series.map(series => {
-                    // const gamesByWinnerIds = series.games.reduce(
-                    //   (obj, game) => {
-                    //     const ids = game.winners.map(({ id }) => id).join(':');
-                    //     return { ...obj, [ids]: (obj[ids] ?? []).concat(game) };
-                    //   },
-                    //   {}
-                    // );
-                    // const winnerIds = Object.entries(gamesByWinnerIds).sort(
-                    //   ([, a], [, b]) => b.length - a.length
-                    // )[0];
-                    // const [winnerId, games] = winnerIds;
-                    return (
-                      <div
-                        className='border-t grid grid-cols-4'
-                        key={series.id}
-                      >
-                        <div className='p-2 col-span-3'>
-                          {/* {series.bestOf} */}-
-                        </div>
-                        <div className='p-2'>
-                          {new Date(series.completedAt).toDateString()}
-                        </div>
-                      </div>
-                    );
-                  })}
+                  {profileData.player.series.map(series => (
+                    <Result key={series.id} series={series} />
+                  ))}
                 </div>
               ) : tab === 'inventory' ? (
                 <div>
                   {profileData.player.items.length ? (
-                    <div />
+                    <div className='grid grid-cols-4 gap-4 overflow-y-auto'>
+                      {profileData.player.items.map(({ item, isEquipped }) => (
+                        <div
+                          key={item.id}
+                          className='relative cursor-pointer hover:border-orange-500 transition w-full border rounded aspect-square p-2'
+                          onclick={() => updateEquippedItems(item)}
+                        >
+                          <ItemPreview item={item} />
+                          {isEquipped ? (
+                            <SquareCheckIcon className='absolute h-4 w-4 top-2 right-2' />
+                          ) : (
+                            <SquareIcon className='absolute h-4 w-4 top-2 right-2' />
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   ) : (
                     <div className='w-full p-8 space-y-1 flex flex-col justify-center items-center border rounded'>
                       <div>You don&apos;t own any items yet</div>

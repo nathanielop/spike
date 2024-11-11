@@ -93,7 +93,15 @@ export default ({ players, reload }) => {
             bestOf: {},
             teams: {
               id: {},
-              players: { id: {}, name: {}, avatarUrl: { $: { size: 200 } } }
+              players: {
+                id: {},
+                name: {},
+                avatarUrl: { $: { size: 200 } },
+                items: {
+                  item: { id: {}, type: {}, attributes: {} },
+                  isEquipped: {}
+                }
+              }
             }
           }
         }
@@ -146,6 +154,7 @@ export default ({ players, reload }) => {
             >
               <UserAvatar
                 player={player}
+                showItems
                 className='animate-ccw-spin'
                 onclick={() => {
                   const utterance = new SpeechSynthesisUtterance(
@@ -189,6 +198,7 @@ export default ({ players, reload }) => {
                 key={player.id}
                 player={player}
                 resetDisplay
+                showItems
                 className='absolute w-20 h-20'
                 style={{
                   left: `calc(50% + ${
