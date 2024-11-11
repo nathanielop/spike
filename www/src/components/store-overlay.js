@@ -353,7 +353,7 @@ export default ({ onClose, onPurchase }) => {
             </div>
           </div>
         ) : (
-          <div className='grid gap-4 md:grid-cols-8'>
+          <div className='grid gap-4 grid-cols-2 md:grid-cols-6'>
             {itemsError && <Notice>{itemsError}</Notice>}
             {itemsAreLoading && <LoadingArea />}
             {itemsData && (
