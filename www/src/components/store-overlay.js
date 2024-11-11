@@ -141,260 +141,264 @@ export default ({ onClose, onPurchase }) => {
               : 'Store'}
           </h2>
         )}
-        {viewingItem ? (
-          <div className='space-y-2 grow'>
-            <a
-              onclick={() => setViewingItem()}
-              className='block cursor-pointer text-orange-500 hover:text-orange-600'
-            >
-              <ArrowLeftIcon className='h-4 inline-block text-orange-500 align-[-0.125rem]' />{' '}
-              Back to Store
-            </a>
-            <div className='grid gap-4 md:grid-cols-3 grow'>
-              <div className='relative w-full border rounded aspect-square p-2'>
-                <ItemPreview item={viewingItem} />
-              </div>
-              {viewingItem.update ? (
-                <div className='space-y-2'>
-                  <Input
-                    placeholder='Name'
-                    className='w-full'
-                    value={viewingItem.name}
-                    oninput={({ target: { value } }) =>
-                      addChange({ name: value })
-                    }
-                  />
-                  <Input
-                    placeholder='Description'
-                    className='w-full'
-                    value={viewingItem.description}
-                    oninput={({ target: { value } }) =>
-                      addChange({ description: value })
-                    }
-                  />
-                  <Input
-                    placeholder='Price'
-                    type='number'
-                    className='w-full'
-                    value={viewingItem.price}
-                    oninput={({ target: { value } }) =>
-                      addChange({ price: Math.max(Number(value), 0) })
-                    }
-                  />
-                  <Input
-                    placeholder='Discounted Price'
-                    type='number'
-                    className='w-full'
-                    value={viewingItem.discountedPrice}
-                    oninput={({ target: { value } }) =>
-                      addChange({
-                        discountedPrice: value
-                          ? Math.max(Number(value), 0)
-                          : null
-                      })
-                    }
-                  />
-                  <Input
-                    placeholder='Limited To'
-                    type='number'
-                    className='w-full'
-                    value={viewingItem.limitedTo}
-                    oninput={({ target: { value } }) =>
-                      addChange({
-                        limitedTo: value ? Math.max(Number(value), 0) : null
-                      })
-                    }
-                  />
-                  <select
-                    className='w-full border rounded p-2'
-                    onchange={({ target: { value } }) =>
-                      addChange({ type: value })
-                    }
-                  >
-                    {['badge', 'avatarEffect', 'hat'].map(type => (
-                      <option
-                        key={type}
-                        value={type}
-                        selected={type === viewingItem.type}
-                      >
-                        {titleize(type)}
-                      </option>
-                    ))}
-                  </select>
-                  {Object.entries(viewingItem.attributes).map(
-                    ([key, value], i) => (
-                      <div key={i} className='flex gap-2'>
+        <div className='grow overflow-y-auto'>
+          {viewingItem ? (
+            <div className='space-y-2 grow'>
+              <a
+                onclick={() => setViewingItem()}
+                className='block cursor-pointer text-orange-500 hover:text-orange-600'
+              >
+                <ArrowLeftIcon className='h-4 inline-block text-orange-500 align-[-0.125rem]' />{' '}
+                Back to Store
+              </a>
+              <div className='grid gap-4 md:grid-cols-3 grow'>
+                <div className='relative w-full border rounded aspect-square p-2'>
+                  <ItemPreview item={viewingItem} />
+                </div>
+                {viewingItem.update ? (
+                  <div className='space-y-2'>
+                    <Input
+                      placeholder='Name'
+                      className='w-full'
+                      value={viewingItem.name}
+                      oninput={({ target: { value } }) =>
+                        addChange({ name: value })
+                      }
+                    />
+                    <Input
+                      placeholder='Description'
+                      className='w-full'
+                      value={viewingItem.description}
+                      oninput={({ target: { value } }) =>
+                        addChange({ description: value })
+                      }
+                    />
+                    <Input
+                      placeholder='Price'
+                      type='number'
+                      className='w-full'
+                      value={viewingItem.price}
+                      oninput={({ target: { value } }) =>
+                        addChange({ price: Math.max(Number(value), 0) })
+                      }
+                    />
+                    <Input
+                      placeholder='Discounted Price'
+                      type='number'
+                      className='w-full'
+                      value={viewingItem.discountedPrice}
+                      oninput={({ target: { value } }) =>
+                        addChange({
+                          discountedPrice: value
+                            ? Math.max(Number(value), 0)
+                            : null
+                        })
+                      }
+                    />
+                    <Input
+                      placeholder='Limited To'
+                      type='number'
+                      className='w-full'
+                      value={viewingItem.limitedTo}
+                      oninput={({ target: { value } }) =>
+                        addChange({
+                          limitedTo: value ? Math.max(Number(value), 0) : null
+                        })
+                      }
+                    />
+                    <select
+                      className='w-full border rounded p-2'
+                      onchange={({ target: { value } }) =>
+                        addChange({ type: value })
+                      }
+                    >
+                      {['badge', 'avatarEffect', 'hat'].map(type => (
+                        <option
+                          key={type}
+                          value={type}
+                          selected={type === viewingItem.type}
+                        >
+                          {titleize(type)}
+                        </option>
+                      ))}
+                    </select>
+                    {Object.entries(viewingItem.attributes).map(
+                      ([key, value], i) => (
+                        <div key={i} className='flex gap-2'>
+                          <Input
+                            placeholder='Key'
+                            className='w-full'
+                            value={key}
+                            oninput={({ target: { value } }) =>
+                              addChange({
+                                attributes: {
+                                  ...omit(viewingItem.attributes, key),
+                                  [value]: viewingItem.attributes[key]
+                                }
+                              })
+                            }
+                          />
+                          <Input
+                            placeholder='Value'
+                            className='w-full'
+                            value={value}
+                            oninput={({ target: { value } }) =>
+                              addChange({
+                                attributes: {
+                                  ...viewingItem.attributes,
+                                  [key]: value
+                                }
+                              })
+                            }
+                          />
+                          <button
+                            className='border shrink-0 py-2 px-4 cursor-pointer w-36 text-center rounded hover:bg-gray-50 transition'
+                            onclick={() => {
+                              addChange({
+                                attributes: omit(viewingItem.attributes, key)
+                              });
+                            }}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      )
+                    )}
+                    {newAttribute && (
+                      <div className='flex gap-2'>
                         <Input
                           placeholder='Key'
                           className='w-full'
-                          value={key}
+                          value={newAttribute.key}
                           oninput={({ target: { value } }) =>
-                            addChange({
-                              attributes: {
-                                ...omit(viewingItem.attributes, key),
-                                [value]: viewingItem.attributes[key]
-                              }
-                            })
+                            setNewAttribute({ ...newAttribute, key: value })
                           }
                         />
                         <Input
                           placeholder='Value'
                           className='w-full'
-                          value={value}
+                          value={newAttribute.value}
                           oninput={({ target: { value } }) =>
-                            addChange({
-                              attributes: {
-                                ...viewingItem.attributes,
-                                [key]: value
-                              }
-                            })
+                            setNewAttribute({ ...newAttribute, value })
                           }
                         />
                         <button
                           className='border shrink-0 py-2 px-4 cursor-pointer w-36 text-center rounded hover:bg-gray-50 transition'
                           onclick={() => {
                             addChange({
-                              attributes: omit(viewingItem.attributes, key)
+                              attributes: {
+                                ...viewingItem.attributes,
+                                [newAttribute.key]: newAttribute.value
+                              }
                             });
+                            setNewAttribute({});
                           }}
                         >
-                          Remove
+                          Add
                         </button>
                       </div>
-                    )
-                  )}
-                  {newAttribute && (
-                    <div className='flex gap-2'>
-                      <Input
-                        placeholder='Key'
-                        className='w-full'
-                        value={newAttribute.key}
-                        oninput={({ target: { value } }) =>
-                          setNewAttribute({ ...newAttribute, key: value })
-                        }
-                      />
-                      <Input
-                        placeholder='Value'
-                        className='w-full'
-                        value={newAttribute.value}
-                        oninput={({ target: { value } }) =>
-                          setNewAttribute({ ...newAttribute, value })
-                        }
-                      />
-                      <button
-                        className='border shrink-0 py-2 px-4 cursor-pointer w-36 text-center rounded hover:bg-gray-50 transition'
-                        onclick={() => {
-                          addChange({
-                            attributes: {
-                              ...viewingItem.attributes,
-                              [newAttribute.key]: newAttribute.value
-                            }
-                          });
-                          setNewAttribute({});
-                        }}
-                      >
-                        Add
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className='space-y-1'>
-                  <div className='flex justify-between font-bold text-2xl items-center'>
-                    <div>
-                      {viewingItem.name}
-                      {player.isSuperAdmin && (
-                        <>
-                          {' '}
-                          <a
-                            className='cursor-pointer'
-                            onclick={() => addChange({ update: true })}
-                          >
-                            <SquarePenIcon className='h-5 inline-block text-orange-500 align-[-0.125rem]' />
-                          </a>
-                        </>
-                      )}
-                    </div>
-                    <div>
-                      {viewingItem.discountedPrice ? (
-                        <>
-                          {viewingItem.discountedPrice}{' '}
-                          <span className='font-normal line-through text-gray-500'>
-                            {viewingItem.price}
-                          </span>
-                        </>
-                      ) : (
-                        viewingItem.price
-                      )}
-                    </div>
-                  </div>
-                  <div className='text-lg'>{viewingItem.description}</div>
-                  <button
-                    className='w-full border rounded py-2 px-4 cursor-pointer disabled:pointer-events-none disabled:opacity-50 rounded ml-auto hover:bg-gray-50 transition'
-                    disabled={
-                      (viewingItem.discountedPrice ?? viewingItem.price) >
-                      player.credits
-                    }
-                    onclick={() => {
-                      setCart([
-                        ...cart.filter(({ id }) => id !== viewingItem.id),
-                        viewingItem
-                      ]);
-                      setViewingItem();
-                    }}
-                  >
-                    {(viewingItem.discountedPrice ?? viewingItem.price) >
-                    player.credits
-                      ? 'Not enough credits'
-                      : 'Add to Cart'}
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        ) : (
-          <div className='grid gap-4 grid-cols-2 md:grid-cols-6'>
-            {itemsError && <Notice>{itemsError}</Notice>}
-            {itemsAreLoading && <LoadingArea />}
-            {itemsData && (
-              <>
-                {items.map((item, i) => (
-                  <div
-                    key={item.id}
-                    className='relative aspect-square border cursor-pointer overflow-hidden rounded hover:border-orange-500 transition'
-                    onclick={() => setViewingItem(item)}
-                    style={
-                      i === 0 ? { gridColumn: 'span 2', gridRow: 'span 2' } : {}
-                    }
-                  >
-                    <div className='absolute top-0 z-10 right-0 border-b border-l bg-gray-50 rounded-bl px-3 py-1 font-bold'>
-                      {item.discountedPrice && (
-                        <>
-                          <span className='line-through font-normal'>
-                            {item.price}
-                          </span>{' '}
-                        </>
-                      )}
-                      {item.discountedPrice ?? item.price}
-                    </div>
-                    {item.limitedTo && (
-                      <div className='absolute bottom-0 z-10 left-0 border-t border-r rounded-tr bg-gray-50 px-3 py-1 font-bold'>
-                        Limited
-                      </div>
                     )}
-                    <ItemPreview item={item} />
                   </div>
-                ))}
-                {!items.length && (
-                  <div className='text-center my-auto col-span-4'>
-                    There are currently no items available, please check back
-                    later!
+                ) : (
+                  <div className='space-y-1'>
+                    <div className='flex justify-between font-bold text-2xl items-center'>
+                      <div>
+                        {viewingItem.name}
+                        {player.isSuperAdmin && (
+                          <>
+                            {' '}
+                            <a
+                              className='cursor-pointer'
+                              onclick={() => addChange({ update: true })}
+                            >
+                              <SquarePenIcon className='h-5 inline-block text-orange-500 align-[-0.125rem]' />
+                            </a>
+                          </>
+                        )}
+                      </div>
+                      <div>
+                        {viewingItem.discountedPrice ? (
+                          <>
+                            {viewingItem.discountedPrice}{' '}
+                            <span className='font-normal line-through text-gray-500'>
+                              {viewingItem.price}
+                            </span>
+                          </>
+                        ) : (
+                          viewingItem.price
+                        )}
+                      </div>
+                    </div>
+                    <div className='text-lg'>{viewingItem.description}</div>
+                    <button
+                      className='w-full border rounded py-2 px-4 cursor-pointer disabled:pointer-events-none disabled:opacity-50 rounded ml-auto hover:bg-gray-50 transition'
+                      disabled={
+                        (viewingItem.discountedPrice ?? viewingItem.price) >
+                        player.credits
+                      }
+                      onclick={() => {
+                        setCart([
+                          ...cart.filter(({ id }) => id !== viewingItem.id),
+                          viewingItem
+                        ]);
+                        setViewingItem();
+                      }}
+                    >
+                      {(viewingItem.discountedPrice ?? viewingItem.price) >
+                      player.credits
+                        ? 'Not enough credits'
+                        : 'Add to Cart'}
+                    </button>
                   </div>
                 )}
-              </>
-            )}
-          </div>
-        )}
+              </div>
+            </div>
+          ) : (
+            <div className='grid gap-4 grid-cols-2 md:grid-cols-8'>
+              {itemsError && <Notice>{itemsError}</Notice>}
+              {itemsAreLoading && <LoadingArea />}
+              {itemsData && (
+                <>
+                  {items.map((item, i) => (
+                    <div
+                      key={item.id}
+                      className='relative aspect-square border cursor-pointer overflow-hidden rounded hover:border-orange-500 transition'
+                      onclick={() => setViewingItem(item)}
+                      style={
+                        i === 0
+                          ? { gridColumn: 'span 2', gridRow: 'span 2' }
+                          : {}
+                      }
+                    >
+                      <div className='absolute top-0 z-10 right-0 border-b border-l bg-gray-50 rounded-bl px-3 py-1 font-bold'>
+                        {item.discountedPrice && (
+                          <>
+                            <span className='line-through font-normal'>
+                              {item.price}
+                            </span>{' '}
+                          </>
+                        )}
+                        {item.discountedPrice ?? item.price}
+                      </div>
+                      {item.limitedTo && (
+                        <div className='absolute bottom-0 z-10 left-0 border-t border-r rounded-tr bg-gray-50 px-3 py-1 font-bold'>
+                          Limited
+                        </div>
+                      )}
+                      <ItemPreview item={item} />
+                    </div>
+                  ))}
+                  {!items.length && (
+                    <div className='text-center my-auto col-span-4'>
+                      There are currently no items available, please check back
+                      later!
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+        </div>
         <div className='flex mt-auto'>
           {player.isSuperAdmin && !viewingItem && (
             <button
