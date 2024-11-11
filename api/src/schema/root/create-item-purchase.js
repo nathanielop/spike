@@ -52,7 +52,10 @@ export default {
         .into('itemPurchases');
 
       if (item.limitedTo && purchaseCount + 1 === item.limitedTo) {
-        await tx.table('items').update({ isForSale: false });
+        await tx
+          .table('items')
+          .update({ isForSale: false })
+          .where({ id: itemId });
       }
 
       await tx.table('players').update({ credits: player.credits - itemPrice });
