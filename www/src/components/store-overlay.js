@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { useState } from 'endr';
 
 import ArrowLeftIcon from '#src/components/icons/arrow-left.js';
@@ -46,6 +47,7 @@ export default ({ onClose, onPurchase }) => {
         description: {},
         discountedPrice: {},
         id: {},
+        isForSale: {},
         limitedTo: {},
         name: {},
         price: {},
@@ -359,35 +361,41 @@ export default ({ onClose, onPurchase }) => {
               {itemsAreLoading && <LoadingArea />}
               {itemsData && (
                 <>
-                  {items.map((item, i) => (
-                    <div
-                      key={item.id}
-                      className='relative aspect-square border cursor-pointer overflow-hidden rounded hover:border-orange-500 transition'
-                      onclick={() => setViewingItem(item)}
-                      style={
-                        i === 0
-                          ? { gridColumn: 'span 2', gridRow: 'span 2' }
-                          : {}
-                      }
-                    >
-                      <div className='absolute top-0 z-10 right-0 border-b border-l bg-gray-50 rounded-bl px-3 py-1 font-bold'>
-                        {item.discountedPrice && (
-                          <>
-                            <span className='line-through font-normal'>
-                              {item.price}
-                            </span>{' '}
-                          </>
+                  {items
+                    .slice()
+                    .sort((a, b) => (a.isForSale === b.isForSale ? -1 : 1))
+                    .map((item, i) => (
+                      <div
+                        key={item.id}
+                        className={clsx(
+                          'relative aspect-square border cursor-pointer overflow-hidden rounded hover:border-orange-500 transition',
+                          !item.isForSale && 'opacity-50'
                         )}
-                        {item.discountedPrice ?? item.price}
-                      </div>
-                      {item.limitedTo && (
-                        <div className='absolute bottom-0 z-10 left-0 border-t border-r rounded-tr bg-gray-50 px-3 py-1 font-bold'>
-                          Limited
+                        onclick={() => setViewingItem(item)}
+                        style={
+                          i === 0
+                            ? { gridColumn: 'span 2', gridRow: 'span 2' }
+                            : {}
+                        }
+                      >
+                        <div className='absolute top-0 z-10 right-0 border-b border-l bg-gray-50 rounded-bl px-3 py-1 font-bold'>
+                          {item.discountedPrice && (
+                            <>
+                              <span className='line-through font-normal'>
+                                {item.price}
+                              </span>{' '}
+                            </>
+                          )}
+                          {item.discountedPrice ?? item.price}
                         </div>
-                      )}
-                      <ItemPreview item={item} />
-                    </div>
-                  ))}
+                        {item.limitedTo && (
+                          <div className='absolute bottom-0 z-10 left-0 border-t border-r rounded-tr bg-gray-50 px-3 py-1 font-bold'>
+                            Limited
+                          </div>
+                        )}
+                        <ItemPreview item={item} />
+                      </div>
+                    ))}
                   {!items.length && (
                     <div className='text-center my-auto col-span-4'>
                       There are currently no items available, please check back
