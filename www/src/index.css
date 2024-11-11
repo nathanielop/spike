@@ -51,6 +51,33 @@ a, input, textarea {
       transform: rotate(360deg);
     }
   }
+
+  @keyframes rainbow {
+    0% { 
+      border-color: hsl(0, 100%, 50%);
+    }
+    14% { 
+      border-color: hsl(30,100%,50%);
+    }
+    28% { 
+      border-color: hsl(60,100%,50%);
+    }
+    42% { 
+      border-color: hsl(120,100%,50%);
+    }
+    56% { 
+      border-color:  hsl(240,100%,50%);
+    }
+    70% { 
+      border-color: hsl(280,100%,50%);
+    }
+    84% { 
+      border-color: hsl(320,100%,50%);
+    }
+    100% { 
+      border-color: hsl(255, 100%, 50%);
+    }
+  }
 }
 
 @layer components {
