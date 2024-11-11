@@ -7,7 +7,6 @@ export default ({
   resetShadow,
   resetRounding,
   showItems,
-  style,
   textClassName = 'text-xs',
   ...props
 }) => {
@@ -29,10 +28,6 @@ export default ({
         !resetRounding && 'rounded-xl',
         className
       )}
-      style={{
-        ...style,
-        ...(borderItem && showItems ? borderItem.attributes : undefined)
-      }}
       {...props}
     >
       <div className='absolute inset-0 p-1 flex flex-col bg-white items-center text-center rounded-xl justify-center'>
@@ -46,6 +41,12 @@ export default ({
         src={player.avatarUrl}
         alt={player.name}
       />
+      {showItems && borderItem && (
+        <div
+          className='absolute inset-0 rounded-xl'
+          style={borderItem.attributes}
+        />
+      )}
       {showItems && badgeItem && (
         <div className='absolute p-1 text-xs shadow bg-white z-10 w-[min(40%,2rem)] h-[min(40%,2rem)] flex items-center justify-center -top-[min(20%,1rem)] -left-[min(20%,1rem)] rounded-full'>
           {badgeItem.attributes.children}
