@@ -353,7 +353,7 @@ export default ({ onClose, onPurchase }) => {
             </div>
           </div>
         ) : (
-          <div className='grid grow gap-4 md:grid-cols-8'>
+          <div className='grid gap-4 md:grid-cols-8'>
             {itemsError && <Notice>{itemsError}</Notice>}
             {itemsAreLoading && <LoadingArea />}
             {itemsData && (
@@ -364,9 +364,7 @@ export default ({ onClose, onPurchase }) => {
                     className='relative aspect-square border cursor-pointer overflow-hidden rounded hover:border-orange-500 transition'
                     onclick={() => setViewingItem(item)}
                     style={
-                      i === 0
-                        ? { gridColumn: 'span 2', gridRows: 'span 2' }
-                        : {}
+                      i === 0 ? { gridColumn: 'span 2', gridRow: 'span 2' } : {}
                     }
                   >
                     <div className='absolute top-0 z-10 right-0 border-b border-l bg-gray-50 rounded-bl px-3 py-1 font-bold'>
@@ -397,7 +395,7 @@ export default ({ onClose, onPurchase }) => {
             )}
           </div>
         )}
-        <div className='flex'>
+        <div className='flex mt-auto'>
           {player.isSuperAdmin && !viewingItem && (
             <button
               className='border py-2 px-4 cursor-pointer rounded hover:bg-gray-50 transition'
