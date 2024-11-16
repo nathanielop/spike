@@ -1,6 +1,7 @@
 import http from 'http';
 
 import pave from 'pave';
+import { WebSocketServer } from 'ws';
 
 import config from '#src/config.js';
 import PublicError from '#src/constants/public-error.js';
@@ -13,7 +14,7 @@ const { version } = config;
 
 const maxPayload = 1024 * 1024;
 
-export default http.createServer(async (request, response) => {
+const server = http.createServer(async (request, response) => {
   response.setHeader('Access-Control-Allow-Origin', '*');
 
   if (request.url === '/version') return response.end(version);
@@ -67,3 +68,35 @@ export default http.createServer(async (request, response) => {
   response.statusCode = 404;
   response.end('Not found');
 });
+
+const wss = new WebSocketServer({ noServer: true });
+
+server.on('upgrade', (request, socket, head) => {
+  if (request.url !== '/pave') return socket.destroy();
+  wss.handleUpgrade(request, socket, head, ws => {
+    ws.on('message', async message => {
+      try {
+        let { query } = JSON.parse(message);
+        query = pave.validateQuery({ query, schema, type: 'root' });
+
+        const data = await pave.execute({
+          query,
+          context: { load: createLoad() },
+          schema,
+          type: 'root'
+        });
+
+        ws.send(JSON.stringify(data));
+      } catch (er) {
+        const isPublic = er instanceof PublicError;
+        ws.send(
+          JSON.stringify({
+            error: isPublic ? er.message : 'Something went wrong on our end.'
+          })
+        );
+      }
+    });
+  });
+});
+
+export default server;

@@ -1,3 +1,4 @@
+import award from '#src/schema/award/index.js';
 import bet from '#src/schema/bet/index.js';
 import boolean from '#src/schema/boolean/index.js';
 import date from '#src/schema/date/index.js';
@@ -20,6 +21,7 @@ import time from '#src/schema/time/index.js';
 import url from '#src/schema/url/index.js';
 
 export default {
+  award,
   bet,
   boolean,
   datetime,

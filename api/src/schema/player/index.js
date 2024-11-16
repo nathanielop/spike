@@ -1,5 +1,6 @@
 import createDbType from '#src/functions/create-db-type.js';
 import avatarUrl from '#src/schema/player/avatar-url.js';
+import awards from '#src/schema/player/awards.js';
 import bets from '#src/schema/player/bets.js';
 import items from '#src/schema/player/items.js';
 import series from '#src/schema/player/series.js';
@@ -20,6 +21,7 @@ export default createDbType({
   },
   fields: {
     avatarUrl,
+    awards,
     bets,
     items,
     series,
