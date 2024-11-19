@@ -4,4 +4,4 @@ const { process } = globalThis;
 
 process.on('SIGTERM', () => services.stop());
 
-await services.start('http');
+await services.start(['http', 'janitor']);
