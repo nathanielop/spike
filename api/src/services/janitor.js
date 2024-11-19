@@ -5,10 +5,9 @@ const { console, setTimeout } = globalThis;
 // Run every 5 minutes
 const interval = 5 * 60 * 1000;
 
-let shouldClean = true;
+let timeout;
 
 const clean = async () => {
-  if (!shouldClean) return;
   for (const cleanFn of Object.values(janitorTypes)) {
     try {
       await cleanFn();
@@ -16,19 +15,17 @@ const clean = async () => {
       console.log(er);
     }
   }
-  setTimeout(clean, interval);
+  timeout = setTimeout(clean, interval);
 };
 
 export default {
   dependsOn: ['db'],
   start: async () => {
-    console.log('[janitor] starting...');
-    clean();
-    console.log('[janitor] started');
+    timeout = clean();
+    console.log('Janitor Started');
   },
   stop: async () => {
-    console.log('[janitor] stopping...');
-    shouldClean = false;
-    console.log('[janitor] stopped');
+    clearTimeout(timeout);
+    console.log('Janitor Stopped');
   }
 };
