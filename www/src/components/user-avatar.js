@@ -22,7 +22,7 @@ export default ({
   return (
     <div
       className={clsx(
-        'aspect-square overflow-hidden',
+        'aspect-square',
         !resetDisplay && 'relative',
         !resetShadow && 'shadow-md shadow-slate-600 active:shadow-sm',
         !resetRounding && 'rounded-xl',
