@@ -18,12 +18,5 @@
     "pg": "8",
     "ws": "8"
   },
-  "devDependencies": {
-    "eslint-config-coderiety": "2"
-  },
-  "eslintConfig": {
-    "extends": "coderiety",
-    "globals": { "globalThis": "readonly", "process": "readonly" }
-  },
   "module": "src/index.js"
 }

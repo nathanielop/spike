@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   balancer:
     image: nginx:1.25.5-alpine3.19

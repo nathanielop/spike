@@ -20,6 +20,7 @@ import LoadingArea from '#src/components/loading-area.js';
 import Notice from '#src/components/notice.js';
 import PlaceBetOverlay from '#src/components/place-bet-overlay.js';
 import StoreOverlay from '#src/components/store-overlay.js';
+import Tooltip from '#src/components/tooltip.js';
 import UserAvatar from '#src/components/user-avatar.js';
 import disk from '#src/constants/disk.js';
 import history from '#src/constants/history.js';
@@ -41,37 +42,196 @@ const tabs = [
   { name: 'settings', Icon: SettingsIcon }
 ];
 
-const Result = ({ series }) => {
+const Result = ({ player, series }) => {
   const [isOpen, , , toggle] = useToggle();
-  // const gamesByWinnerIds = series.games.reduce(
-  //   (obj, game) => {
-  //     const ids = game.winners.map(({ id }) => id).join(':');
-  //     return { ...obj, [ids]: (obj[ids] ?? []).concat(game) };
-  //   },
-  //   {}
-  // );
-  // const winnerIds = Object.entries(gamesByWinnerIds).sort(
-  //   ([, a], [, b]) => b.length - a.length
-  // )[0];
-  // const [winnerId, games] = winnerIds;
+  const { games, teams } = series;
+
+  const [playerTeam, opposingTeam] = teams.sort(a =>
+    a.players.some(({ id }) => id === player.id) ? -1 : 1
+  );
+
+  const {
+    [playerTeam.id]: gamesByPlayerTeam = [],
+    [opposingTeam.id]: gamesByOpposingTeam = []
+  } = games.reduce((obj, game) => {
+    const winnerIds = game.winners.map(({ id }) => id);
+    const teamId = teams.find(({ players }) =>
+      players.every(({ id }) => winnerIds.includes(id))
+    ).id;
+    return { ...obj, [teamId]: [...(obj[teamId] ?? []), game] };
+  }, {});
+
   return (
-    <div className='border-t divide-y' key={series.id}>
+    <div className='border-t' key={series.id}>
       <div
-        className='grid grid-cols-4 cursor-pointer hover:bg-gray-50 group'
+        className={clsx(
+          'grid grid-cols-4 cursor-pointer hover:bg-gray-50 group',
+          isOpen && 'border-b'
+        )}
         onclick={toggle}
       >
-        <div className='p-2 col-span-3'>
+        <div className='p-2 col-span-3 flex items-center gap-2'>
           <ChevronRightIcon
             className={clsx(
               'inline-block align-[-0.125rem] h-4 transition-[all] w-4',
               isOpen && 'rotate-90'
             )}
           />
-          {/* {series.bestOf} */}
+          <div
+            className={clsx(
+              'flex items-center gap-2 p-1 border-2 rounded',
+              gamesByPlayerTeam.length > gamesByOpposingTeam.length
+                ? 'border-green-500'
+                : gamesByPlayerTeam.length !== gamesByOpposingTeam.length
+                  ? 'border-red-500'
+                  : 'border-gray-500'
+            )}
+          >
+            <div className='flex gap-1'>
+              {playerTeam.players.map(player => (
+                <Tooltip key={player.id} tooltip={player.name}>
+                  <UserAvatar
+                    resetRounding
+                    resetShadow
+                    player={player}
+                    className='h-6 w-6 rounded border'
+                  />
+                </Tooltip>
+              ))}
+            </div>
+            <div
+              className={clsx(
+                'font-semibold w-8 text-center',
+                gamesByPlayerTeam.length > gamesByOpposingTeam.length
+                  ? 'text-green-500'
+                  : gamesByPlayerTeam.length !== gamesByOpposingTeam.length
+                    ? 'text-red-500'
+                    : 'text-gray-500'
+              )}
+            >
+              {gamesByPlayerTeam.length}
+            </div>
+          </div>
+          <div
+            className={clsx(
+              'flex items-center gap-2 p-1 border-2 rounded',
+              gamesByPlayerTeam.length < gamesByOpposingTeam.length
+                ? 'border-green-500'
+                : gamesByPlayerTeam.length !== gamesByOpposingTeam.length
+                  ? 'border-red-500'
+                  : 'border-gray-500'
+            )}
+          >
+            <div
+              className={clsx(
+                'font-semibold w-8 text-center',
+                gamesByPlayerTeam.length < gamesByOpposingTeam.length
+                  ? 'text-green-500'
+                  : gamesByPlayerTeam.length !== gamesByOpposingTeam.length
+                    ? 'text-red-500'
+                    : 'text-gray-500'
+              )}
+            >
+              {gamesByOpposingTeam.length}
+            </div>
+            <div className='flex gap-1'>
+              {opposingTeam.players.map(player => (
+                <Tooltip key={player.id} tooltip={player.name}>
+                  <UserAvatar
+                    resetRounding
+                    resetShadow
+                    player={player}
+                    className='h-6 w-6 rounded border'
+                  />
+                </Tooltip>
+              ))}
+            </div>
+          </div>
         </div>
-        <div className='p-2'>{new Date(series.completedAt).toDateString()}</div>
+        <div className='p-2 flex items-center'>
+          {new Date(series.completedAt).toDateString()}
+        </div>
       </div>
-      {}
+      {isOpen && (
+        <div className='p-2 pl-8 space-y-2'>
+          {series.games.map(game => {
+            const winnerIds = game.winners.map(({ id }) => id);
+            const [{ id: winningTeamId }] = teams.sort(a =>
+              a.players.every(({ id }) => winnerIds.includes(id)) ? -1 : 1
+            );
+            return (
+              <div key={game.id} className='flex items-center gap-2'>
+                <div
+                  className={clsx(
+                    'flex items-center gap-2 p-1 border-2 rounded',
+                    winningTeamId === playerTeam.id
+                      ? 'border-green-500'
+                      : 'border-red-500'
+                  )}
+                >
+                  <div className='flex gap-1'>
+                    {playerTeam.players.map(player => (
+                      <Tooltip key={player.id} tooltip={player.name}>
+                        <UserAvatar
+                          resetRounding
+                          resetShadow
+                          player={player}
+                          className='h-6 w-6 rounded border'
+                        />
+                      </Tooltip>
+                    ))}
+                  </div>
+                  <div
+                    className={clsx(
+                      'font-semibold w-8 text-center',
+                      winningTeamId === playerTeam.id
+                        ? 'text-green-500'
+                        : 'text-red-500'
+                    )}
+                  >
+                    {winningTeamId === playerTeam.id
+                      ? game.winningTeamScore
+                      : game.losingTeamScore}
+                  </div>
+                </div>
+                <div
+                  className={clsx(
+                    'flex items-center gap-2 p-1 border-2 rounded',
+                    winningTeamId !== playerTeam.id
+                      ? 'border-green-500'
+                      : 'border-red-500'
+                  )}
+                >
+                  <div
+                    className={clsx(
+                      'font-semibold w-8 text-center',
+                      winningTeamId !== playerTeam.id
+                        ? 'text-green-500'
+                        : 'text-red-500'
+                    )}
+                  >
+                    {winningTeamId !== playerTeam.id
+                      ? game.winningTeamScore
+                      : game.losingTeamScore}
+                  </div>
+                  <div className='flex gap-1'>
+                    {opposingTeam.players.map(player => (
+                      <Tooltip key={player.id} tooltip={player.name}>
+                        <UserAvatar
+                          resetRounding
+                          resetShadow
+                          player={player}
+                          className='h-6 w-6 rounded border'
+                        />
+                      </Tooltip>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };
@@ -308,7 +468,7 @@ export default ({ reload }) => {
                     </div>
                   )}
                   {profileData.player.series.map(series => (
-                    <Result key={series.id} series={series} />
+                    <Result key={series.id} series={series} player={player} />
                   ))}
                 </div>
               ) : tab === 'inventory' ? (

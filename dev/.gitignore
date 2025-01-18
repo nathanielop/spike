@@ -1,2 +1,3 @@
 bin/create-certs
+dumps
 **/*.pem

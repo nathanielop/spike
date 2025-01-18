@@ -22,7 +22,7 @@ export default ({
   return (
     <div
       className={clsx(
-        'aspect-square',
+        'aspect-square overflow-hidden',
         !resetDisplay && 'relative',
         !resetShadow && 'shadow-md shadow-slate-600 active:shadow-sm',
         !resetRounding && 'rounded-xl',
@@ -36,14 +36,20 @@ export default ({
         </div>
       </div>
       <img
-        className='relative z-10 w-full h-full rounded-xl'
+        className={clsx(
+          'relative z-10 w-full h-full',
+          !resetRounding && 'rounded-xl'
+        )}
         key={player.id}
         src={player.avatarUrl}
         alt={player.name}
       />
       {showItems && borderItem && (
         <div
-          className='absolute z-10 inset-0 rounded-xl'
+          className={clsx(
+            'absolute z-10 inset-0',
+            !resetRounding && 'rounded-xl'
+          )}
           style={borderItem.attributes}
         />
       )}

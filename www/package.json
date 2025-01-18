@@ -20,17 +20,7 @@
     "utf8": "3",
     "watchy": "0"
   },
-  "devDependencies": {
-    "eslint-config-coderiety": "2"
-  },
   "eslintIgnore": [
     "src/inline-entry.js"
-  ],
-  "eslintConfig": {
-    "root": true,
-    "extends": "coderiety",
-    "rules": {
-      "react/no-unknown-property": [0]
-    }
-  }
+  ]
 }

@@ -1,0 +1,14 @@
+{
+  "name": "spike",
+  "private": true,
+  "devDependencies": {
+    "eslint-config-coderiety": "2"
+  },
+  "eslintConfig": {
+    "extends": "coderiety",
+    "globals": { "globalThis": "readonly", "process": "readonly" },
+    "rules": {
+      "react/no-unknown-property": [0]
+    }
+  }
+}
