@@ -77,6 +77,22 @@ const Result = ({ player, series }) => {
               isOpen && 'rotate-90'
             )}
           />
+          <div
+            className={clsx(
+              'w-4 text-center font-bold',
+              gamesByPlayerTeam.length > gamesByOpposingTeam.length
+                ? 'text-green-500'
+                : gamesByPlayerTeam.length !== gamesByOpposingTeam.length
+                  ? 'text-red-500'
+                  : 'text-gray-500'
+            )}
+          >
+            {gamesByPlayerTeam.length > gamesByOpposingTeam.length
+              ? 'W'
+              : gamesByPlayerTeam.length !== gamesByOpposingTeam.length
+                ? 'L'
+                : '-'}
+          </div>
           <div className='flex items-center gap-0.5'>
             <div className='flex gap-1'>
               {playerTeam.players.map(player => (
@@ -136,7 +152,7 @@ const Result = ({ player, series }) => {
         </div>
       </div>
       {isOpen && (
-        <div className='p-2 pl-8 space-y-2'>
+        <div className='p-2 pl-14 space-y-2'>
           {series.games.map(game => {
             const winnerIds = game.winners.map(({ id }) => id);
             const [{ id: winningTeamId }] = teams.sort(a =>
