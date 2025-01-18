@@ -77,7 +77,7 @@ const Result = ({ player, series }) => {
               isOpen && 'rotate-90'
             )}
           />
-          <div className='flex items-center p-0.5 gap-0.5'>
+          <div className='flex items-center gap-0.5'>
             <div className='flex gap-1'>
               {playerTeam.players.map(player => (
                 <Tooltip key={player.id} tooltip={player.name}>
@@ -104,7 +104,7 @@ const Result = ({ player, series }) => {
             </div>
           </div>
           <div>-</div>
-          <div className='flex items-center p-0.5 gap-0.5'>
+          <div className='flex items-center gap-0.5'>
             <div
               className={clsx(
                 'font-semibold w-5 text-center',
@@ -144,7 +144,7 @@ const Result = ({ player, series }) => {
             );
             return (
               <div key={game.id} className='flex items-center gap-2'>
-                <div className='flex items-center p-0.5 gap-0.5'>
+                <div className='flex items-center gap-0.5'>
                   <div className='flex gap-1'>
                     {playerTeam.players.map(player => (
                       <Tooltip key={player.id} tooltip={player.name}>
@@ -171,7 +171,7 @@ const Result = ({ player, series }) => {
                   </div>
                 </div>
                 <div>-</div>
-                <div className='flex items-center p-0.5 gap-0.5'>
+                <div className='flex items-center gap-0.5'>
                   <div
                     className={clsx(
                       'font-semibold w-5 text-center',
