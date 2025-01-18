@@ -77,16 +77,7 @@ const Result = ({ player, series }) => {
               isOpen && 'rotate-90'
             )}
           />
-          <div
-            className={clsx(
-              'flex items-center gap-2 p-1 border-2 rounded',
-              gamesByPlayerTeam.length > gamesByOpposingTeam.length
-                ? 'border-green-500'
-                : gamesByPlayerTeam.length !== gamesByOpposingTeam.length
-                  ? 'border-red-500'
-                  : 'border-gray-500'
-            )}
-          >
+          <div className='flex items-center p-0.5 gap-0.5'>
             <div className='flex gap-1'>
               {playerTeam.players.map(player => (
                 <Tooltip key={player.id} tooltip={player.name}>
@@ -101,7 +92,7 @@ const Result = ({ player, series }) => {
             </div>
             <div
               className={clsx(
-                'font-semibold w-8 text-center',
+                'font-semibold w-5 text-center',
                 gamesByPlayerTeam.length > gamesByOpposingTeam.length
                   ? 'text-green-500'
                   : gamesByPlayerTeam.length !== gamesByOpposingTeam.length
@@ -112,19 +103,11 @@ const Result = ({ player, series }) => {
               {gamesByPlayerTeam.length}
             </div>
           </div>
-          <div
-            className={clsx(
-              'flex items-center gap-2 p-1 border-2 rounded',
-              gamesByPlayerTeam.length < gamesByOpposingTeam.length
-                ? 'border-green-500'
-                : gamesByPlayerTeam.length !== gamesByOpposingTeam.length
-                  ? 'border-red-500'
-                  : 'border-gray-500'
-            )}
-          >
+          <div>-</div>
+          <div className='flex items-center p-0.5 gap-0.5'>
             <div
               className={clsx(
-                'font-semibold w-8 text-center',
+                'font-semibold w-5 text-center',
                 gamesByPlayerTeam.length < gamesByOpposingTeam.length
                   ? 'text-green-500'
                   : gamesByPlayerTeam.length !== gamesByOpposingTeam.length
@@ -161,14 +144,7 @@ const Result = ({ player, series }) => {
             );
             return (
               <div key={game.id} className='flex items-center gap-2'>
-                <div
-                  className={clsx(
-                    'flex items-center gap-2 p-1 border-2 rounded',
-                    winningTeamId === playerTeam.id
-                      ? 'border-green-500'
-                      : 'border-red-500'
-                  )}
-                >
+                <div className='flex items-center p-0.5 gap-0.5'>
                   <div className='flex gap-1'>
                     {playerTeam.players.map(player => (
                       <Tooltip key={player.id} tooltip={player.name}>
@@ -183,7 +159,7 @@ const Result = ({ player, series }) => {
                   </div>
                   <div
                     className={clsx(
-                      'font-semibold w-8 text-center',
+                      'font-semibold w-5 text-center',
                       winningTeamId === playerTeam.id
                         ? 'text-green-500'
                         : 'text-red-500'
@@ -194,17 +170,11 @@ const Result = ({ player, series }) => {
                       : game.losingTeamScore}
                   </div>
                 </div>
-                <div
-                  className={clsx(
-                    'flex items-center gap-2 p-1 border-2 rounded',
-                    winningTeamId !== playerTeam.id
-                      ? 'border-green-500'
-                      : 'border-red-500'
-                  )}
-                >
+                <div>-</div>
+                <div className='flex items-center p-0.5 gap-0.5'>
                   <div
                     className={clsx(
-                      'font-semibold w-8 text-center',
+                      'font-semibold w-5 text-center',
                       winningTeamId !== playerTeam.id
                         ? 'text-green-500'
                         : 'text-red-500'
