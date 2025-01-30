@@ -1,0 +1,10 @@
+{
+    "background_color": "#fff",
+    "display": "standalone",
+    "name": "JTSpike",
+    "scope": "/",
+    "short_name": "JTSpike",
+    "start_url": "/",
+    "theme_color": "#fff"
+  }
+  
