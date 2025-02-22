@@ -1,12 +1,12 @@
 import clsx from 'clsx';
 import { useState } from 'endr';
 
-import capitalize from '#src/functions/capitalize.js';
-
 export default ({ onComplete, onClose, state }) => {
   const [score, setScore] = useState(state);
   const [input, setInput] = useState('');
   const mode = score.winningTeam.score ? 'loser' : 'winner';
+  const players = (mode === 'loser' ? score.losingTeam : score.winningTeam)
+    .players;
   return (
     <div
       className={clsx(
@@ -19,7 +19,7 @@ export default ({ onComplete, onClose, state }) => {
           &times;
         </button>
         <h2 className='text-xl font-semibold mb-4'>
-          {capitalize(mode)}&apos;s score
+          {players.map(({ name }) => name).join(' & ')}&apos;s score
         </h2>
         <input
           type='text'

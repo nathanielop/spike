@@ -28,11 +28,8 @@ export default ({ matchDetails, onComplete, onExit }) => {
               winningTeamId: winningTeam.id,
               winningTeamScore: winningTeam.score
             },
-            series: {
-              $: { id: series.id },
-              id: {},
-              completedAt: {}
-            }
+            createdGame: { id: {} },
+            series: { $: { id: series.id }, id: {}, completedAt: {} }
           }
         }
       });
@@ -41,14 +38,7 @@ export default ({ matchDetails, onComplete, onExit }) => {
         onComplete();
         exit();
       } else {
-        const {
-          createGame: { createdGame }
-        } = await pave.execute({
-          query: {
-            createGame: { $: { seriesId: series.id }, createdGame: { id: {} } }
-          }
-        });
-        setGame(createdGame);
+        setGame(completeGame.createdGame);
       }
     }
   );
