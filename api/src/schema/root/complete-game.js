@@ -9,7 +9,7 @@ import postToSlack from '#src/functions/post-to-slack.js';
 
 const { console } = globalThis;
 
-const kFactor = 64;
+const kFactor = 48;
 
 export default {
   type: 'root',
