@@ -47,6 +47,7 @@ export default () => {
     <RootContext
       value={{
         location: urlLocation,
+        season: data?.currentSeason,
         player: data?.currentGrant?.player,
         grant: data?.currentGrant
       }}

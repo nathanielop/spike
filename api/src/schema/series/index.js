@@ -6,8 +6,10 @@ export default createDbType({
   table: 'series',
   local: {
     bestOf: 'format',
-    completedAt: { nullable: 'datetime' },
-    season: 'integer'
+    completedAt: { nullable: 'datetime' }
+  },
+  references: {
+    season: 'season'
   },
   fields: {
     games,

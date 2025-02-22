@@ -14,6 +14,7 @@ import number from '#src/schema/number/index.js';
 import player from '#src/schema/player/index.js';
 import rank from '#src/schema/rank/index.js';
 import root from '#src/schema/root/index.js';
+import season from '#src/schema/season/index.js';
 import series from '#src/schema/series/index.js';
 import string from '#src/schema/string/index.js';
 import time from '#src/schema/time/index.js';
@@ -36,6 +37,7 @@ export default {
   player,
   rank,
   root,
+  season,
   series,
   string,
   time,

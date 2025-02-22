@@ -11,5 +11,6 @@ export default {
       isSuperAdmin: {},
       credits: {}
     }
-  }
+  },
+  currentSeason: { id: {}, endsAt: {}, season: {} }
 };

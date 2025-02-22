@@ -225,7 +225,8 @@ const Result = ({ player, series }) => {
 export default ({ reload }) => {
   const {
     player,
-    location: { query: { bet, seriesId } = {} }
+    location: { query: { bet, seriesId } = {} },
+    season
   } = useRootContext();
   const [tab, setTab] = useState(tabs[0].name);
   const [storeIsOpen, openStore, closeStore] = useToggle();
@@ -582,7 +583,12 @@ export default ({ reload }) => {
             <div className='space-y-4 grow max-w-prose'>
               <div className='space-y-2'>
                 <div className='flex items-center gap-2 justify-between'>
-                  <div className='text-2xl font-bold'>Season Leaderboard</div>
+                  <div>
+                    <div className='text-2xl font-bold'>Season Leaderboard</div>
+                    <div className='font-light text-sm'>
+                      Ends {new Date(season.endsAt).toLocaleDateString()}
+                    </div>
+                  </div>
                   <div className='font-medium text-orange-500'>
                     {profileData.player.points} points
                   </div>

@@ -1,7 +1,7 @@
 import config from '#src/config.js';
-import currentSeason from '#src/constants/current-season.js';
 import PublicError from '#src/constants/public-error.js';
 import createId from '#src/functions/create-id.js';
+import getCurrentSeason from '#src/functions/get-current-season.js';
 import getGameOdds from '#src/functions/get-game-odds.js';
 import groupBy from '#src/functions/group-by.js';
 import indexBy from '#src/functions/index-by.js';
@@ -84,7 +84,7 @@ export default {
         .insert({
           bestOf,
           id: seriesId,
-          season: currentSeason,
+          seasonId: (await getCurrentSeason(load)).id,
           createdAt: new Date()
         })
         .into('series');

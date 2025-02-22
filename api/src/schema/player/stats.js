@@ -1,5 +1,5 @@
-import currentSeason from '#src/constants/current-season.js';
 import ranks from '#src/constants/ranks.js';
+import getCurrentSeason from '#src/functions/get-current-season.js';
 
 export default {
   type: {
@@ -14,6 +14,7 @@ export default {
   },
   resolve: async ({ context: { load, player }, object: { id } }) => {
     if (player.id !== id) return;
+    const currentSeason = await getCurrentSeason(load);
 
     let [{ count: wins }] = await load.tx
       .count()
@@ -25,7 +26,7 @@ export default {
         'seriesTeamMembers.seriesTeamId',
         'seriesTeams.id'
       )
-      .where({ playerId: id, season: currentSeason });
+      .where({ playerId: id, seasonId: currentSeason.id });
 
     let [{ count: losses }] = await load.tx
       .count()
@@ -37,7 +38,7 @@ export default {
         'seriesTeamMembers.seriesTeamId',
         'seriesTeams.id'
       )
-      .where({ playerId: id, season: currentSeason });
+      .where({ playerId: id, seasonId: currentSeason.id });
 
     wins = Number(wins);
     losses = Number(losses);
