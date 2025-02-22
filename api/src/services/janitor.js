@@ -1,6 +1,6 @@
 import janitorTypes from '#src/janitor-types/index.js';
 
-const { console, setTimeout } = globalThis;
+const { console, setTimeout, clearTimeout } = globalThis;
 
 // Run every 5 minutes
 const interval = 5 * 60 * 1000;
