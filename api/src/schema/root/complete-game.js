@@ -227,7 +227,12 @@ export default {
           .update({
             elo: Math.round(elo),
             points:
-              playersById[id].points + (winningTeamIds.includes(id) ? 10 : 0),
+              playersById[id].points +
+              (winningTeamIds.includes(id)
+                ? Math.round(
+                    5 * (1 + Math.max(actualDifference - expectedDifference, 0))
+                  )
+                : 0),
             credits:
               playersById[id].credits +
               10 +
