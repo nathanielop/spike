@@ -8,7 +8,7 @@ import getCurrentSeason from '#src/functions/get-current-season.js';
 export default async () => {
   const load = createLoad();
   const currentSeason = await getCurrentSeason(load);
-  if (DateTime.now() < DateTime.fromISO(currentSeason.endsAt)) return;
+  if (DateTime.now() > DateTime.fromISO(currentSeason.endsAt)) return;
 
   await db.transaction(async tx => {
     const winnerIds = await tx
