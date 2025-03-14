@@ -232,6 +232,7 @@ export default ({ reload }) => {
   const [storeIsOpen, openStore, closeStore] = useToggle();
 
   const [details, setDetails] = useState({
+    isActive: player.isActive,
     name: player.name,
     nickname: player.nickname
   });
@@ -254,6 +255,7 @@ export default ({ reload }) => {
         $: { id: player.id },
         dailyRewardLastClaimedAt: {},
         id: {},
+        isActive: {},
         items: {
           item: {
             id: {},
@@ -315,6 +317,7 @@ export default ({ reload }) => {
         updatePlayer: {
           $: {
             id: player.id,
+            isActive: details.isActive,
             name: details.name,
             nickname: details.nickname,
             password: details.password?.trim() || null
@@ -571,6 +574,18 @@ export default ({ reload }) => {
                       }))
                     }
                   />
+                  <label className='relative flex items-center gap-1'>
+                    {details.isActive ? <SquareCheckIcon /> : <SquareIcon />}
+                    <div>Active</div>
+                    <input
+                      className='absolute inset-0 cursor-pointer'
+                      type='checkbox'
+                      checked={details.isActive}
+                      onchange={({ target: { checked } }) =>
+                        setDetails(prev => ({ ...prev, isActive: checked }))
+                      }
+                    />
+                  </label>
                   <button
                     type='submit'
                     className='bg-orange-500 hover:bg-orange-600 text-center transition-colors text-white rounded p-2 w-full'

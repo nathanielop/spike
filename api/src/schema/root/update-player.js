@@ -10,13 +10,14 @@ export default {
     object: {
       equippedItemIds: { optional: { arrayOf: 'id' } },
       id: 'id',
+      isActive: { optional: 'boolean' },
       nickname: { optional: { nullable: 'string' } },
       name: { optional: { nullable: 'string' } },
       password: { optional: { nullable: 'string' } }
     }
   },
   resolve: async ({
-    input: { equippedItemIds, id, nickname, name, password },
+    input: { equippedItemIds, id, isActive, nickname, name, password },
     context,
     context: { load }
   }) => {
@@ -49,7 +50,7 @@ export default {
     }
 
     const update = {};
-    maybeUpdate(update, player, { nickname, name });
+    maybeUpdate(update, player, { nickname, name, isActive });
 
     if (password && !(await bcrypt.compare(password, player.passwordHash))) {
       update.passwordHash = await bcrypt.hash(password, 10);

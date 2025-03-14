@@ -5,26 +5,32 @@ import createId from '#src/functions/create-id.js';
 import createLoad from '#src/functions/create-load.js';
 import getCurrentSeason from '#src/functions/get-current-season.js';
 
+const places = [
+  { badge: '🥇', name: 'Winner', prize: 2500 },
+  { badge: '🥈', name: '2nd Place', prize: 1000 },
+  { badge: '🥉', name: '3rd Place', prize: 500 }
+];
+
 export default async () => {
   const load = createLoad();
   const currentSeason = await getCurrentSeason(load);
   if (DateTime.now() > DateTime.fromISO(currentSeason.endsAt)) return;
 
   await db.transaction(async tx => {
-    const winnerIds = await tx
-      .pluck('id')
+    const winners = await tx
+      .select()
       .from('players')
-      .limit(3)
+      .limit(places.length)
       .orderBy('points', 'desc');
 
-    const itemIds = Array.from({ length: 3 }, () => createId());
+    const items = places.map(place => ({ id: createId(), ...place }));
     await tx
       .insert(
-        itemIds.map((id, i) => ({
+        items.map(({ id, badge, name }) => ({
           id,
-          attributes: { children: i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉' },
+          attributes: { children: badge },
           isForSale: false,
-          name: `JTSpike Season ${currentSeason.season} ${i === 0 ? 'Winner' : i === 1 ? '2nd Place' : '3rd Place'}`,
+          name: `JTSpike Season ${currentSeason.season} ${name}`,
           price: 0,
           type: 'badge',
           createdAt: new Date()
@@ -34,11 +40,11 @@ export default async () => {
 
     await tx
       .insert(
-        winnerIds.map((playerId, i) => ({
+        winners.map(({ id: playerId }, i) => ({
           id: createId(),
           isEquipped: false,
           playerId,
-          itemId: itemIds[i],
+          itemId: items[i].id,
           createdAt: new Date()
         }))
       )
@@ -47,13 +53,24 @@ export default async () => {
     await tx.table('players').update({ points: 0 });
 
     await tx
+      .insert(
+        winners.map((player, i) => ({
+          ...player,
+          credits: player.credits + places[i].prize
+        }))
+      )
+      .into('players')
+      .onConflict('id')
+      .merge();
+
+    await tx
       .table('seasons')
       .update({
         endedAt: new Date(),
         endsAt: null,
-        firstPlacePlayerId: winnerIds[0],
-        secondPlacePlayerId: winnerIds[1],
-        thirdPlacePlayerId: winnerIds[2]
+        firstPlacePlayerId: winners[0].id,
+        secondPlacePlayerId: winners[1].id,
+        thirdPlacePlayerId: winners[2].id
       })
       .where({ id: currentSeason.id });
 

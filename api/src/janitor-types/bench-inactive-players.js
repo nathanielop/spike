@@ -1,0 +1,16 @@
+import db from '#src/constants/db.js';
+
+const inactivePeriod = 1000 * 60 * 60 * 24 * 30;
+
+// Mark players as inactive if they haven't played in the last 30 days
+export default async () =>
+  await db
+    .table('players')
+    .update({ isActive: false })
+    .whereNotExists(query =>
+      query
+        .select()
+        .from('seriesTeamMembers')
+        .whereColumn('playerId', 'players.id')
+        .where('createdAt', '>', new Date(Date.now() - inactivePeriod))
+    );

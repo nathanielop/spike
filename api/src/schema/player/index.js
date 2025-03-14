@@ -12,6 +12,7 @@ export default createDbType({
     credits: 'integer',
     dailyRewardLastClaimedAt: { nullable: 'datetime' },
     id: 'id',
+    isActive: 'boolean',
     isAdmin: 'boolean',
     isSuperAdmin: 'boolean',
     name: 'string',

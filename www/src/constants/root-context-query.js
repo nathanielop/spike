@@ -7,6 +7,7 @@ export default {
       dailyRewardLastClaimedAt: {},
       avatarUrl: {},
       nickname: {},
+      isActive: {},
       isAdmin: {},
       isSuperAdmin: {},
       credits: {}
