@@ -7,6 +7,7 @@ export default async () =>
   await db
     .table('players')
     .update({ isActive: false })
+    .where('createdAt', '<', new Date(Date.now() - inactivePeriod)) // Only consider players created before the inactive period
     .whereNotExists(query =>
       query
         .select()
