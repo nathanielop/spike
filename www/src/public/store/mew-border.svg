@@ -9,13 +9,13 @@
   <image id="mew" width="32" height="32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABABAMAAABYR2ztAAAAHlBMVEX////4+Pjw0OD4wMj4gHhIkNDQSFAYWKCwIDAoKCj8Si3rAAAAAXRSTlMAQObYZgAAAWZJREFUeNrtlLFOwzAQhj0gdJl5gzJ1pL8VnJWcKmfsKxCE0pE3MNii7maJDMnbIicw5dId1H+xpftO99v+ZXXV/1cXL9cD2F2qEzQnsXI793nwCvBspqUFN2J/fK2mdWUC1UCZZgtWCfIA4DIgTqCArGoG3LL+dI+shxlISyDXS+DRZZOCBeIaQDsBqpY8hhom/rgMEkCM94MHbAbYicDpcAc00z4KRMDp7Q56BrxwET3KFuAUM+yrJVAwADOSIaeilh5rYHRnqivfKRIBNQbNXiffKC8HigC2Te5u+Swm1QOIpC3pDIh5wAZRO+JGSswHgN0Gngfio3dSlAfsoD33gZ1wESGML4CJnoewTzfbBUCDCtDe6M7yPtFWTqWB0UcbrJIBQjkDzQpQALD6symSyh4EfUFb3ad8ZhkomC2PKgNOiRqYbcpuNknJGsfeOkX1Vq2K2MaAtA7kMb+PuTpmvP7Sf1LfewJyfKqh0PEAAAAASUVORK5CYII=" />
  </defs>
  <g transform="translate(0,0)">
- <use href="#mew" x="7" y="4.5" style="animation: down 1s infinite linear"/>
- <use href="#mew" x="39" y="4.5" style="animation: left 1s infinite linear"/>
- <use href="#mew" x="71" y="4.5" style="animation: left 1s infinite linear"/>
- <use href="#mew" x="7" y="36.5" style="animation: down 1s infinite linear"/>
- <use href="#mew" x="7" y="68.5" style="animation: right 1s infinite linear"/>
- <use href="#mew" x="39" y="68.5" style="animation: right 1s infinite linear"/>
- <use href="#mew" x="71" y="68.5" style="animation: up 1s infinite linear"/>
- <use href="#mew" x="71" y="36.5" style="animation: up 1s infinite linear"/>
+ <use href="#mew" x="0" y="0" style="animation: down 1s infinite linear"/>
+ <use href="#mew" x="32" y="0" style="animation: left 1s infinite linear"/>
+ <use href="#mew" x="64" y="0" style="animation: left 1s infinite linear"/>
+ <use href="#mew" x="0" y="32" style="animation: down 1s infinite linear"/>
+ <use href="#mew" x="0" y="64" style="animation: right 1s infinite linear"/>
+ <use href="#mew" x="32" y="64" style="animation: right 1s infinite linear"/>
+ <use href="#mew" x="64" y="64" style="animation: up 1s infinite linear"/>
+ <use href="#mew" x="64" y="32" style="animation: up 1s infinite linear"/>
  </g>
 </svg>
