@@ -1,0 +1,21 @@
+<svg version="1.1" height="96" width="96" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" background="black">
+ <style>
+  @keyframes left {to {transform: translate(-32px, 0)}}
+  @keyframes down {to {transform: translate(0, 32px)}}
+  @keyframes right {to {transform: translate(32px, 0)}}
+  @keyframes up {to {transform: translate(0, -32px)}}
+ </style>
+ <defs>
+  <image id="mew" width="28" height="28" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABABAMAAABYR2ztAAAAHlBMVEX////4+Pjw0OD4wMj4gHhIkNDQSFAYWKCwIDAoKCj8Si3rAAAAAXRSTlMAQObYZgAAAWZJREFUeNrtlLFOwzAQhj0gdJl5gzJ1pL8VnJWcKmfsKxCE0pE3MNii7maJDMnbIicw5dId1H+xpftO99v+ZXXV/1cXL9cD2F2qEzQnsXI793nwCvBspqUFN2J/fK2mdWUC1UCZZgtWCfIA4DIgTqCArGoG3LL+dI+shxlISyDXS+DRZZOCBeIaQDsBqpY8hhom/rgMEkCM94MHbAbYicDpcAc00z4KRMDp7Q56BrxwET3KFuAUM+yrJVAwADOSIaeilh5rYHRnqivfKRIBNQbNXiffKC8HigC2Te5u+Swm1QOIpC3pDIh5wAZRO+JGSswHgN0Gngfio3dSlAfsoD33gZ1wESGML4CJnoewTzfbBUCDCtDe6M7yPtFWTqWB0UcbrJIBQjkDzQpQALD6symSyh4EfUFb3ad8ZhkomC2PKgNOiRqYbcpuNknJGsfeOkX1Vq2K2MaAtA7kMb+PuTpmvP7Sf1LfewJyfKqh0PEAAAAASUVORK5CYII=" />
+ </defs>
+ <g transform="translate(0,0)">
+ <use href="#mew" x="7" y="4.5" style="animation: down 1s infinite linear"/>
+ <use href="#mew" x="39" y="4.5" style="animation: left 1s infinite linear"/>
+ <use href="#mew" x="71" y="4.5" style="animation: left 1s infinite linear"/>
+ <use href="#mew" x="7" y="36.5" style="animation: down 1s infinite linear"/>
+ <use href="#mew" x="7" y="68.5" style="animation: right 1s infinite linear"/>
+ <use href="#mew" x="39" y="68.5" style="animation: right 1s infinite linear"/>
+ <use href="#mew" x="71" y="68.5" style="animation: up 1s infinite linear"/>
+ <use href="#mew" x="71" y="36.5" style="animation: up 1s infinite linear"/>
+ </g>
+</svg>
