@@ -5,7 +5,7 @@ import groupBy from '#src/functions/group-by.js';
 
 const betTimeLimit = 1000 * 60 * 5;
 
-const maxPayout = 5000;
+const maxPayout = 50000;
 
 export default {
   type: 'root',
@@ -74,7 +74,7 @@ export default {
     const payRate = 1 / oddsByTeamId[teamId];
     if (payRate * amount > maxPayout) {
       throw new PublicError(
-        'You cannot place a bet with a payout greater than 5000 credits'
+        `You cannot place a bet with a payout greater than ${maxPayout} credits`
       );
     }
 

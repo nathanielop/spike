@@ -14,7 +14,7 @@ import useRootContext from '#src/hooks/use-root-context.js';
 
 const { confirm } = globalThis;
 
-const maxPayout = 5000;
+const maxPayout = 50000;
 
 export default ({ onClose, onPlaced, seriesId }) => {
   const { player } = useRootContext();
