@@ -6,11 +6,13 @@ import pave from '#src/constants/pave.js';
 import useAsync from '#src/hooks/use-async.js';
 import useNotification from '#src/hooks/use-notification.js';
 
-const { setTimeout } = globalThis;
+const { setTimeout, Intl } = globalThis;
 
 const duration = 10 * 1000;
 
-const slices = [20, 20, 50, 20, 20, 100, 20, 20, 250, 500];
+const slices = [250000, 50, 50000, 25000, 100, 500000, 20, 250, 500, 10000];
+
+const formatter = Intl.NumberFormat('en-US');
 
 const shuffle = arr => {
   const array = arr.slice();
@@ -113,7 +115,7 @@ export default ({ onClose, onClaimed }) => {
                   clipPath: 'polygon(0% -2%, 100% 50%, 0% 102%)'
                 }}
               >
-                {reward}
+                {formatter.format(reward)}
               </div>
             ))}
           </div>
