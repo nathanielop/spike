@@ -35,6 +35,31 @@ import useToggle from '#src/hooks/use-toggle.js';
 
 const { window } = globalThis;
 
+const rankOrder = [
+  'ironI',
+  'ironII',
+  'ironIII',
+  'bronzeI',
+  'bronzeII',
+  'bronzeIII',
+  'silverI',
+  'silverII',
+  'silverIII',
+  'goldI',
+  'goldII',
+  'goldIII',
+  'platinumI',
+  'platinumII',
+  'platinumIII',
+  'diamondI',
+  'diamondII',
+  'diamondIII',
+  'championI',
+  'championII',
+  'championIII',
+  'grandChampion'
+];
+
 const tabs = [
   { name: 'results', Icon: SwordsIcon },
   { name: 'bets', Icon: ReceiptIcon },
@@ -249,7 +274,8 @@ export default ({ reload }) => {
         id: {},
         name: {},
         avatarUrl: {},
-        points: {}
+        points: {},
+        rank: {}
       },
       player: {
         $: { id: player.id },
@@ -609,7 +635,7 @@ export default ({ reload }) => {
                   </div>
                 </div>
                 <div className='border rounded w-full'>
-                  <div className='grid grid-cols-4'>
+                  <div className='grid grid-cols-4 font-semibold'>
                     <div className='p-2 col-span-3'>Player</div>
                     <div className='p-2 text-right'>Points</div>
                   </div>
@@ -644,6 +670,48 @@ export default ({ reload }) => {
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+              <div className='space-y-2'>
+                <div className='text-2xl font-bold'>Rankings</div>
+                <div className='border rounded w-full'>
+                  <div className='grid grid-cols-4 font-semibold'>
+                    <div className='p-2 col-span-3'>Player</div>
+                    <div className='p-2 text-right'>Rank</div>
+                  </div>
+                  {profileData.players
+                    .toSorted((a, b) =>
+                      rankOrder.indexOf(a.rank) < rankOrder.indexOf(b.rank)
+                        ? 1
+                        : -1
+                    )
+                    .map(player => (
+                      <div
+                        className='border-t grid grid-cols-4'
+                        key={player.id}
+                      >
+                        <div className='p-2 flex items-center gap-2 col-span-3'>
+                          <UserAvatar
+                            player={player}
+                            resetShadow
+                            resetRounding
+                            textClassName='text-[5px]'
+                            className='border rounded h-6 w-6'
+                          />
+                          <div
+                            className={clsx(
+                              player.id === profileData.player.id &&
+                                'font-semibold'
+                            )}
+                          >
+                            {player.name}
+                          </div>
+                        </div>
+                        <div className='p-2 text-right'>
+                          {titleize(player.rank)}
+                        </div>
+                      </div>
+                    ))}
                 </div>
               </div>
             </div>
