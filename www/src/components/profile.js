@@ -254,6 +254,7 @@ export default ({ reload }) => {
     season
   } = useRootContext();
   const [tab, setTab] = useState(tabs[0].name);
+  const [leaderboardTab, setLeaderboardTab] = useState('season');
   const [storeIsOpen, openStore, closeStore] = useToggle();
 
   const [details, setDetails] = useState({
@@ -621,25 +622,60 @@ export default ({ reload }) => {
                 </form>
               )}
             </div>
-            <div className='space-y-4 grow max-w-prose'>
+            <div className='grow max-w-prose'>
               <div className='space-y-2'>
                 <div className='flex items-center gap-2 justify-between'>
                   <div>
-                    <div className='text-2xl font-bold'>Season Leaderboard</div>
-                    <div className='font-light text-sm'>
-                      Ends {new Date(season.endsAt).toLocaleDateString()}
+                    <div className='flex items-center gap-2'>
+                      <div className='text-2xl font-bold'>Leaderboard</div>
+                      <div className='flex'>
+                        <div
+                          className={clsx(
+                            'px-2 py-1 border-y border text-xs rounded-l cursor-pointer hover:bg-gray-50',
+                            leaderboardTab === 'season' && 'shadow-inner'
+                          )}
+                          onclick={() => setLeaderboardTab('season')}
+                        >
+                          Season
+                        </div>
+                        <div
+                          className={clsx(
+                            'px-2 py-1 border-y border-r text-xs rounded-r cursor-pointer hover:bg-gray-50',
+                            leaderboardTab === 'allTime' && 'shadow-inner'
+                          )}
+                          onclick={() => setLeaderboardTab('allTime')}
+                        >
+                          All-Time
+                        </div>
+                      </div>
                     </div>
+                    {leaderboardTab !== 'allTime' && (
+                      <div className='font-light text-sm'>
+                        Ends {new Date(season.endsAt).toLocaleDateString()}
+                      </div>
+                    )}
                   </div>
-                  <div className='font-medium text-orange-500'>
-                    {profileData.player.points} points
-                  </div>
+                  {leaderboardTab !== 'allTime' && (
+                    <div className='font-medium text-orange-500 text-right'>
+                      {profileData.player.points} points
+                    </div>
+                  )}
                 </div>
                 <div className='border rounded w-full'>
                   <div className='grid grid-cols-4 font-semibold'>
                     <div className='p-2 col-span-3'>Player</div>
-                    <div className='p-2 text-right'>Points</div>
+                    <div className='p-2 text-right'>
+                      {leaderboardTab === 'allTime' ? 'Rank' : 'Points'}
+                    </div>
                   </div>
-                  {profileData.players.map((player, i) => (
+                  {(leaderboardTab === 'season'
+                    ? profileData.players
+                    : profileData.players.toSorted((a, b) =>
+                        rankOrder.indexOf(a.rank) < rankOrder.indexOf(b.rank)
+                          ? 1
+                          : -1
+                      )
+                  ).map((player, i) => (
                     <div className='border-t grid grid-cols-4' key={player.id}>
                       <div className='p-2 flex items-center gap-2 col-span-3'>
                         <UserAvatar
@@ -659,59 +695,23 @@ export default ({ reload }) => {
                         </div>
                       </div>
                       <div className='p-2 text-right'>
-                        {i === 0
-                          ? '🥇 '
-                          : i === 1
-                            ? '🥈 '
-                            : i === 2
-                              ? '🥉 '
-                              : ''}
-                        {player.points}
+                        {leaderboardTab === 'season' ? (
+                          <>
+                            {i === 0
+                              ? '🥇 '
+                              : i === 1
+                                ? '🥈 '
+                                : i === 2
+                                  ? '🥉 '
+                                  : ''}
+                            {player.points}
+                          </>
+                        ) : (
+                          titleize(player.rank)
+                        )}
                       </div>
                     </div>
                   ))}
-                </div>
-              </div>
-              <div className='space-y-2'>
-                <div className='text-2xl font-bold'>Rankings</div>
-                <div className='border rounded w-full'>
-                  <div className='grid grid-cols-4 font-semibold'>
-                    <div className='p-2 col-span-3'>Player</div>
-                    <div className='p-2 text-right'>Rank</div>
-                  </div>
-                  {profileData.players
-                    .toSorted((a, b) =>
-                      rankOrder.indexOf(a.rank) < rankOrder.indexOf(b.rank)
-                        ? 1
-                        : -1
-                    )
-                    .map(player => (
-                      <div
-                        className='border-t grid grid-cols-4'
-                        key={player.id}
-                      >
-                        <div className='p-2 flex items-center gap-2 col-span-3'>
-                          <UserAvatar
-                            player={player}
-                            resetShadow
-                            resetRounding
-                            textClassName='text-[5px]'
-                            className='border rounded h-6 w-6'
-                          />
-                          <div
-                            className={clsx(
-                              player.id === profileData.player.id &&
-                                'font-semibold'
-                            )}
-                          >
-                            {player.name}
-                          </div>
-                        </div>
-                        <div className='p-2 text-right'>
-                          {titleize(player.rank)}
-                        </div>
-                      </div>
-                    ))}
                 </div>
               </div>
             </div>
