@@ -657,7 +657,10 @@ export default ({ reload }) => {
                     ? profileData.players
                     : profileData.allTimePlayers
                   ).map((player, i) => (
-                    <div className='border-t grid grid-cols-4' key={player.id}>
+                    <div
+                      className='border-t grid grid-cols-4'
+                      key={`${leaderboardTab}:${player.id}`}
+                    >
                       <div className='p-2 flex items-center gap-2 col-span-3'>
                         <UserAvatar
                           player={player}
