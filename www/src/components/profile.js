@@ -33,7 +33,9 @@ import usePave from '#src/hooks/use-pave.js';
 import useRootContext from '#src/hooks/use-root-context.js';
 import useToggle from '#src/hooks/use-toggle.js';
 
-const { window } = globalThis;
+const { window, Intl } = globalThis;
+
+const formatter = Intl.NumberFormat('en-US');
 
 const tabs = [
   { name: 'results', Icon: SwordsIcon },
@@ -678,7 +680,7 @@ export default ({ reload }) => {
                           tooltip={
                             leaderboardTab === 'season'
                               ? undefined
-                              : `${player.elo} - ${titleize(player.rank)}`
+                              : `${formatter.format(player.elo)} - ${titleize(player.rank)}`
                           }
                         >
                           {leaderboardTab === 'season' ? (
