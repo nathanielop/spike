@@ -35,31 +35,6 @@ import useToggle from '#src/hooks/use-toggle.js';
 
 const { window } = globalThis;
 
-const rankOrder = [
-  'ironI',
-  'ironII',
-  'ironIII',
-  'bronzeI',
-  'bronzeII',
-  'bronzeIII',
-  'silverI',
-  'silverII',
-  'silverIII',
-  'goldI',
-  'goldII',
-  'goldIII',
-  'platinumI',
-  'platinumII',
-  'platinumIII',
-  'diamondI',
-  'diamondII',
-  'diamondIII',
-  'championI',
-  'championII',
-  'championIII',
-  'grandChampion'
-];
-
 const tabs = [
   { name: 'results', Icon: SwordsIcon },
   { name: 'bets', Icon: ReceiptIcon },
@@ -275,7 +250,15 @@ export default ({ reload }) => {
         id: {},
         name: {},
         avatarUrl: {},
-        points: {},
+        points: {}
+      },
+      allTimePlayers: {
+        _: 'players',
+        $: { sortBy: { field: 'elo' } },
+        id: {},
+        name: {},
+        avatarUrl: {},
+        elo: {},
         rank: {}
       },
       player: {
@@ -670,11 +653,7 @@ export default ({ reload }) => {
                   </div>
                   {(leaderboardTab === 'season'
                     ? profileData.players
-                    : profileData.players.toSorted((a, b) =>
-                        rankOrder.indexOf(a.rank) < rankOrder.indexOf(b.rank)
-                          ? 1
-                          : -1
-                      )
+                    : profileData.allTimePlayers
                   ).map((player, i) => (
                     <div className='border-t grid grid-cols-4' key={player.id}>
                       <div className='p-2 flex items-center gap-2 col-span-3'>
@@ -695,20 +674,28 @@ export default ({ reload }) => {
                         </div>
                       </div>
                       <div className='p-2 text-right'>
-                        {leaderboardTab === 'season' ? (
-                          <>
-                            {i === 0
-                              ? '🥇 '
-                              : i === 1
-                                ? '🥈 '
-                                : i === 2
-                                  ? '🥉 '
-                                  : ''}
-                            {player.points}
-                          </>
-                        ) : (
-                          titleize(player.rank)
-                        )}
+                        <Tooltip
+                          tooltip={
+                            leaderboardTab === 'season'
+                              ? undefined
+                              : `${player.elo} - ${titleize(player.rank)}`
+                          }
+                        >
+                          {leaderboardTab === 'season' ? (
+                            <>
+                              {i === 0
+                                ? '🥇 '
+                                : i === 1
+                                  ? '🥈 '
+                                  : i === 2
+                                    ? '🥉 '
+                                    : ''}
+                              {player.points}
+                            </>
+                          ) : (
+                            titleize(player.rank)
+                          )}
+                        </Tooltip>
                       </div>
                     </div>
                   ))}
