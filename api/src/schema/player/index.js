@@ -12,6 +12,7 @@ export default createDbType({
   local: {
     credits: 'integer',
     dailyRewardLastClaimedAt: { nullable: 'datetime' },
+    elo: 'integer',
     id: 'id',
     isActive: 'boolean',
     isAdmin: 'boolean',
