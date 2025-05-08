@@ -21,7 +21,7 @@ export default {
       await load.tx
         .insert({
           id,
-          elo: 1000,
+          elo: 250,
           credits: 1000,
           points: 0,
           emailAddress,
