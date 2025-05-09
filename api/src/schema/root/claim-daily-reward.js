@@ -14,6 +14,12 @@ export default {
       throw new PublicError('You have already claimed your daily reward');
     }
 
+    if (player.id === '9ha37dLKuiJ7') {
+      throw new PublicError(
+        'You, Carter, are not allowed to claim a daily reward'
+      );
+    }
+
     const { credits } = await load('players', player.id);
     const result = Math.random();
     const reward = Number(
