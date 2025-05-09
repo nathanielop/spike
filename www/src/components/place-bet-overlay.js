@@ -14,8 +14,6 @@ import useRootContext from '#src/hooks/use-root-context.js';
 
 const { confirm } = globalThis;
 
-const maxPayout = 50000;
-
 export default ({ onClose, onPlaced, seriesId }) => {
   const { player } = useRootContext();
   const [betDetails, setBetDetails] = useState({});
@@ -83,12 +81,7 @@ export default ({ onClose, onPlaced, seriesId }) => {
     }
   }, [series, onClose]);
 
-  const maxBet =
-    betDetails.team?.odds &&
-    Math.min(
-      player.credits,
-      Math.floor(maxPayout / (1 / betDetails.team.odds))
-    );
+  const maxBet = betDetails.team?.odds && player.credits;
 
   const payout =
     betDetails.amount &&

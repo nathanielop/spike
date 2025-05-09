@@ -5,8 +5,6 @@ import groupBy from '#src/functions/group-by.js';
 
 const betTimeLimit = 1000 * 60 * 5;
 
-const maxPayout = 50000;
-
 export default {
   type: 'root',
   input: {
@@ -70,13 +68,6 @@ export default {
         odds
       ])
     );
-
-    const payRate = 1 / oddsByTeamId[teamId];
-    if (payRate * amount > maxPayout) {
-      throw new PublicError(
-        `You cannot place a bet with a payout greater than ${maxPayout} credits`
-      );
-    }
 
     const id = createId();
     await load.tx.transaction(async tx => {
