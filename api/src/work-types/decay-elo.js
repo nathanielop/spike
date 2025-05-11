@@ -15,7 +15,12 @@ const fn = async ({ load }) => {
         .where('createdAt', '>', new Date(Date.now() - decayRate))
     );
 
-  console.log(validPlayers);
+  console.log(
+    validPlayers.map(
+      ({ id, elo }) =>
+        `${id}: ${elo < 250 ? elo : Math.ceil((elo - 250) * 0.9 + 250)}`
+    )
+  );
 
   if (!validPlayers.length) return;
 
