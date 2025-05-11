@@ -15,26 +15,19 @@ const fn = async ({ load }) => {
         .where('createdAt', '>', new Date(Date.now() - decayRate))
     );
 
-  console.log(
-    validPlayers.map(
-      ({ id, elo }) =>
-        `${id}: ${elo < 250 ? elo : Math.ceil((elo - 250) * 0.9 + 250)}`
-    )
-  );
-
   if (!validPlayers.length) return;
 
-  // await load.tx
-  //   .table('players')
-  //   .update({
-  //     elo: db.raw(
-  //       'case when elo < 250 then elo else ceil(((elo - 250) * 0.9) + 250)::integer end'
-  //     )
-  //   })
-  //   .whereIn(
-  //     'id',
-  //     validPlayers.map(({ id }) => id)
-  //   );
+  await load.tx
+    .table('players')
+    .update({
+      elo: db.raw(
+        'case when elo < 250 then elo else ceil(((elo - 250) * 0.9) + 250)::integer end'
+      )
+    })
+    .whereIn(
+      'id',
+      validPlayers.map(({ id }) => id)
+    );
 };
 
 // Decay elo every week by 10%
