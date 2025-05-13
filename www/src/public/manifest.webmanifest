@@ -1,6 +1,13 @@
 {
     "background_color": "#fff",
     "display": "standalone",
+    "icons": [
+      {
+        "src": "/spike.png",
+        "sizes": "180x180",
+        "type": "image/png"
+      }
+    ],
     "name": "JTSpike",
     "scope": "/",
     "short_name": "JTSpike",
