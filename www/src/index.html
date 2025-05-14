@@ -6,7 +6,6 @@
     <link rel="icon" type="image/svg+xml" href="/spike.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="preconnect" href=<%= process.env.API_URL %> />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name='theme-color' content='#fff'>
     <meta name='mobile-web-app-capable' content='yes'>
     <meta name='apple-mobile-web-app-capable' content='yes'>
@@ -25,7 +24,7 @@
       %>
 
       globalThis.spike = { manifest: <%= JSON.stringify(urlManifest) %> };
-      window.env = { API_URL: '<%= process.env.API_URL %>', VERSION: '<%= process.env.VERSION %>' }; 
+      window.env = { API_URL: '<%= process.env.API_URL %>', VERSION: '<%= process.env.VERSION %>' };
 
       <% for (const path of manifest['src/entry.js']) print(await readFile(path)); %>
     </script>
