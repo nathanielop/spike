@@ -647,7 +647,7 @@ export default ({ reload }) => {
                   </div>
                   {leaderboardTab !== 'allTime' && (
                     <div className='font-medium text-orange-500 text-right'>
-                      {profileData.player.points} points
+                      {formatter.format(profileData.player.points)} points
                     </div>
                   )}
                 </div>
@@ -700,7 +700,7 @@ export default ({ reload }) => {
                                   : i === 2
                                     ? '🥉 '
                                     : ''}
-                              {player.points}
+                              {formatter.format(player.points)}
                             </>
                           ) : (
                             titleize(player.rank)
