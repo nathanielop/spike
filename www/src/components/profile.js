@@ -519,8 +519,20 @@ export default ({ reload }) => {
                   )}
                   {profileData.player.bets.map(bet => (
                     <div className='border-t grid grid-cols-4' key={bet.id}>
-                      <div className='p-2'>{bet.amount}</div>
-                      <div className='p-2'>{bet.paidOutAmount ?? '-'}</div>
+                      <div className='p-2'>
+                        {formatter.format(bet.amount, {
+                          style: 'currency',
+                          currency: 'USD'
+                        })}
+                      </div>
+                      <div className='p-2'>
+                        {bet.paidOutAmount
+                          ? formatter.format(bet.paidOutAmount, {
+                              style: 'currency',
+                              currency: 'USD'
+                            })
+                          : '-'}
+                      </div>
                       <div className='p-2 text-center'>
                         {!bet.isActive && (
                           <CircleCheckIcon className='inline-block align-[-0.125rem] h-5 text-green-500' />
