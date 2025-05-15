@@ -414,7 +414,8 @@ export default ({ reload }) => {
                   </a>
                 </div>
                 <div className='font-medium text-orange-500'>
-                  {profileData.player.credits} credits available
+                  {formatter.format(profileData.player.credits)} credits
+                  available
                 </div>
               </div>
               <div className='border leading-tight rounded w-full flex divide-x'>
@@ -519,18 +520,10 @@ export default ({ reload }) => {
                   )}
                   {profileData.player.bets.map(bet => (
                     <div className='border-t grid grid-cols-4' key={bet.id}>
-                      <div className='p-2'>
-                        {formatter.format(bet.amount, {
-                          style: 'currency',
-                          currency: 'USD'
-                        })}
-                      </div>
+                      <div className='p-2'>{formatter.format(bet.amount)}</div>
                       <div className='p-2'>
                         {bet.paidOutAmount
-                          ? formatter.format(bet.paidOutAmount, {
-                              style: 'currency',
-                              currency: 'USD'
-                            })
+                          ? formatter.format(bet.paidOutAmount)
                           : '-'}
                       </div>
                       <div className='p-2 text-center'>
