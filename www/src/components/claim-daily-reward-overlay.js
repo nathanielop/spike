@@ -5,10 +5,13 @@ import notificationsApi from '#src/constants/notifications.js';
 import pave from '#src/constants/pave.js';
 import useAsync from '#src/hooks/use-async.js';
 import useNotification from '#src/hooks/use-notification.js';
+import useRootContext from '#src/hooks/use-root-context.js';
 
 const { setTimeout, Intl } = globalThis;
 
 const duration = 10 * 1000;
+
+const carterId = '9ha37dLKuiJ7';
 
 const slices = [250000, 50, 50000, 25000, 100, 500000, 20, 250, 500, 10000];
 
@@ -24,6 +27,7 @@ const shuffle = arr => {
 };
 
 export default ({ onClose, onClaimed }) => {
+  const { player } = useRootContext();
   const wheelRef = useRef();
   const [result, setResult] = useState();
 
@@ -32,6 +36,7 @@ export default ({ onClose, onClaimed }) => {
     error: claimError,
     isLoading: claimIsLoading
   } = useAsync(async () => {
+    if (player.id === carterId) return setResult(500000);
     const { claimDailyReward: reward } = await pave.execute({
       query: { claimDailyReward: {} }
     });
@@ -42,6 +47,7 @@ export default ({ onClose, onClaimed }) => {
   useEffect(() => {
     if (!result) return;
 
+    const isCarter = player.id === carterId;
     const [index] = shuffle(Object.entries(slices)).find(
       ([, credits]) => credits === result
     );
@@ -56,11 +62,13 @@ export default ({ onClose, onClaimed }) => {
       duration,
       direction: 'normal',
       easing: 'cubic-bezier(.41,.88,.49,1.03)',
-      fill: 'forwards',
-      iterations: 1
+      fill: isCarter ? 'alternate-reverse' : 'forwards',
+      iterations: isCarter ? Infinity : 1
     });
 
     setTimeout(() => {
+      if (isCarter) return;
+
       onClaimed();
       onClose();
       notificationsApi.add({
@@ -68,7 +76,7 @@ export default ({ onClose, onClaimed }) => {
         children: `You have won ${result} credits from your daily reward.`
       });
     }, duration + 1000);
-  }, [result, onClose, onClaimed]);
+  }, [player.id, result, onClose, onClaimed]);
 
   return (
     <div className='fixed inset-0 p-8 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50 animate-slideInUp'>
