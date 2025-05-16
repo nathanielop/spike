@@ -647,7 +647,7 @@ export default ({ reload }) => {
                         </div>
                         <div
                           className={clsx(
-                            'px-2 py-1 border-y border-r text-xs rounded-r cursor-pointer hover:bg-gray-50',
+                            'px-2 py-1 border-y border-x text-xs rounded-r cursor-pointer hover:bg-gray-50',
                             leaderboardTab === 'money' && 'shadow-inner'
                           )}
                           onclick={() => setLeaderboardTab('money')}
