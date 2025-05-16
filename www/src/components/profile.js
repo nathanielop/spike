@@ -263,6 +263,14 @@ export default ({ reload }) => {
         elo: {},
         rank: {}
       },
+      moneyPlayers: {
+        _: 'players',
+        $: { sortBy: { field: 'credits' } },
+        id: {},
+        name: {},
+        credits: {},
+        avatarUrl: {}
+      },
       player: {
         $: { id: player.id },
         dailyRewardLastClaimedAt: {},
@@ -630,12 +638,21 @@ export default ({ reload }) => {
                         </div>
                         <div
                           className={clsx(
-                            'px-2 py-1 border-y border-r text-xs rounded-r cursor-pointer hover:bg-gray-50',
+                            'px-2 py-1 border-y text-xs cursor-pointer hover:bg-gray-50',
                             leaderboardTab === 'allTime' && 'shadow-inner'
                           )}
                           onclick={() => setLeaderboardTab('allTime')}
                         >
                           All-Time
+                        </div>
+                        <div
+                          className={clsx(
+                            'px-2 py-1 border-y border-r text-xs rounded-r cursor-pointer hover:bg-gray-50',
+                            leaderboardTab === 'money' && 'shadow-inner'
+                          )}
+                          onclick={() => setLeaderboardTab('money')}
+                        >
+                          Money
                         </div>
                       </div>
                     </div>
@@ -655,12 +672,18 @@ export default ({ reload }) => {
                   <div className='grid grid-cols-4 font-semibold'>
                     <div className='p-2 col-span-3'>Player</div>
                     <div className='p-2 text-right'>
-                      {leaderboardTab === 'allTime' ? 'Rank' : 'Points'}
+                      {leaderboardTab === 'allTime'
+                        ? 'Rank'
+                        : leaderboardTab === 'money'
+                          ? 'Credits'
+                          : 'Points'}
                     </div>
                   </div>
                   {(leaderboardTab === 'season'
                     ? profileData.players
-                    : profileData.allTimePlayers
+                    : leaderboardTab === 'money'
+                      ? profileData.moneyPlayers
+                      : profileData.allTimePlayers
                   ).map((player, i) => (
                     <div
                       className='border-t grid grid-cols-4'
@@ -686,7 +709,8 @@ export default ({ reload }) => {
                       <div className='p-2 text-right'>
                         <Tooltip
                           tooltip={
-                            leaderboardTab === 'season'
+                            leaderboardTab === 'season' ||
+                            leaderboardTab === 'money'
                               ? undefined
                               : `${formatter.format(player.elo)} - ${titleize(player.rank)}`
                           }
@@ -702,6 +726,8 @@ export default ({ reload }) => {
                                     : ''}
                               {formatter.format(player.points)}
                             </>
+                          ) : leaderboardTab === 'money' ? (
+                            formatter.format(player.credits)
                           ) : (
                             titleize(player.rank)
                           )}

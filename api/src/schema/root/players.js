@@ -7,7 +7,7 @@ export default {
       sortBy: {
         nullable: {
           object: {
-            field: createEnumType(['createdAt', 'elo', 'points']),
+            field: createEnumType(['createdAt', 'elo', 'points', 'credits']),
             order: {
               type: createEnumType(['asc', 'desc']),
               defaultValue: 'desc'
