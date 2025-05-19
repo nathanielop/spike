@@ -30,6 +30,13 @@ export default {
         throw new PublicError('Scores must be at least 11');
       }
 
+      if (
+        value.winningTeamScore > 11 &&
+        value.winningTeamScore - value.losingTeamScore !== 2
+      ) {
+        throw new PublicError('Winning team must win by 2 points');
+      }
+
       return value;
     }
   },
