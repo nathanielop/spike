@@ -11,6 +11,8 @@ const { console } = globalThis;
 
 const kFactor = 48;
 
+const formatter = Intl.NumberFormat('en-US');
+
 export default {
   type: 'root',
   input: {
@@ -247,10 +249,10 @@ export default {
       try {
         const bettingMessage = [].concat(
           totalPaidOut
-            ? `*${totalPaidOut} credits paid out to ${totalPlayersPaid} player${totalPlayersPaid > 1 ? 's' : ''}*`
+            ? `*${formatter.format(totalPaidOut)} credits paid out to ${totalPlayersPaid} player${totalPlayersPaid > 1 ? 's' : ''}*`
             : [],
           totalLost
-            ? `*${totalLost} credits lost by ${totalPlayersLost} player${totalPlayersLost > 1 ? 's' : ''}*`
+            ? `*${formatter.format(totalLost)} credits lost by ${totalPlayersLost} player${totalPlayersLost > 1 ? 's' : ''}*`
             : [],
           totalBets ? `*${totalBets} total credits at stake*` : []
         );
