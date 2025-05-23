@@ -21,12 +21,7 @@ export default ({ onComplete, onClose, state }) => {
         <h2 className='text-xl font-semibold mb-4'>
           {players.map(({ name }) => name).join(' & ')}&apos;s score
         </h2>
-        <input
-          type='text'
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          className='text-center text-3xl p-4 bg-gray-100 w-full mb-4'
-        />
+        <div className='text-center text-3xl p-4 bg-gray-100 mb-4' />
         <div className='grid grid-cols-3 gap-2'>
           {Array.from({ length: 9 }, (_, i) => i).map(num => (
             <button
