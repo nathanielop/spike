@@ -14,14 +14,14 @@ export default ({ onComplete, onClose, state }) => {
         mode === 'winner' ? 'animate-slideInLeft' : 'animate-slideInUp'
       )}
     >
-      <div className='relative bg-white p-8 rounded-lg shadow-lg'>
-        <button onclick={onClose} className='absolute top-2 right-2 text-3xl'>
+      <div className='relative bg-white p-8 rounded-lg shadow-lg w-full max-w-md'>
+        <button onclick={onClose} className='absolute px-3 py-1 top-0 right-0 text-4xl'>
           &times;
         </button>
         <h2 className='text-xl font-semibold mb-4'>
           {players.map(({ name }) => name).join(' & ')}&apos;s score
         </h2>
-        <div className='text-center text-3xl p-4 bg-gray-100 mb-4'>{input}</div>
+        <div className='text-center text-3xl p-4 bg-gray-100 mb-4 rounded-md'>{input}&zwnj;</div>
         <div className='grid grid-cols-3 gap-2'>
           {Array.from({ length: 9 }, (_, i) => i).map(num => (
             <button
