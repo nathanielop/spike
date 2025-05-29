@@ -13,7 +13,7 @@ const duration = 10 * 1000;
 
 const carterId = '9ha37dLKuiJ7';
 
-const slices = [250000, 50, 50000, 25000, 100, 500000, 20, 250, 500, 10000];
+const slices = [2500, 50, 10000, 25000, 100, 5000, 20, 250, 500, 1000];
 
 const formatter = Intl.NumberFormat('en-US');
 
