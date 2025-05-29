@@ -55,7 +55,7 @@ export default ({ onClose, onClaimed }) => {
     wheelRef.current.animate([{ transform: `rotate(${degrees}deg)` }], {
       duration,
       direction: 'normal',
-      easing: 'cubic-bezier(.41,.88,.49,1.03)',
+      easing: `cubic-bezier(.41,.88,.49,${Math.round((0.95 + Math.random() / 10) * 100) / 100})`,
       fill: 'forwards',
       iterations: 1
     });
