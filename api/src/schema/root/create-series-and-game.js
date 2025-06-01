@@ -16,7 +16,7 @@ export default {
   type: 'root',
   input: {
     object: {
-      bestOf: 'format',
+      bestOf: { type: 'format', defaultValue: 3 },
       players: {
         arrayOf: { object: { id: 'id', team: { nullable: 'integer' } } },
         minLength: 4,

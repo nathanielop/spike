@@ -1,14 +1,15 @@
 import config from '#src/config.js';
-import db from '#src/constants/db.js';
 
 const { version } = config;
 
 const inactivePeriod = 1000 * 60 * 60 * 24 * 30;
 
-// Mark players as inactive if they haven't played in the last 30 days
-export default async () =>
-  version === 'production' &&
-  (await db
+const decayRate = 1000 * 60 * 60 * 24 * 7;
+
+const fn = async ({ load }) => {
+  if (version !== 'production') return;
+
+  await load.tx
     .table('players')
     .update({ isActive: false })
     .where('createdAt', '<', new Date(Date.now() - inactivePeriod)) // Only consider players created before the inactive period
@@ -18,4 +19,7 @@ export default async () =>
         .from('seriesTeamMembers')
         .whereColumn('playerId', 'players.id')
         .where('createdAt', '>', new Date(Date.now() - inactivePeriod))
-    ));
+    );
+};
+
+export default Object.assign(fn, { runEvery: decayRate });

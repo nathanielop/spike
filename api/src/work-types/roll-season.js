@@ -1,9 +1,9 @@
 import { DateTime } from 'luxon';
 
-import db from '#src/constants/db.js';
 import createId from '#src/functions/create-id.js';
-import createLoad from '#src/functions/create-load.js';
 import getCurrentSeason from '#src/functions/get-current-season.js';
+
+const seasonLength = 1000 * 60 * 60 * 24 * 30 * 3;
 
 const places = [
   { badge: '🥇', name: 'Winner', prize: 2500 },
@@ -11,12 +11,11 @@ const places = [
   { badge: '🥉', name: '3rd Place', prize: 500 }
 ];
 
-export default async () => {
-  const load = createLoad();
+const fn = async ({ load }) => {
   const currentSeason = await getCurrentSeason(load);
   if (DateTime.now() > DateTime.fromISO(currentSeason.endsAt)) return;
 
-  await db.transaction(async tx => {
+  await load.tx.transaction(async tx => {
     const winners = await tx
       .select()
       .from('players')
@@ -52,11 +51,17 @@ export default async () => {
 
     await tx.table('players').update({ points: 0 });
 
+    const winnerCreditsById = Object.fromEntries(
+      winners.map((player, i) => [player.id, player.credits + places[i].prize])
+    );
+
+    const players = await tx.select().from('players');
     await tx
       .insert(
-        winners.map((player, i) => ({
+        players.map((player, i) => ({
           ...player,
-          credits: player.credits + places[i].prize
+          points: 0,
+          credits: winnerCreditsById[player.id] ?? player.credits
         }))
       )
       .into('players')
@@ -79,8 +84,10 @@ export default async () => {
         id: createId(),
         season: currentSeason.season + 1,
         createdAt: new Date(),
-        endsAt: DateTime.now().plus({ months: 3 }).toISO()
+        endsAt: new Date(Date.now() + seasonLength)
       })
       .into('seasons');
   });
 };
+
+export default Object.assign(fn, { runEvery: seasonLength });

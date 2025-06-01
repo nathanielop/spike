@@ -5,4 +5,4 @@ const { process } = globalThis;
 process.on('SIGTERM', () => services.stop());
 process.on('SIGINT', () => services.stop());
 
-await services.start(['http', 'janitor', 'processWork']);
+await services.start(['http', 'processWork']);
