@@ -8,7 +8,7 @@ export default {
         wins: 'integer',
         losses: 'integer',
         winRate: 'number',
-        rank: 'rank'
+        rank: { nullable: 'rank' }
       }
     }
   },

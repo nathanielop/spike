@@ -1,11 +1,7 @@
-import ranks from '#src/constants/ranks.js';
+import getPlayerRank from '#src/functions/get-player-rank.js';
 
 export default {
-  type: 'rank',
-  resolve: async ({ context: { load }, object: { id } }) => {
-    const { elo } = await load('players', id);
-    return Object.entries(ranks).find(
-      ([, [min, max]]) => elo >= min && (!max || elo <= max)
-    )[0];
-  }
+  type: { nullable: 'rank' },
+  resolve: async ({ context: { load }, object: { id } }) =>
+    await getPlayerRank({ load, playerId: id })
 };
