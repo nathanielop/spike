@@ -1,6 +1,7 @@
 import PublicError from '#src/constants/public-error.js';
 import createId from '#src/functions/create-id.js';
 import getGameOdds from '#src/functions/get-game-odds.js';
+import getPlayerRank from '#src/functions/get-player-rank.js';
 import groupBy from '#src/functions/group-by.js';
 
 const betTimeLimit = 1000 * 60 * 5;
@@ -22,6 +23,12 @@ export default {
     }
 
     const series = await load('series', team.seriesId);
+    if (series.modifier) {
+      throw new PublicError(
+        'You cannot place a bet on a series with a modifier'
+      );
+    }
+
     const seriesGame = await load.tx
       .first()
       .from('games')
@@ -59,6 +66,19 @@ export default {
     );
     if (matchingSeriesPlayer && matchingSeriesPlayer.seriesTeamId !== teamId) {
       throw new PublicError('You cannot bet against yourself');
+    }
+
+    const allPlayersRanked = (
+      await Promise.all(
+        seriesPlayers.map(
+          async ({ playerId }) => await getPlayerRank({ load, playerId })
+        )
+      )
+    ).every(rank => !!rank);
+    if (!allPlayersRanked) {
+      throw new PublicError(
+        'All players must be ranked to place a bet on this series'
+      );
     }
 
     const byTeamId = groupBy(seriesPlayers, 'seriesTeamId');

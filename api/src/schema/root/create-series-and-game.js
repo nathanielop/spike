@@ -1,11 +1,14 @@
 import config from '#src/config.js';
+import modifiers from '#src/constants/modifiers.js';
 import PublicError from '#src/constants/public-error.js';
 import createId from '#src/functions/create-id.js';
 import getCurrentSeason from '#src/functions/get-current-season.js';
 import getGameOdds from '#src/functions/get-game-odds.js';
+import getPlayerRank from '#src/functions/get-player-rank.js';
 import groupBy from '#src/functions/group-by.js';
 import indexBy from '#src/functions/index-by.js';
 import postToSlack from '#src/functions/post-to-slack.js';
+import titleize from '#src/functions/titleize.js';
 import unique from '#src/functions/unique.js';
 
 const { console, URLSearchParams } = globalThis;
@@ -17,6 +20,15 @@ export default {
   input: {
     object: {
       bestOf: { type: 'format', defaultValue: 3 },
+      modifier: {
+        nullable: {
+          oneOf: {
+            static: 'modifier',
+            random: { type: 'constant', typeInput: 'random' }
+          },
+          resolveType: value => value
+        }
+      },
       players: {
         arrayOf: { object: { id: 'id', team: { nullable: 'integer' } } },
         minLength: 4,
@@ -46,7 +58,7 @@ export default {
   },
   resolve: async ({
     context: { load, player, shouldNotify },
-    input: { bestOf, players: _players }
+    input: { bestOf, modifier, players: _players }
   }) => {
     if (!player?.isAdmin) {
       throw new PublicError(
@@ -72,6 +84,14 @@ export default {
       team: byId[player.id].team
     }));
 
+    const allPlayersRanked = (
+      await Promise.all(
+        players.map(
+          async ({ id }) => await getPlayerRank({ load, playerId: id })
+        )
+      )
+    ).every(rank => !!rank);
+
     if (players[0].team == null) {
       players.forEach((player, i) => (player.team = Math.floor(i / 2)));
     }
@@ -79,11 +99,17 @@ export default {
     const teams = groupBy(players, 'team');
     const seriesId = createId();
     const gameId = createId();
+    modifier = modifier
+      ? modifier === 'random'
+        ? modifiers[Math.floor(Math.random() * modifiers.length)]
+        : modifier
+      : null;
     await load.tx.transaction(async tx => {
       await tx
         .insert({
           bestOf,
           id: seriesId,
+          modifier,
           seasonId: (await getCurrentSeason(load)).id,
           createdAt: new Date()
         })
@@ -122,15 +148,20 @@ export default {
       try {
         const odds = getGameOdds(...Object.values(teams));
         await postToSlack({
-          subject: Object.values(teams)
-            .map(
-              (players, i) =>
-                `${players.map(({ name }) => name).join(' & ')} (${Math.round(odds[i] * 100)}%)`
-            )
-            .join(' vs '),
+          subject:
+            Object.values(teams)
+              .map(
+                (players, i) =>
+                  `${players.map(({ name }) => name).join(' & ')} (${Math.round(odds[i] * 100)}%)`
+              )
+              .join(' vs ') +
+            ` [${modifier ? titleize(modifier) : 'Competitive'}]`,
           title: `*GAME STARTING*`,
           linkText: 'Place your bets',
-          linkUrl: `${appUrl}/profile?${new URLSearchParams({ bet: true, seriesId })}`
+          linkUrl:
+            modifier || !allPlayersRanked
+              ? undefined
+              : `${appUrl}/profile?${new URLSearchParams({ bet: true, seriesId })}`
         });
       } catch (er) {
         console.log('Error sending slack message', er);
