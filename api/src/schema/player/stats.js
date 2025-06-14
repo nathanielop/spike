@@ -1,5 +1,5 @@
-import ranks from '#src/constants/ranks.js';
 import getCurrentSeason from '#src/functions/get-current-season.js';
+import getPlayerRank from '#src/functions/get-player-rank.js';
 
 export default {
   type: {
@@ -43,15 +43,11 @@ export default {
     wins = Number(wins);
     losses = Number(losses);
 
-    const { elo } = await load('players', id);
-
     return {
       wins,
       losses,
       winRate: wins / (wins + losses),
-      rank: Object.entries(ranks).find(
-        ([, [min, max]]) => elo >= min && (!max || elo <= max)
-      )[0]
+      rank: await getPlayerRank({ load, playerId: id })
     };
   }
 };

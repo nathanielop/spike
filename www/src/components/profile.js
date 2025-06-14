@@ -448,7 +448,9 @@ export default ({ reload }) => {
                 <div className='text-center p-2 w-full'>
                   <div>Rank</div>
                   <div className='text-xl font-semibold'>
-                    {titleize(profileData.player.stats.rank)}
+                    {profileData.player.stats.rank
+                      ? titleize(profileData.player.stats.rank)
+                      : 'Unranked'}
                   </div>
                 </div>
               </div>
@@ -712,7 +714,7 @@ export default ({ reload }) => {
                             leaderboardTab === 'season' ||
                             leaderboardTab === 'money'
                               ? undefined
-                              : `${formatter.format(player.elo)} - ${titleize(player.rank)}`
+                              : `${formatter.format(player.elo)} - ${player.rank ? titleize(player.rank) : 'Unranked'}`
                           }
                         >
                           {leaderboardTab === 'season' ? (
@@ -728,8 +730,10 @@ export default ({ reload }) => {
                             </>
                           ) : leaderboardTab === 'money' ? (
                             formatter.format(player.credits)
-                          ) : (
+                          ) : player.rank ? (
                             titleize(player.rank)
+                          ) : (
+                            'Unranked'
                           )}
                         </Tooltip>
                       </div>
