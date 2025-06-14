@@ -73,7 +73,7 @@ export default ({ onLogin }) => {
         }}
         className='border rounded p-4 text-center space-y-4'
       >
-        <img src='/spikelogo.png' className='h-24' />
+        <img src='/spike.svg' className='h-24' />
         {!isLogin && (
           <Input
             placeholder='Name'
