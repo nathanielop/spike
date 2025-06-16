@@ -134,7 +134,7 @@ export default ({ players, reload }) => {
         />
       )}
       <div className='w-1/6 min-w-0 p-4 bg-purple-700'>
-        <img src='/spikelogo.png' className='w-full' />
+        <img src='/spike.svg' className='w-full' />
       </div>
       <div className='relative h-screen w-3/4 items-center justify-center'>
         <div className='flex h-screen self-center animate-cw-spin'>
