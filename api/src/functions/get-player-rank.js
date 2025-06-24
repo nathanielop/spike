@@ -1,6 +1,6 @@
 import ranks from '#src/constants/ranks.js';
 
-const minimumSeries = 25;
+const minimumSeries = 50;
 
 export default async ({ load, playerId }) => {
   const [{ count }] = await load.tx
