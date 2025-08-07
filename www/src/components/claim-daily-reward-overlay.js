@@ -10,7 +10,7 @@ const { setTimeout, Intl } = globalThis;
 
 const duration = 10 * 1000;
 
-const slices = [2500, 50, 10000, 25000, 100, 5000, 20, 250, 500, 1000];
+const slices = [2500, 50, 10000, 25000, 100, 5000, 250, 500, 1000, 50000];
 
 const formatter = Intl.NumberFormat('en-US');
 
