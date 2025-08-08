@@ -10,7 +10,9 @@ const { setTimeout, Intl } = globalThis;
 
 const duration = 10 * 1000;
 
-const slices = [2500, 50, 10000, 25000, 100, 5000, 250, 500, 1000, 50000];
+const slices = [
+  2500, 10000, 25000, 5000, 250, 500, 1000, 50000, 250000, 1000000, 100000
+];
 
 const formatter = Intl.NumberFormat('en-US');
 
@@ -65,7 +67,7 @@ export default ({ onClose, onClaimed }) => {
       onClose();
       notificationsApi.add({
         type: 'success',
-        children: `You have won ${result} credits from your daily reward.`
+        children: `You have won ${formatter.format(result)} credits from your daily reward.`
       });
     }, duration + 1000);
   }, [result, onClose, onClaimed]);
