@@ -21,7 +21,7 @@ export default ({
   const hatItem = player.items?.find(
     ({ item, isEquipped }) => isEquipped && item.type === 'hat'
   )?.item;
-  const hasBounty = player.bounties?.length > 0;
+  const hasBounty = player.activeBounties?.length > 0;
   return (
     <div
       className={clsx(
