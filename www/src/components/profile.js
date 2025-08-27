@@ -716,13 +716,15 @@ export default ({ reload }) => {
                         >
                           {player.name}
                         </div>
-                        <a
-                          onclick={() => setPlacingBountyOnPlayer(player)}
-                          className='block group-hover:visible invisible cursor-pointer text-orange-500 hover:text-orange-600'
-                        >
-                          <CrosshairIcon className='h-4 inline-block text-orange-500 align-[-0.125rem]' />{' '}
-                          Place Bounty
-                        </a>
+                        {player.id !== profileData.player.id && (
+                          <a
+                            onclick={() => setPlacingBountyOnPlayer(player)}
+                            className='block group-hover:visible invisible cursor-pointer text-orange-500 hover:text-orange-600'
+                          >
+                            <CrosshairIcon className='h-4 inline-block text-orange-500 align-[-0.125rem]' />{' '}
+                            Place Bounty
+                          </a>
+                        )}
                       </div>
                       <div className='p-2 text-right'>
                         <Tooltip
