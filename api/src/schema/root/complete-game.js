@@ -103,6 +103,7 @@ export default {
 
     let totalPaidOut = 0;
     let totalPlayersPaid = 0;
+    let totalBountiesPaid = 0;
     let totalLost = 0;
     let totalPlayersLost = 0;
     let totalBets;
@@ -138,6 +139,9 @@ export default {
       );
       if (bestOf === gameCount || seriesWinner) {
         const [seriesWinnerTeamId] = seriesWinner;
+        const [, loserPlayerIds] = Object.entries(teams).find(
+          ([k]) => k !== seriesWinnerTeamId
+        );
 
         await tx
           .table('series')
@@ -202,6 +206,27 @@ export default {
             betValues.flat()
           );
         }
+
+        const bounties = await tx
+          .select()
+          .from('bounties')
+          .whereIn('placedOnPlayerId', loserPlayerIds)
+          .where({ isClaimed: false });
+
+        if (bounties.length) {
+          totalBountiesPaid = bounties.reduce(
+            (sum, { amount }) => sum + amount,
+            0
+          );
+
+          await tx
+            .table('bounties')
+            .update({ isClaimed: true })
+            .whereIn(
+              'id',
+              bounties.map(({ id }) => id)
+            );
+        }
       } else {
         if (gameCount === 0 && bestOf !== 1) {
           totalBets = (
@@ -246,7 +271,11 @@ export default {
               playersById[id].credits +
               10 +
               (paidPlayerAmounts[id] || 0) +
-              (winningTeamIds.includes(id) ? 10 : 0)
+              (winningTeamIds.includes(id) ? 10 : 0) +
+              // The following math might not be correct for distribution but don't really care about +- 1 credit
+              (winningTeamIds.includes(id) && totalBountiesPaid
+                ? Math.round(totalBountiesPaid / winningTeamIds.length)
+                : 0)
           })
           .where({ id });
       }
@@ -254,14 +283,19 @@ export default {
 
     if (shouldNotify !== false) {
       try {
-        const bettingMessage = [].concat(
+        const bettingMessage = /** @type {string[]} */ ([]).concat(
           totalPaidOut
             ? `*${formatter.format(totalPaidOut)} credits paid out to ${totalPlayersPaid} player${totalPlayersPaid > 1 ? 's' : ''}*`
             : [],
           totalLost
             ? `*${formatter.format(totalLost)} credits lost by ${totalPlayersLost} player${totalPlayersLost > 1 ? 's' : ''}*`
             : [],
-          totalBets ? `*${totalBets} total credits at stake*` : []
+          totalBets
+            ? `*${formatter.format(totalBets)} total credits at stake*`
+            : [],
+          totalBountiesPaid
+            ? `*${formatter.format(totalBountiesPaid)} credits paid out in bounties*`
+            : []
         );
         await postToSlack({
           subject: `${teams[winningTeamId].map(({ name }) => name).join(' & ')} defeated ${teams[losingTeamId].map(({ name }) => name).join(' & ')}`,
