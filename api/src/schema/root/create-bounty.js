@@ -24,16 +24,23 @@ export default {
     }
 
     const id = createId();
-    await load.tx
-      .insert({
-        id,
-        amount,
-        isClaimed: false,
-        placedByPlayerId: player.id,
-        placedOnPlayerId: playerId,
-        createdAt: new Date()
-      })
-      .into('bounties');
+    await load.tx.transaction(async tx => {
+      await tx
+        .insert({
+          id,
+          amount,
+          isClaimed: false,
+          placedByPlayerId: player.id,
+          placedOnPlayerId: playerId,
+          createdAt: new Date()
+        })
+        .into('bounties');
+
+      await tx
+        .table('players')
+        .update({ credits: player.credits - amount })
+        .where({ id: player.id });
+    });
 
     return { createdBounty: { id } };
   }
