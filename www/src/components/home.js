@@ -97,6 +97,7 @@ export default ({ players, reload }) => {
                 id: {},
                 name: {},
                 avatarUrl: { $: { size: 200 } },
+                activeBounties: { id: {} },
                 items: {
                   item: { id: {}, type: {}, attributes: {} },
                   isEquipped: {}
