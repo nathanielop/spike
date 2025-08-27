@@ -139,9 +139,6 @@ export default {
       );
       if (bestOf === gameCount || seriesWinner) {
         const [seriesWinnerTeamId] = seriesWinner;
-        const [, loserPlayerIds] = Object.entries(teams).find(
-          ([k]) => k !== seriesWinnerTeamId
-        );
 
         await tx
           .table('series')
@@ -210,7 +207,10 @@ export default {
         const bounties = await tx
           .select()
           .from('bounties')
-          .whereIn('placedOnPlayerId', loserPlayerIds)
+          .whereIn(
+            'placedOnPlayerId',
+            losingTeam.map(({ id }) => id)
+          )
           .where({ isClaimed: false });
 
         if (bounties.length) {
