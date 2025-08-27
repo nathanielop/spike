@@ -9,7 +9,7 @@ import useRootContext from '#src/hooks/use-root-context.js';
 
 const { confirm } = globalThis;
 
-export default ({ onClose, onPlaced, placingOnPlayer }) => {
+export default ({ onClose, placingOnPlayer }) => {
   const { player } = useRootContext();
   const [amount, setAmount] = useState(10);
 
@@ -26,7 +26,6 @@ export default ({ onClose, onPlaced, placingOnPlayer }) => {
       type: 'success',
       children: 'Bounty placed successfully.'
     });
-    onPlaced();
     onClose();
   });
   useNotification(error);
