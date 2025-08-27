@@ -5,6 +5,7 @@ import PublicError from '#src/constants/public-error.js';
 import claimDailyReward from '#src/schema/root/claim-daily-reward.js';
 import completeGame from '#src/schema/root/complete-game.js';
 import createBet from '#src/schema/root/create-bet.js';
+import createBounty from '#src/schema/root/create-bounty.js';
 import createGame from '#src/schema/root/create-game.js';
 import createGrant from '#src/schema/root/create-grant.js';
 import createItemPurchase from '#src/schema/root/create-item-purchase.js';
@@ -33,11 +34,13 @@ export default {
       completeGame,
       createBet,
       createdBet: { nullable: 'bet' },
+      createdBounty: { nullable: 'bounty' },
       createdItem: { nullable: 'item' },
       createdGame: { nullable: 'game' },
       createdGrant: { nullable: 'grant' },
       createdPlayer: { nullable: 'player' },
       createdSeries: { nullable: 'series' },
+      createBounty,
       createGame,
       createGrant,
       createItemPurchase,

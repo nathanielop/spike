@@ -265,7 +265,7 @@ export default ({ reload }) => {
       },
       moneyPlayers: {
         _: 'players',
-        $: { sortBy: { field: 'credits' } },
+        $: { activeOnly: false, sortBy: { field: 'credits' } },
         id: {},
         name: {},
         credits: {},

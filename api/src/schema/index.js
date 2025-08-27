@@ -1,5 +1,6 @@
 import bet from '#src/schema/bet/index.js';
 import boolean from '#src/schema/boolean/index.js';
+import bounty from '#src/schema/bounty/index.js';
 import constant from '#src/schema/constant/index.js';
 import date from '#src/schema/date/index.js';
 import datetime from '#src/schema/datetime/index.js';
@@ -25,6 +26,7 @@ import url from '#src/schema/url/index.js';
 export default {
   bet,
   boolean,
+  bounty,
   constant,
   datetime,
   date,
