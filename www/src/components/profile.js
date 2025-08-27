@@ -5,6 +5,7 @@ import ClaimDailyRewardOverlay from '#src/components/claim-daily-reward-overlay.
 import BackpackIcon from '#src/components/icons/backpack.js';
 import ChevronRightIcon from '#src/components/icons/chevron-right.js';
 import CircleCheckIcon from '#src/components/icons/circle-check.js';
+import CrosshairIcon from '#src/components/icons/crosshair.js';
 import LogOutIcon from '#src/components/icons/log-out.js';
 import ReceiptIcon from '#src/components/icons/receipt.js';
 import SettingsIcon from '#src/components/icons/settings.js';
@@ -19,6 +20,7 @@ import ItemPreview from '#src/components/item-preview.js';
 import LoadingArea from '#src/components/loading-area.js';
 import Notice from '#src/components/notice.js';
 import PlaceBetOverlay from '#src/components/place-bet-overlay.js';
+import PlaceBountyOverlay from '#src/components/place-bounty-overlay.js';
 import StoreOverlay from '#src/components/store-overlay.js';
 import Tooltip from '#src/components/tooltip.js';
 import UserAvatar from '#src/components/user-avatar.js';
@@ -233,6 +235,7 @@ export default ({ reload }) => {
   const [tab, setTab] = useState(tabs[0].name);
   const [leaderboardTab, setLeaderboardTab] = useState('season');
   const [storeIsOpen, openStore, closeStore] = useToggle();
+  const [placingBountyOnPlayer, setPlacingBountyOnPlayer] = useState(undefined);
 
   const [details, setDetails] = useState({
     isActive: player.isActive,
@@ -387,6 +390,12 @@ export default ({ reload }) => {
         <ClaimDailyRewardOverlay
           onClose={closeDailyReward}
           onClaimed={reloadProfileData}
+        />
+      )}
+      {placingBountyOnPlayer && (
+        <PlaceBountyOverlay
+          onClose={() => setPlacingBountyOnPlayer(undefined)}
+          placingOnPlayer={placingBountyOnPlayer}
         />
       )}
       {profileDataError && <Notice>{profileDataError}</Notice>}
@@ -658,13 +667,13 @@ export default ({ reload }) => {
                         </div>
                       </div>
                     </div>
-                    {leaderboardTab !== 'allTime' && (
+                    {leaderboardTab === 'season' && (
                       <div className='font-light text-sm'>
                         Ends {new Date(season.endsAt).toLocaleDateString()}
                       </div>
                     )}
                   </div>
-                  {leaderboardTab !== 'allTime' && (
+                  {leaderboardTab === 'season' && (
                     <div className='font-medium text-orange-500 text-right'>
                       {formatter.format(profileData.player.points)} points
                     </div>
@@ -688,7 +697,7 @@ export default ({ reload }) => {
                       : profileData.allTimePlayers
                   ).map((player, i) => (
                     <div
-                      className='border-t grid grid-cols-4'
+                      className='border-t group grid grid-cols-4'
                       key={`${leaderboardTab}:${player.id}`}
                     >
                       <div className='p-2 flex items-center gap-2 col-span-3'>
@@ -707,6 +716,13 @@ export default ({ reload }) => {
                         >
                           {player.name}
                         </div>
+                        <a
+                          onclick={() => setPlacingBountyOnPlayer(player)}
+                          className='block group-hover:visible invisible cursor-pointer text-orange-500 hover:text-orange-600'
+                        >
+                          <CrosshairIcon className='h-4 inline-block text-orange-500 align-[-0.125rem]' />{' '}
+                          Place Bounty
+                        </a>
                       </div>
                       <div className='p-2 text-right'>
                         <Tooltip
