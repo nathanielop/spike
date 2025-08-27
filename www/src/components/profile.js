@@ -395,6 +395,7 @@ export default ({ reload }) => {
       {placingBountyOnPlayer && (
         <PlaceBountyOverlay
           onClose={() => setPlacingBountyOnPlayer(undefined)}
+          onPlaced={reloadProfileData}
           placingOnPlayer={placingBountyOnPlayer}
         />
       )}
