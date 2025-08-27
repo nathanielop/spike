@@ -225,7 +225,7 @@ export default {
           totalBountiesPaid = [
             ...paid.map(({ amount }) => amount),
             ...collected.map(({ id, amount }) => {
-              if (amount * 0.1 < 100) {
+              if (amount < 1000) {
                 exhaustedIds.push(id);
                 return amount;
               } else {
