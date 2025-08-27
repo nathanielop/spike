@@ -1,5 +1,10 @@
 import PublicError from '#src/constants/public-error.js';
 import createId from '#src/functions/create-id.js';
+import postToSlack from '#src/functions/post-to-slack.js';
+
+const { console, Intl } = globalThis;
+
+const formatter = Intl.NumberFormat('en-US');
 
 export default {
   type: 'root',
@@ -23,6 +28,13 @@ export default {
       );
     }
 
+    const onPlayer = await load('players', playerId);
+    if (!onPlayer) {
+      throw new PublicError(
+        'The player you are placing a bounty on is invalid'
+      );
+    }
+
     const id = createId();
     await load.tx.transaction(async tx => {
       await tx
@@ -41,6 +53,15 @@ export default {
         .update({ credits: player.credits - amount })
         .where({ id: player.id });
     });
+
+    try {
+      await postToSlack({
+        subject: `A bounty of ${formatter.format(amount)} credits has been placed by ${player.name} on ${onPlayer.name}!`,
+        title: `*BOUNTY PLACED*`
+      });
+    } catch (er) {
+      console.log('Error sending slack message', er);
+    }
 
     return { createdBounty: { id } };
   }
