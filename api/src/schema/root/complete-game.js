@@ -209,23 +209,60 @@ export default {
           .from('bounties')
           .whereIn(
             'placedOnPlayerId',
-            losingTeam.map(({ id }) => id)
+            players.map(({ id }) => id)
           )
           .where({ isClaimed: false });
 
         if (bounties.length) {
-          totalBountiesPaid = bounties.reduce(
-            (sum, { amount }) => sum + amount,
-            0
+          const { paid = [], collected = [] } = groupBy(
+            bounties,
+            ({ placedOnPlayerId }) =>
+              winningTeamIds.includes(placedOnPlayerId) ? 'collected' : 'paid'
           );
 
-          await tx
-            .table('bounties')
-            .update({ isClaimed: true })
-            .whereIn(
-              'id',
-              bounties.map(({ id }) => id)
+          const exhaustedIds = [];
+          const bountyValues = [];
+          totalBountiesPaid = [
+            ...paid.map(({ amount }) => amount),
+            ...collected.map(({ id, amount }) => {
+              if (amount * 0.1 < 100) {
+                exhaustedIds.push(id);
+                return amount;
+              } else {
+                const reduction = amount * 0.1;
+                bountyValues.push([id, Math.floor(amount - reduction)]);
+                return reduction;
+              }
+            })
+          ].reduce((sum, amount) => sum + amount, 0);
+
+          if (paid.length) {
+            await tx
+              .table('bounties')
+              .update({ isClaimed: true })
+              .whereIn(
+                'id',
+                paid.map(({ id }) => id)
+              );
+          }
+
+          if (exhaustedIds.length) {
+            await tx.delete().from('bounties').whereIn('id', exhaustedIds);
+          }
+
+          if (bountyValues.length) {
+            await tx.raw(
+              `
+              update bounties
+              set amount = data.amount::integer
+              from (values ${Array.from(bountyValues, () => '(?, ?)').join(
+                ', '
+              )}) as data (id, amount)
+              where bounties.id = data.id
+              `,
+              bountyValues.flat()
             );
+          }
         }
       } else {
         if (gameCount === 0 && bestOf !== 1) {
@@ -274,7 +311,7 @@ export default {
               (winningTeamIds.includes(id) ? 10 : 0) +
               // The following math might not be correct for distribution but don't really care about +- 1 credit
               (winningTeamIds.includes(id) && totalBountiesPaid
-                ? Math.round(totalBountiesPaid / winningTeamIds.length)
+                ? Math.floor(totalBountiesPaid / winningTeamIds.length)
                 : 0)
           })
           .where({ id });
