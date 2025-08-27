@@ -35,6 +35,10 @@ export default {
       );
     }
 
+    if (onPlayer.id === player.id) {
+      throw new PublicError('You cannot place a bounty on yourself');
+    }
+
     const id = createId();
     await load.tx.transaction(async tx => {
       await tx
