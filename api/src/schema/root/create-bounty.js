@@ -61,7 +61,7 @@ export default {
     try {
       await postToSlack({
         subject: `A bounty of ${formatter.format(amount)} credits has been placed by ${player.name} on ${onPlayer.name}!`,
-        title: `*BOUNTY PLACED*`
+        title: `*BOUNTY PLACED 🎯*`
       });
     } catch (er) {
       console.log('Error sending slack message', er);
