@@ -121,8 +121,8 @@ export default {
         })
         .where({ id });
 
-      const [{ bestOf, gameCount }] = await tx
-        .select('bestOf', tx.raw('count(games.id) as "gameCount"'))
+      const [{ bestOf, gameCount, createdAt: seriesCreatedAt }] = await tx
+        .select('bestOf', 'series.createdAt', tx.raw('count(games.id) as "gameCount"'))
         .from('series')
         .where('series.id', game.seriesId)
         .join('games', 'games.seriesId', 'series.id')
@@ -204,14 +204,15 @@ export default {
           );
         }
 
-        const bounties = await tx
+        const bounties = (await tx
           .select()
           .from('bounties')
           .whereIn(
             'placedOnPlayerId',
             players.map(({ id }) => id)
           )
-          .where({ isClaimed: false });
+          .where({ isClaimed: false }))
+          .filter(({ createdAt }) => createdAt < seriesCreatedAt); // 10 minute grace period to avoid sniping
 
         if (bounties.length) {
           const { paid = [], collected = [] } = groupBy(
