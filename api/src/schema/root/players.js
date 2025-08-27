@@ -4,6 +4,7 @@ export default {
   type: { arrayOf: 'player' },
   input: {
     object: {
+      activeOnly: { type: 'boolean', defaultValue: true },
       sortBy: {
         nullable: {
           object: {
@@ -22,12 +23,13 @@ export default {
       }
     }
   },
-  resolve: async ({ input: { size, sortBy }, context: { load } }) => {
-    const query = load.tx
-      .select()
-      .from('players')
-      .where({ isActive: true })
-      .limit(size);
+  resolve: async ({
+    input: { activeOnly, size, sortBy },
+    context: { load }
+  }) => {
+    const query = load.tx.select().from('players').limit(size);
+
+    if (activeOnly) query.where('isActive', true);
 
     if (sortBy) query.orderBy(sortBy.field, sortBy.order);
 
