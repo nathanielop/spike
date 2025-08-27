@@ -1,5 +1,7 @@
 import clsx from 'clsx';
 
+import CrosshairIcon from '#src/components/icons/crosshair.js';
+
 export default ({
   player,
   className,
@@ -19,6 +21,7 @@ export default ({
   const hatItem = player.items?.find(
     ({ item, isEquipped }) => isEquipped && item.type === 'hat'
   )?.item;
+  const hasBounty = player.bounties?.length > 0;
   return (
     <div
       className={clsx(
@@ -63,6 +66,11 @@ export default ({
           className='absolute w-2/3 -top-1/3 -right-1/3 z-10 rotate-45 aspect-square bg-center bg-no-repeat bg-contain'
           style={{ backgroundImage: `url("store/${hatItem.attributes.src}")` }}
         />
+      )}
+      {hasBounty && (
+        <div className='absolute p-1 text-xs shadow bg-white z-10 w-[min(40%,2rem)] h-[min(40%,2rem)] flex items-center justify-center -bottom-[min(20%,1rem)] -left-[min(20%,1rem)] rounded-full'>
+          <CrosshairIcon className='text-red-500' />
+        </div>
       )}
     </div>
   );

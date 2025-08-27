@@ -12,6 +12,7 @@ export default () => {
         name: {},
         nickname: {},
         avatarUrl: {},
+        bounties: { id: {} },
         items: { item: { id: {}, type: {}, attributes: {} }, isEquipped: {} }
       }
     }
