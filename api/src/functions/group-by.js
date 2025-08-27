@@ -1,6 +1,6 @@
-export default (arr, key) =>
+export default (arr, keyOrFn) =>
   arr.reduce((obj, val) => {
-    const value = val[typeof key === 'function' ? key(val) : key];
+    const value = typeof keyOrFn === 'function' ? keyOrFn(val) : val[keyOrFn];
     return Object.assign(obj, {
       ...obj,
       [value]: [...(obj[value] ?? []), val]
