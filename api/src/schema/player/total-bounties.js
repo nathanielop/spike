@@ -5,6 +5,6 @@ export default {
       .sum('amount')
       .from('bounties')
       .where({ placedOnPlayerId: id, isClaimed: false });
-    return sum;
+    return +sum;
   }
 };
