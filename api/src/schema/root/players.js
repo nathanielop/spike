@@ -8,7 +8,13 @@ export default {
       sortBy: {
         nullable: {
           object: {
-            field: createEnumType(['createdAt', 'elo', 'points', 'credits']),
+            field: createEnumType([
+              'createdAt',
+              'elo',
+              'points',
+              'credits',
+              'totalBounties'
+            ]),
             order: {
               type: createEnumType(['asc', 'desc']),
               defaultValue: 'desc'
@@ -31,7 +37,24 @@ export default {
 
     if (activeOnly) query.where('isActive', true);
 
-    if (sortBy) query.orderBy(sortBy.field, sortBy.order);
+    if (sortBy) {
+      if (sortBy.field === 'totalBounties') {
+        query.join(
+          query =>
+            query
+              .sum('amount')
+              .select('placedOnPlayerId')
+              .from('bounties')
+              .groupBy('placedOnPlayerId')
+              .as('totalBounties'),
+          'totalBounties.placedOnPlayerId',
+          'players.id'
+        );
+        sortBy.field = 'totalBounties.sum';
+      }
+
+      query.orderBy(sortBy.field, sortBy.order);
+    }
 
     return await query;
   }
