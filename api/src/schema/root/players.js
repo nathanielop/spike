@@ -45,6 +45,7 @@ export default {
               .sum('amount')
               .select('placedOnPlayerId')
               .from('bounties')
+              .where({ isClaimed: false })
               .groupBy('placedOnPlayerId')
               .as('totalBounties'),
           'totalBounties.placedOnPlayerId',
