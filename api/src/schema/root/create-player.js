@@ -8,8 +8,8 @@ export default {
   input: {
     object: {
       emailAddress: 'email',
-      name: { type: 'string', typeArgs: { maxLength: 50 } },
-      password: { type: 'string', typeArgs: { minLength: 8 } }
+      name: { type: 'string', typeInput: { maxLength: 50 } },
+      password: { type: 'string', typeInput: { minLength: 8 } }
     }
   },
   resolve: async ({

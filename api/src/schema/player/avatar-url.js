@@ -5,7 +5,7 @@ export default {
     object: {
       size: {
         type: 'integer',
-        typeArgs: { min: 80, max: 200 },
+        typeInput: { min: 80, max: 200 },
         defaultValue: 80
       }
     },

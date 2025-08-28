@@ -19,9 +19,9 @@ export default {
     object: {
       id: 'id',
       losingTeamId: 'id',
-      losingTeamScore: { type: 'integer', typeArgs: { min: 0 } },
+      losingTeamScore: { type: 'integer', typeInput: { min: 0 } },
       winningTeamId: 'id',
-      winningTeamScore: { type: 'integer', typeArgs: { min: 0 } }
+      winningTeamScore: { type: 'integer', typeInput: { min: 0 } }
     },
     validate: ({ value }) => {
       if (value.winningTeamScore - value.losingTeamScore < 2) {

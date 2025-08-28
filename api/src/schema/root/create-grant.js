@@ -14,7 +14,7 @@ export default {
   input: {
     object: {
       emailAddress: 'email',
-      password: { type: 'string', typeArgs: { minLength: 8 } }
+      password: { type: 'string', typeInput: { minLength: 8 } }
     }
   },
   resolve: async ({ context, input: { emailAddress, password } }) => {

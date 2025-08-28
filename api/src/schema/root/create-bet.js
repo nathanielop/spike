@@ -10,7 +10,7 @@ export default {
   type: 'root',
   input: {
     object: {
-      amount: { type: 'integer', typeArgs: { min: 0 } },
+      amount: { type: 'integer', typeInput: { min: 0 } },
       teamId: 'id'
     }
   },

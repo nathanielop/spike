@@ -8,15 +8,15 @@ export default {
       attributes: { optional: {} },
       description: { optional: { nullable: 'string' } },
       discountedPrice: {
-        optional: { nullable: { type: 'integer', typeArgs: { min: 0 } } }
+        optional: { nullable: { type: 'integer', typeInput: { min: 0 } } }
       },
       isForSale: { optional: 'boolean' },
       id: 'id',
       limitedTo: {
-        optional: { nullable: { type: 'integer', typeArgs: { min: 0 } } }
+        optional: { nullable: { type: 'integer', typeInput: { min: 0 } } }
       },
       name: { optional: 'string' },
-      price: { optional: { type: 'integer', typeArgs: { min: 0 } } },
+      price: { optional: { type: 'integer', typeInput: { min: 0 } } },
       type: { optional: 'itemType' }
     }
   },

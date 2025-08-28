@@ -24,7 +24,7 @@ export default {
       },
       size: {
         type: 'integer',
-        typeArgs: { min: 1, max: 100 },
+        typeInput: { min: 1, max: 100 },
         defaultValue: 10
       }
     }

@@ -7,11 +7,11 @@ export default {
     object: {
       attributes: {},
       description: { nullable: 'string' },
-      discountedPrice: { nullable: { type: 'integer', typeArgs: { min: 0 } } },
+      discountedPrice: { nullable: { type: 'integer', typeInput: { min: 0 } } },
       isForSale: { type: 'boolean', defaultValue: true },
-      limitedTo: { nullable: { type: 'integer', typeArgs: { min: 0 } } },
+      limitedTo: { nullable: { type: 'integer', typeInput: { min: 0 } } },
       name: 'string',
-      price: { type: 'integer', typeArgs: { min: 0 } },
+      price: { type: 'integer', typeInput: { min: 0 } },
       type: 'itemType'
     }
   },
