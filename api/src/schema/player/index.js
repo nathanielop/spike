@@ -8,6 +8,7 @@ import rank from '#src/schema/player/rank.js';
 import series from '#src/schema/player/series.js';
 import stats from '#src/schema/player/stats.js';
 import streaks from '#src/schema/player/streaks.js';
+import totalBounties from '#src/schema/player/total-bounties.js';
 
 export default createDbType({
   table: 'players',
@@ -32,6 +33,7 @@ export default createDbType({
     rank,
     series,
     stats,
-    streaks
+    streaks,
+    totalBounties
   }
 });

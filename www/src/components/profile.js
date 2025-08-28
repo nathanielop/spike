@@ -274,6 +274,14 @@ export default ({ reload }) => {
         credits: {},
         avatarUrl: {}
       },
+      bountyPlayers: {
+        _: 'players',
+        $: { activeOnly: false, sortBy: { field: 'totalBounties' } },
+        id: {},
+        name: {},
+        totalBounties: {},
+        avatarUrl: {}
+      },
       player: {
         $: { id: player.id },
         dailyRewardLastClaimedAt: {},
@@ -666,6 +674,15 @@ export default ({ reload }) => {
                         >
                           Money
                         </div>
+                        <div
+                          className={clsx(
+                            'px-2 py-1 border-y border-x text-xs rounded-r cursor-pointer hover:bg-gray-50',
+                            leaderboardTab === 'money' && 'shadow-inner'
+                          )}
+                          onclick={() => setLeaderboardTab('bounties')}
+                        >
+                          Bounties
+                        </div>
                       </div>
                     </div>
                     {leaderboardTab === 'season' && (
@@ -688,14 +705,18 @@ export default ({ reload }) => {
                         ? 'Rank'
                         : leaderboardTab === 'money'
                           ? 'Credits'
-                          : 'Points'}
+                          : leaderboardTab === 'bounties'
+                            ? 'Total Bounty'
+                            : 'Points'}
                     </div>
                   </div>
                   {(leaderboardTab === 'season'
                     ? profileData.players
                     : leaderboardTab === 'money'
                       ? profileData.moneyPlayers
-                      : profileData.allTimePlayers
+                      : leaderboardTab === 'allTime'
+                        ? profileData.allTimePlayers
+                        : profileData.bountyPlayers
                   ).map((player, i) => (
                     <div
                       className='border-t group grid grid-cols-4'
@@ -717,23 +738,23 @@ export default ({ reload }) => {
                         >
                           {player.name}
                         </div>
-                        {player.id !== profileData.player.id && (
-                          <a
-                            onclick={() => setPlacingBountyOnPlayer(player)}
-                            className='block group-hover:visible invisible cursor-pointer text-orange-500 hover:text-orange-600'
-                          >
-                            <CrosshairIcon className='h-4 inline-block text-orange-500 align-[-0.125rem]' />{' '}
-                            Place Bounty
-                          </a>
-                        )}
+                        {player.id !== profileData.player.id &&
+                          tab !== 'bounties' && (
+                            <a
+                              onclick={() => setPlacingBountyOnPlayer(player)}
+                              className='block group-hover:visible invisible cursor-pointer text-orange-500 hover:text-orange-600'
+                            >
+                              <CrosshairIcon className='h-4 inline-block text-orange-500 align-[-0.125rem]' />{' '}
+                              Place Bounty
+                            </a>
+                          )}
                       </div>
                       <div className='p-2 text-right'>
                         <Tooltip
                           tooltip={
-                            leaderboardTab === 'season' ||
-                            leaderboardTab === 'money'
-                              ? undefined
-                              : `${formatter.format(player.elo)} - ${player.rank ? titleize(player.rank) : 'Unranked'}`
+                            leaderboardTab === 'allTime'
+                              ? `${formatter.format(player.elo)} - ${player.rank ? titleize(player.rank) : 'Unranked'}`
+                              : undefined
                           }
                         >
                           {leaderboardTab === 'season' ? (
@@ -749,6 +770,8 @@ export default ({ reload }) => {
                             </>
                           ) : leaderboardTab === 'money' ? (
                             formatter.format(player.credits)
+                          ) : leaderboardTab === 'bounties' ? (
+                            formatter.format(player.totalBounties)
                           ) : player.rank ? (
                             titleize(player.rank)
                           ) : (
