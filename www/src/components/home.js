@@ -21,6 +21,12 @@ const {
 
 const initialRadius = 120;
 
+const voices = window.speechSynthesis.getVoices();
+const voice =
+  voices.find(
+    ({ name, lang }) => lang === 'en-US' && name.includes('Grandma')
+  ) ?? voices[0];
+
 export default ({ players, reload }) => {
   const { player } = useRootContext();
   const [size, setSize] = useState({
@@ -161,7 +167,7 @@ export default ({ players, reload }) => {
                   const utterance = new SpeechSynthesisUtterance(
                     `${player.name}${player.nickname ? ` ${player.nickname}` : ''}`
                   );
-                  utterance.voice = speechSynthesis.getVoices()[41];
+                  utterance.voice = voice;
                   speechSynthesis.speak(utterance);
 
                   if (
