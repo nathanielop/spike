@@ -161,7 +161,7 @@ export default ({ players, reload }) => {
                   const utterance = new SpeechSynthesisUtterance(
                     `${player.name}${player.nickname ? ` ${player.nickname}` : ''}`
                   );
-                  utterance.voice = speechSynthesis.getVoices()[201];
+                  utterance.voice = speechSynthesis.getVoices()[41];
                   speechSynthesis.speak(utterance);
 
                   if (
