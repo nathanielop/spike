@@ -159,7 +159,7 @@ export default ({ players, reload }) => {
                 className='animate-ccw-spin'
                 onclick={() => {
                   const utterance = new SpeechSynthesisUtterance(
-                    `${player.name}${player.nickname ? ` the ${player.nickname}` : ''}`
+                    `${player.name}${player.nickname ? ` ${player.nickname}` : ''}`
                   );
                   utterance.voice = speechSynthesis.getVoices()[201];
                   speechSynthesis.speak(utterance);
