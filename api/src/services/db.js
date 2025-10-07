@@ -1,4 +1,5 @@
 import knex from 'knex';
+import pg from 'pg';
 
 import config from '#src/config.js';
 import db from '#src/constants/db.js';
@@ -7,6 +8,8 @@ import migrate from '#src/functions/migrate.js';
 const { console } = globalThis;
 
 const { name: databaseName, connectionString } = config.database;
+
+pg.types.setTypeParser(20, parseInt);
 
 const maybeCreateDb = async () => {
   const tempDb = knex({
