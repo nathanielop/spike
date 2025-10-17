@@ -194,7 +194,7 @@ export default {
           await tx.raw(
             `
             update bets
-            set "paidOutAmount" = data."paidOutAmount"::integer, "isActive" = data."isActive"::boolean
+            set "paidOutAmount" = data."paidOutAmount"::bigint, "isActive" = data."isActive"::boolean
             from (values ${Array.from(betValues, () => '(?, ?, ?)').join(
               ', '
             )}) as data (id, "paidOutAmount", "isActive")
