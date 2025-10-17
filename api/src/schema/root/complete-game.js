@@ -181,7 +181,7 @@ export default {
             await tx.raw(
               `
               update players
-              set credits = data.credits::integer
+              set credits = data.credits::bigint
               from (values ${Array.from(playerValues, () => '(?, ?)').join(
                 ', '
               )}) as data (id, credits)
