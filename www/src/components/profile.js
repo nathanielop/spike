@@ -69,16 +69,18 @@ const Result = ({ player, series }) => {
     <div className='border-t' key={series.id}>
       <div
         className={clsx(
-          'grid grid-cols-4 cursor-pointer hover:bg-gray-50 group',
-          isOpen && 'border-b'
+          'grid grid-cols-4 group',
+          isOpen && 'border-b',
+          series.games.length && 'cursor-pointer hover:bg-gray-50'
         )}
-        onclick={toggle}
+        onclick={series.games.length > 0 ? toggle : undefined}
       >
         <div className='p-2 col-span-3 flex items-center gap-2'>
           <ChevronRightIcon
             className={clsx(
               'inline-block align-[-0.125rem] h-4 transition-[all] w-4',
-              isOpen && 'rotate-90'
+              isOpen && 'rotate-90',
+              !series.games.length && 'invisible'
             )}
           />
           <div
@@ -644,7 +646,7 @@ export default ({ reload }) => {
             </div>
             <div className='grow max-w-prose'>
               <div className='space-y-2'>
-                <div className='flex items-center gap-2 justify-between'>
+                <div className='flex items-center gap-x-2 flex-wrap justify-between'>
                   <div>
                     <div className='flex items-center gap-2'>
                       <div className='text-2xl font-bold'>Leaderboard</div>
@@ -688,13 +690,13 @@ export default ({ reload }) => {
                       </div>
                     </div>
                     {leaderboardTab === 'season' && (
-                      <div className='font-light text-sm'>
+                      <div className='font-light text-sm whitespace-nowrap'>
                         Ends {new Date(season.endsAt).toLocaleDateString()}
                       </div>
                     )}
                   </div>
                   {leaderboardTab === 'season' && (
-                    <div className='font-medium text-orange-500 text-right'>
+                    <div className='font-medium text-orange-500 text-right whitespace-nowrap'>
                       {formatNumber(profileData.player.points)} points
                     </div>
                   )}
