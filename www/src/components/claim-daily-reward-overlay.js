@@ -3,10 +3,11 @@ import { useEffect, useRef, useState } from 'endr';
 
 import notificationsApi from '#src/constants/notifications.js';
 import pave from '#src/constants/pave.js';
+import formatNumberWithUnit from '#src/functions/format-number-with-unit.js';
 import useAsync from '#src/hooks/use-async.js';
 import useNotification from '#src/hooks/use-notification.js';
 
-const { setTimeout, Intl } = globalThis;
+const { setTimeout } = globalThis;
 
 const duration = 10 * 1000;
 
@@ -14,8 +15,6 @@ const slices = [
   2_500, 10_000, 25_000, 5_000, 50_000, 250_000, 1_000_000, 100_000, 5_000_000,
   100_000_000
 ];
-
-const formatter = Intl.NumberFormat('en-US');
 
 const shuffle = arr => {
   const array = arr.slice();
@@ -68,7 +67,7 @@ export default ({ onClose, onClaimed }) => {
       onClose();
       notificationsApi.add({
         type: 'success',
-        children: `You have won ${formatter.format(result)} credits from your daily reward.`
+        children: `You have won ${formatNumberWithUnit(result)} credits from your daily reward.`
       });
     }, duration + 1000);
   }, [result, onClose, onClaimed]);
@@ -118,7 +117,7 @@ export default ({ onClose, onClaimed }) => {
                   clipPath: 'polygon(0% -2%, 100% 50%, 0% 102%)'
                 }}
               >
-                {formatter.format(reward)}
+                {formatNumberWithUnit(reward)}
               </div>
             ))}
           </div>

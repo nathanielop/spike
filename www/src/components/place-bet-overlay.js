@@ -173,18 +173,22 @@ export default ({ onClose, onPlaced, seriesId }) => {
             className='p-2 border rounded w-full'
           />
           <div className='flex border divide-x shrink-0 rounded overflow-hidden'>
-            {[10, 100, 500].map(amount => (
+            {[
+              { multiplier: 0.1, name: '10%' },
+              { multiplier: 0.25, name: '25%' },
+              { multiplier: 0.5, name: '50%' }
+            ].map(({ name, multiplier }) => (
               <button
-                key={amount}
+                key={name}
                 className='p-2 hover:bg-gray-100 shrink-0 transition-colors'
                 onclick={() =>
                   setBetDetails(prev => ({
                     ...prev,
-                    amount: Math.min(amount, maxBet)
+                    amount: Math.min(Math.ceil(maxBet * multiplier), maxBet)
                   }))
                 }
               >
-                {amount}
+                {name}
               </button>
             ))}
             <button

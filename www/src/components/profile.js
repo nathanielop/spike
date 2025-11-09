@@ -28,6 +28,8 @@ import disk from '#src/constants/disk.js';
 import history from '#src/constants/history.js';
 import notificationsApi from '#src/constants/notifications.js';
 import pave from '#src/constants/pave.js';
+import formatNumberWithUnit from '#src/functions/format-number-with-unit.js';
+import formatNumber from '#src/functions/format-number.js';
 import titleize from '#src/functions/titleize.js';
 import useAsync from '#src/hooks/use-async.js';
 import useNotification from '#src/hooks/use-notification.js';
@@ -35,9 +37,7 @@ import usePave from '#src/hooks/use-pave.js';
 import useRootContext from '#src/hooks/use-root-context.js';
 import useToggle from '#src/hooks/use-toggle.js';
 
-const { window, Intl } = globalThis;
-
-const formatter = Intl.NumberFormat('en-US');
+const { window } = globalThis;
 
 const tabs = [
   { name: 'results', Icon: SwordsIcon },
@@ -440,7 +440,7 @@ export default ({ reload }) => {
                   </a>
                 </div>
                 <div className='font-medium text-orange-500'>
-                  {formatter.format(profileData.player.credits)} credits
+                  {formatNumberWithUnit(profileData.player.credits, 1)} credits
                   available
                 </div>
               </div>
@@ -548,10 +548,12 @@ export default ({ reload }) => {
                   )}
                   {profileData.player.bets.map(bet => (
                     <div className='border-t grid grid-cols-4' key={bet.id}>
-                      <div className='p-2'>{formatter.format(bet.amount)}</div>
+                      <div className='p-2'>
+                        {formatNumberWithUnit(bet.amount)}
+                      </div>
                       <div className='p-2'>
                         {bet.paidOutAmount
-                          ? formatter.format(bet.paidOutAmount)
+                          ? formatNumberWithUnit(bet.paidOutAmount)
                           : '-'}
                       </div>
                       <div className='p-2 text-center'>
@@ -693,7 +695,7 @@ export default ({ reload }) => {
                   </div>
                   {leaderboardTab === 'season' && (
                     <div className='font-medium text-orange-500 text-right'>
-                      {formatter.format(profileData.player.points)} points
+                      {formatNumber(profileData.player.points)} points
                     </div>
                   )}
                 </div>
@@ -753,7 +755,7 @@ export default ({ reload }) => {
                         <Tooltip
                           tooltip={
                             leaderboardTab === 'allTime'
-                              ? `${formatter.format(player.elo)} - ${player.rank ? titleize(player.rank) : 'Unranked'}`
+                              ? `${formatNumber(player.elo)} - ${player.rank ? titleize(player.rank) : 'Unranked'}`
                               : undefined
                           }
                         >
@@ -766,12 +768,12 @@ export default ({ reload }) => {
                                   : i === 2
                                     ? '🥉 '
                                     : ''}
-                              {formatter.format(player.points)}
+                              {formatNumber(player.points)}
                             </>
                           ) : leaderboardTab === 'money' ? (
-                            formatter.format(player.credits)
+                            formatNumberWithUnit(player.credits)
                           ) : leaderboardTab === 'bounties' ? (
-                            formatter.format(player.totalBounties)
+                            formatNumberWithUnit(player.totalBounties)
                           ) : player.rank ? (
                             titleize(player.rank)
                           ) : (
