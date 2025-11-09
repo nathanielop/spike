@@ -142,7 +142,11 @@ export default {
 
         await tx
           .table('series')
-          .update({ completedAt: new Date() })
+          .update({
+            completedAt: new Date(),
+            winningSeriesTeamId: winningTeamId,
+            losingSeriesTeamId: losingTeamId
+          })
           .where({ id: game.seriesId });
 
         const bets = await tx
