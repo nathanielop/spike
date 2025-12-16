@@ -1,5 +1,6 @@
 import pave from 'pave';
 
+import playingPayout from '#src/constants/playing-payout.js';
 import PublicError from '#src/constants/public-error.js';
 import createLoad from '#src/functions/create-load.js';
 import getGameOdds from '#src/functions/get-game-odds.js';
@@ -7,7 +8,7 @@ import groupBy from '#src/functions/group-by.js';
 import indexBy from '#src/functions/index-by.js';
 import postToSlack from '#src/functions/post-to-slack.js';
 
-const { console } = globalThis;
+const { Intl, console } = globalThis;
 
 const kFactor = 48;
 
@@ -310,7 +311,7 @@ export default {
                 : 0),
             credits:
               playersById[id].credits +
-              10 +
+              playingPayout +
               (paidPlayerAmounts[id] || 0) +
               (winningTeamIds.includes(id) ? 10 : 0) +
               // The following math might not be correct for distribution but don't really care about +- 1 credit
