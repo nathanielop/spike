@@ -60,7 +60,7 @@ export default {
 
     try {
       await postToSlack({
-        subject: `A bounty of ${formatter.format(amount)} credits has been placed by ${player.name} on ${onPlayer.name}!`,
+        subject: `${player.name} placed a ${formatter.format(amount)} credit bounty on ${onPlayer.name}!`,
         title: `*BOUNTY PLACED 🎯*`
       });
     } catch (er) {
