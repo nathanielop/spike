@@ -6,9 +6,9 @@ import getCurrentSeason from '#src/functions/get-current-season.js';
 const seasonLength = 1000 * 60 * 60 * 24 * 30 * 3;
 
 const places = [
-  { badge: '🥇', name: 'Winner', prize: 2500 },
-  { badge: '🥈', name: '2nd Place', prize: 1000 },
-  { badge: '🥉', name: '3rd Place', prize: 500 }
+  { badge: '🥇', name: 'Winner', prize: 250_000_000 },
+  { badge: '🥈', name: '2nd Place', prize: 100_000_000 },
+  { badge: '🥉', name: '3rd Place', prize: 50_000_000 }
 ];
 
 const fn = async ({ load }) => {
