@@ -1,2 +1,2 @@
 // Per game participation payout
-export default 10000;
+export default 1_000_000;
