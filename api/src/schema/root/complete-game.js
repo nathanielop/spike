@@ -259,7 +259,7 @@ export default {
             await tx.raw(
               `
               update bounties
-              set amount = data.amount::integer
+              set amount = data.amount::bigint
               from (values ${Array.from(bountyValues, () => '(?, ?)').join(
                 ', '
               )}) as data (id, amount)
