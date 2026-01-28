@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'endr';
-import mergeRefs from 'pave/src/merge-refs.js';
+import { mergeRefs } from 'pave';
 
 import pave from '#src/constants/pave.js';
 
