@@ -18,9 +18,8 @@ export default {
 
     let [{ count: wins }] = await load.tx
       .count()
-      .from('games')
-      .join('seriesTeams', 'seriesTeams.id', 'games.winningTeamId')
-      .join('series', 'series.id', 'seriesTeams.seriesId')
+      .from('series')
+      .join('seriesTeams', 'seriesTeams.id', 'series.winningSeriesTeamId')
       .join(
         'seriesTeamMembers',
         'seriesTeamMembers.seriesTeamId',
@@ -30,9 +29,8 @@ export default {
 
     let [{ count: losses }] = await load.tx
       .count()
-      .from('games')
-      .join('seriesTeams', 'seriesTeams.id', 'games.losingTeamId')
-      .join('series', 'series.id', 'seriesTeams.seriesId')
+      .from('series')
+      .join('seriesTeams', 'seriesTeams.id', 'series.losingSeriesTeamId')
       .join(
         'seriesTeamMembers',
         'seriesTeamMembers.seriesTeamId',

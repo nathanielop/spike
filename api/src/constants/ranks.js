@@ -1,5 +1,5 @@
 export default {
-  ironI: [0, 200],
+  '🗑️': [0, 200],
   ironII: [201, 400],
   ironIII: [401, 600],
   bronzeI: [601, 700],
