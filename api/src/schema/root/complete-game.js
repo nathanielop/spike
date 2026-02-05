@@ -1,4 +1,4 @@
-import pave from 'pave';
+import { execute } from 'pave';
 
 import playingPayout from '#src/constants/playing-payout.js';
 import PublicError from '#src/constants/public-error.js';
@@ -282,7 +282,7 @@ export default {
 
         const {
           createGame: { createdGame }
-        } = await pave.execute({
+        } = await execute({
           query: {
             createGame: {
               $: { seriesId: game.seriesId },

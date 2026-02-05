@@ -1,6 +1,6 @@
 import http from 'http';
 
-import pave from 'pave';
+import { execute, validateQuery } from 'pave';
 
 import config from '#src/config.js';
 import PublicError from '#src/constants/public-error.js';
@@ -35,14 +35,14 @@ export default http.createServer(async (request, response) => {
 
       ({ query } = JSON.parse(body));
 
-      query = pave.validateQuery({ query, schema, type: 'root' });
+      query = validateQuery({ query, schema, type: 'root' });
     } catch (er) {
       response.statusCode = 400;
       return response.end(er.message);
     }
 
     try {
-      const data = await pave.execute({
+      const data = await execute({
         query,
         context: { load: createLoad() },
         schema,

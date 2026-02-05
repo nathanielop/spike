@@ -1,4 +1,4 @@
-import pave from 'pave';
+import { execute } from 'pave';
 
 import schema from '#src/schema/index.js';
 
@@ -11,7 +11,7 @@ const fn = async ({ load }) => {
     .where('createdAt', '<', new Date(Date.now() - 1000 * 60 * 60));
 
   for (const { id } of longRunningGames) {
-    await pave.execute({
+    await execute({
       query: { deleteGame: { $: { id } } },
       context: { load, player: { isAdmin: true } },
       schema,

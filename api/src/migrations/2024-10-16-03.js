@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 
-import pave from 'pave';
+import { execute } from 'pave';
 
 import createLoad from '#src/functions/create-load.js';
 import schema from '#src/schema/index.js';
@@ -52,7 +52,7 @@ export default {
     const load = createLoad({ tx });
 
     const paveExecute = async query =>
-      await pave.execute({
+      await execute({
         query,
         context: { load, player: { isAdmin: true }, shouldNotify: false },
         schema,
