@@ -1,10 +1,10 @@
-import pave from 'pave';
+import { createClient, injectType } from 'pave';
 
 import disk from '#src/constants/disk.js';
 
 const { fetch, window } = globalThis;
 
-const client = pave.createClient({
+const client = createClient({
   cache: disk.get('paveCache'),
   execute: async ({ query }) => {
     let res;
@@ -23,7 +23,7 @@ const client = pave.createClient({
     if (text.startsWith('Invalid grant key')) {
       disk.set('grantKey', null);
       disk.set('paveCache', null);
-      pave.cache = {};
+      client.cache = {};
     } else throw new Error(text);
   },
   getKey: ({ _type, id }) => {
@@ -40,8 +40,8 @@ const client = pave.createClient({
     return `${_type}:${id}`;
   },
   transformQuery: ({ key, query }) => {
-    if (key) return pave.injectType(query);
-    return pave.injectType({
+    if (key) return injectType(query);
+    return injectType({
       ...query,
       $: { ...query.$, grantKey: disk.get('grantKey') ?? null }
     });
