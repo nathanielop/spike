@@ -1,9 +1,11 @@
-import { createRoot } from 'endr';
+import { createRender } from 'endr';
 
 import Root from '#src/components/root.js';
 
 const { document } = globalThis;
 
-export default () => {
-  createRoot(document.getElementById('root')).render(<Root />);
-};
+const render = createRender(
+  /** @type {HTMLDivElement} */ (document.getElementById('root'))
+);
+
+export default () => render(<Root />);
