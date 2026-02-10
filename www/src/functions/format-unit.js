@@ -1,4 +1,4 @@
-const units = ['k', 'm', 'b'];
+const units = ['k', 'm', 'b', 't'];
 
 /**
  * @param {string} n
