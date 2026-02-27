@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import { useState } from 'endr';
+import { DateTime } from 'luxon';
 
 import ClaimDailyRewardOverlay from '#src/components/claim-daily-reward-overlay.js';
 import BackpackIcon from '#src/components/icons/backpack.js';
@@ -45,6 +46,10 @@ const tabs = [
   { name: 'inventory', Icon: BackpackIcon },
   { name: 'settings', Icon: SettingsIcon }
 ];
+
+/** @param {string | null} dt */
+const formatDate = dt =>
+  dt && DateTime.fromISO(dt).toLocaleString(DateTime.DATE_SHORT);
 
 const Result = ({ player, series }) => {
   const [isOpen, , , toggle] = useToggle();
@@ -154,7 +159,7 @@ const Result = ({ player, series }) => {
           </div>
         </div>
         <div className='p-2 flex items-center'>
-          {new Date(series.completedAt).toDateString()}
+          {formatDate(series.completedAt)}
         </div>
       </div>
       {isOpen && (
@@ -563,12 +568,7 @@ export default ({ reload }) => {
                           <CircleCheckIcon className='inline-block align-[-0.125rem] h-5 text-green-500' />
                         )}
                       </div>
-                      <div className='flex'>
-                        <div className='p-2'>
-                          {new Date(bet.createdAt).toDateString()}
-                        </div>
-                        {/* TODO Add delete button, need a flag in API to indicate if can be deleted */}
-                      </div>
+                      <div className='p-2'>{formatDate(bet.createdAt)}</div>
                     </div>
                   ))}
                 </div>

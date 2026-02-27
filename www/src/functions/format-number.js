@@ -1,5 +1,4 @@
 const { Intl } = globalThis;
 
-const formatter = Intl.NumberFormat('en-US');
-
-export default formatter.format;
+export default (value, options) =>
+  Intl.NumberFormat('en-US', options).format(value);

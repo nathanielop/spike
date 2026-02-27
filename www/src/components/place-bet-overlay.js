@@ -7,6 +7,7 @@ import UserAvatar from '#src/components/user-avatar.js';
 import notificationsApi from '#src/constants/notifications.js';
 import pave from '#src/constants/pave.js';
 import rootContextQuery from '#src/constants/root-context-query.js';
+import formatNumber from '#src/functions/format-number.js';
 import useAsync from '#src/hooks/use-async.js';
 import useNotification from '#src/hooks/use-notification.js';
 import usePave from '#src/hooks/use-pave.js';
@@ -161,13 +162,21 @@ export default ({ onClose, onPlaced, seriesId }) => {
         </div>
         <div className='flex gap-2 w-full'>
           <input
-            type='number'
-            value={betDetails.amount}
+            value={
+              betDetails.amount
+                ? formatNumber(betDetails.amount, {
+                    maximumFractionDigits: 0
+                  })
+                : ''
+            }
             placeholder='Enter bet amount...'
             oninput={e =>
               setBetDetails(prev => ({
                 ...prev,
-                amount: Math.min(Math.round(e.target.value), maxBet)
+                amount: Math.min(
+                  Math.round(e.target.value.replace(/[^0-9]/g, '')),
+                  maxBet
+                )
               }))
             }
             className='p-2 border rounded w-full'
@@ -203,7 +212,9 @@ export default ({ onClose, onPlaced, seriesId }) => {
         </div>
         <div className='border rounded flex items-center justify-between p-2 gap-2'>
           <div>Expected Payout</div>
-          <div>{payout || '-'}</div>
+          <div>
+            {payout ? formatNumber(payout, { maximumFractionDigits: 0 }) : '-'}
+          </div>
         </div>
         <button
           className='bg-green-500 text-white p-2 rounded w-full hover:bg-green-700 transition cursor-pointer'
@@ -211,7 +222,7 @@ export default ({ onClose, onPlaced, seriesId }) => {
           onclick={() => {
             if (
               confirm(
-                `Are you sure you want to place this bet for ${betDetails.amount} credits?`
+                `Are you sure you want to place this bet for ${formatNumber(betDetails.amount, { maximumFractionDigits: 0 })} credits?`
               )
             ) {
               placeBet();
