@@ -13,7 +13,9 @@ export default {
       isActive: { optional: 'boolean' },
       nickname: { optional: { nullable: 'string' } },
       name: { optional: { nullable: 'string' } },
-      password: { optional: { nullable: 'string' } }
+      password: {
+        optional: { nullable: { type: 'string', typeInput: { minLength: 8 } } }
+      }
     }
   },
   resolve: async ({
