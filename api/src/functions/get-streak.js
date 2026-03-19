@@ -24,24 +24,53 @@ export default async ({ isWins, load, playerId }) => {
             .where({ playerId })
       ]
     )
+    .whereNotExists(query =>
+      query
+        .select()
+        .from('series as os')
+        .whereRaw(
+          isWins
+            ? `os."winningSeriesTeamId" = ??`
+            : `os."losingSeriesTeamId" = ??`,
+          [
+            query =>
+              query
+                .select('seriesTeams.id')
+                .from('seriesTeamMembers')
+                .join(
+                  'seriesTeams',
+                  'seriesTeams.id',
+                  'seriesTeamMembers.seriesTeamId'
+                )
+                .whereColumn('seriesTeams.seriesId', 'os.id')
+                .where({ playerId })
+          ]
+        )
+        .where('os.seasonId', currentSeason.id)
+        .whereColumn('os.completedAt', '<', 'series.completedAt')
+    )
     .where({ seasonId: currentSeason.id })
-    .orderBy('completedAt', 'desc')
+    .orderBy('completedAt', 'asc')
     .limit(1);
 
+  if (!last) return 0;
+
   const [{ count: currentStreak }] = await load.tx
-    .count()
+    .count('series.id')
     .from('series')
-    .join('seriesTeams', 'seriesTeams.id', 'series.id')
-    .join(
-      'seriesTeamMembers',
-      'seriesTeamMembers.seriesTeamId',
-      'seriesTeams.id'
+    .whereExists(query =>
+      query
+        .select('seriesTeams.id')
+        .from('seriesTeamMembers')
+        .join('seriesTeams', 'seriesTeams.id', 'seriesTeamMembers.seriesTeamId')
+        .whereColumn('seriesTeams.seriesId', 'series.id')
+        .where({ playerId })
     )
-    .where({ playerId, seasonId: currentSeason.id })
+    .where({ seasonId: currentSeason.id })
     .where(
       'series.completedAt',
       '>=',
-      new Date(last?.completedAt ?? 0).toISOString()
+      new Date(last.completedAt).toISOString()
     );
 
   return currentStreak;
