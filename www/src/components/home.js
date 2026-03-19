@@ -88,7 +88,7 @@ export default ({ players, reload }) => {
         />
       )}
       <div className='flex flex-col h-full shrink-0 border-r border-gray-200 bg-white w-64'>
-        <div className='p-4 border-b border-gray-100'>
+        <div className='px-4 py-2 border-b border-gray-100'>
           <img
             src='/spike.svg'
             alt='JTSpike'
