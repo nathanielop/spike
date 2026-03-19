@@ -164,7 +164,7 @@ export default ({ players, reload }) => {
             player={player}
             resetRounding
             resetShadow
-            className='w-7 h-7 shrink-0'
+            className='w-7 h-7 shrink-0 rounded overflow-hidden'
           />
           <span className='text-sm text-gray-600 flex-1'>Go to Profile</span>
           <ChevronRightIcon className='w-4 h-4 text-gray-400' />
