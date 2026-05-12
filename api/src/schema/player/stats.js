@@ -1,6 +1,6 @@
 import getCurrentSeason from '#src/functions/get-current-season.js';
 import getPlayerRank from '#src/functions/get-player-rank.js';
-import getStreak from '#src/functions/get-streak.js';
+// import getStreak from '#src/functions/get-streak.js';
 
 export default {
   type: {
@@ -48,8 +48,8 @@ export default {
       wins,
       losses,
       winRate: wins / (wins + losses),
-      winStreak: await getStreak({ isWins: true, load, playerId: id }),
-      lossStreak: await getStreak({ isWins: false, load, playerId: id }),
+      winStreak: 0, // await getStreak({ isWins: true, load, playerId: id }),
+      lossStreak: 0, // await getStreak({ isWins: false, load, playerId: id }),
       rank: await getPlayerRank({ load, playerId: id })
     };
   }
