@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { useState } from 'endr';
+import { useEffect, useRef, useState } from 'endr';
 import { DateTime } from 'luxon';
 
 import ClaimDailyRewardOverlay from '#src/components/claim-daily-reward-overlay.js';
@@ -9,6 +9,7 @@ import ChartColumnIcon from '#src/components/icons/chart-column.js';
 import ChevronRightIcon from '#src/components/icons/chevron-right.js';
 import CircleCheckIcon from '#src/components/icons/circle-check.js';
 import CrosshairIcon from '#src/components/icons/crosshair.js';
+import EllipsisIcon from '#src/components/icons/ellipsis.js';
 import LogOutIcon from '#src/components/icons/log-out.js';
 import ReceiptIcon from '#src/components/icons/receipt.js';
 import SettingsIcon from '#src/components/icons/settings.js';
@@ -50,6 +51,106 @@ const tabs = [
   { name: 'stats', Icon: ChartColumnIcon },
   { name: 'settings', Icon: SettingsIcon }
 ];
+
+// Approximate minimum width (px) a vertical tab needs before its label starts
+// to feel cramped. Used to decide how many tabs fit before spilling into the
+// overflow (…) menu.
+const MIN_TAB_WIDTH = 60;
+
+// Bottom tab bar for mobile. Tabs are laid out vertically (icon over label) and
+// only as many as comfortably fit are shown inline; the rest collapse into an
+// ellipsis menu so the bar never overflows or scrolls.
+const MobileTabBar = ({ tab, setTab }) => {
+  const containerRef = useRef(null);
+  const [width, setWidth] = useState(window.innerWidth);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const update = () => setWidth(el.clientWidth);
+    update();
+    const observer = new window.ResizeObserver(update);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Reserve one slot for the ellipsis button whenever everything can't fit.
+  const maxSlots = Math.max(1, Math.floor(width / MIN_TAB_WIDTH));
+  const overflowing = tabs.length > maxSlots;
+  const visibleTabs = overflowing ? tabs.slice(0, maxSlots - 1) : tabs;
+  const overflowTabs = overflowing ? tabs.slice(maxSlots - 1) : [];
+  const activeOverflowed = overflowTabs.some(({ name }) => name === tab);
+
+  const renderTab = ({ name, Icon }) => (
+    <div
+      key={name}
+      className={clsx(
+        'flex flex-col items-center justify-center gap-0.5 flex-1 min-w-0 px-1 py-2 cursor-pointer border-t-2 transition-colors',
+        tab === name
+          ? 'border-blue-500 text-blue-700 font-semibold'
+          : 'border-transparent text-gray-500'
+      )}
+      onclick={() => setTab(name)}
+    >
+      <Icon className='w-5 h-5 shrink-0' />
+      <span className='text-[10px] leading-none truncate max-w-full'>
+        {titleize(name)}
+      </span>
+    </div>
+  );
+
+  return (
+    <div
+      ref={containerRef}
+      className='md:hidden relative flex border-t border-gray-200 bg-white shrink-0'
+    >
+      {visibleTabs.map(renderTab)}
+      {overflowing && (
+        <div
+          className={clsx(
+            'flex flex-col items-center justify-center gap-0.5 flex-1 min-w-0 px-1 py-2 cursor-pointer border-t-2 transition-colors',
+            activeOverflowed || menuOpen
+              ? 'border-blue-500 text-blue-700 font-semibold'
+              : 'border-transparent text-gray-500'
+          )}
+          onclick={() => setMenuOpen(o => !o)}
+        >
+          <EllipsisIcon className='w-5 h-5 shrink-0' />
+          <span className='text-[10px] leading-none'>More</span>
+        </div>
+      )}
+      {menuOpen && (
+        <>
+          <div
+            className='fixed inset-0 z-30'
+            onclick={() => setMenuOpen(false)}
+          />
+          <div className='absolute z-40 bottom-full right-1 mb-1 min-w-40 rounded-lg border border-gray-200 bg-white shadow-lg overflow-hidden'>
+            {overflowTabs.map(({ name, Icon }) => (
+              <div
+                key={name}
+                className={clsx(
+                  'flex items-center gap-2 px-3 py-2.5 cursor-pointer text-sm',
+                  tab === name
+                    ? 'bg-blue-50 text-blue-700 font-semibold'
+                    : 'text-gray-700 hover:bg-gray-50'
+                )}
+                onclick={() => {
+                  setTab(name);
+                  setMenuOpen(false);
+                }}
+              >
+                <Icon className='w-4 h-4 shrink-0' />
+                <span>{titleize(name)}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
 
 /** @param {string | null} dt */
 const formatDate = dt =>
@@ -404,7 +505,7 @@ export default ({ reload }) => {
   }
 
   return (
-    <div className='relative flex flex-col md:flex-row h-screen w-screen bg-gray-50'>
+    <div className='relative flex flex-col-reverse md:flex-row h-screen w-screen bg-gray-50'>
       {dailyRewardIsOpen && (
         <ClaimDailyRewardOverlay
           onClose={closeDailyReward}
@@ -428,24 +529,8 @@ export default ({ reload }) => {
       {storeIsOpen && (
         <StoreOverlay onPurchase={reloadProfileData} onClose={closeStore} />
       )}
-      {/* Mobile top tab bar */}
-      <div className='md:hidden flex border-b border-gray-200 bg-white shrink-0 overflow-x-auto'>
-        {tabs.map(({ name, Icon }) => (
-          <div
-            key={name}
-            className={clsx(
-              'flex items-center gap-1.5 px-4 py-3 cursor-pointer text-sm whitespace-nowrap border-b-2 transition-colors',
-              tab === name
-                ? 'border-blue-500 text-blue-700 font-semibold'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
-            )}
-            onclick={() => setTab(name)}
-          >
-            <Icon className='w-4 h-4 shrink-0' />
-            <span>{titleize(name)}</span>
-          </div>
-        ))}
-      </div>
+      {/* Mobile bottom tab bar */}
+      <MobileTabBar tab={tab} setTab={setTab} />
 
       {/* Desktop sidebar */}
       <div className='hidden md:flex flex-col h-full shrink-0 border-r border-gray-200 bg-white w-64'>
