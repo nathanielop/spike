@@ -14,6 +14,14 @@ const MIN_PLAYER_GAMES = 10;
 // kept. `s` must be aliased to the joined `series` row.
 const notCancelled = `not (s."completedAt" is not null and s."winningSeriesTeamId" is null)`;
 
+// The league's early history (games completed on or before 2024-10-17) was
+// bulk-imported under old rules that produced an unrealistic number of skunks.
+// It's treated as seed data and excluded from every stat; only games completed
+// on/after this cutoff count. `column` is the completedAt to compare (a game's
+// `g."completedAt"` or a series' `s."completedAt"`).
+const SEED_CUTOFF = '2024-10-18';
+const afterSeed = column => `${column} >= '${SEED_CUTOFF}'`;
+
 // Per-team (>= 2 players) win/loss totals across all counted games. Teams are
 // identified by their exact roster of players, so the same duo is aggregated
 // across every series they've played together.
@@ -38,7 +46,7 @@ const teamAggSql = seriesFilter => `
       on (g."winningTeamId" = k.team_id or g."losingTeamId" = k.team_id)
      and g."completedAt" is not null
     join series s on s.id = g."seriesId"
-    where ${notCancelled} ${seriesFilter}
+    where ${notCancelled} and ${afterSeed('g."completedAt"')} ${seriesFilter}
     group by k.team_key
   )
   select player_ids, wins, losses, (wins + losses) as games
@@ -56,7 +64,7 @@ const playerAggSql = seriesFilter => `
     on (g."winningTeamId" = stm."seriesTeamId" or g."losingTeamId" = stm."seriesTeamId")
    and g."completedAt" is not null
   join series s on s.id = g."seriesId"
-  where ${notCancelled} ${seriesFilter}
+  where ${notCancelled} and ${afterSeed('g."completedAt"')} ${seriesFilter}
   group by stm."playerId"
 `;
 
@@ -67,7 +75,7 @@ const skunksDeliveredSql = seriesFilter => `
   join "seriesTeamMembers" stm on stm."seriesTeamId" = g."winningTeamId"
   join series s on s.id = g."seriesId"
   where g."completedAt" is not null and g."losingTeamScore" = 0
-    and ${notCancelled} ${seriesFilter}
+    and ${notCancelled} and ${afterSeed('g."completedAt"')} ${seriesFilter}
   group by stm."playerId"
   order by count(*) desc, stm."playerId"
   limit ?
@@ -80,7 +88,7 @@ const skunkedSql = seriesFilter => `
   join "seriesTeamMembers" stm on stm."seriesTeamId" = g."losingTeamId"
   join series s on s.id = g."seriesId"
   where g."completedAt" is not null and g."losingTeamScore" = 0
-    and ${notCancelled} ${seriesFilter}
+    and ${notCancelled} and ${afterSeed('g."completedAt"')} ${seriesFilter}
   group by stm."playerId"
   order by count(*) desc, stm."playerId"
   limit ?
@@ -100,7 +108,7 @@ const streakSql = seriesFilter => `
       on (g."winningTeamId" = stm."seriesTeamId" or g."losingTeamId" = stm."seriesTeamId")
      and g."completedAt" is not null
     join series s on s.id = g."seriesId"
-    where ${notCancelled} ${seriesFilter}
+    where ${notCancelled} and ${afterSeed('g."completedAt"')} ${seriesFilter}
   ),
   grouped as (
     select player_id, won,
@@ -142,7 +150,7 @@ const recentSkunkSql = seriesFilter => `
   from games g
   join series s on s.id = g."seriesId"
   where g."completedAt" is not null and g."losingTeamScore" = 0
-    and ${notCancelled} ${seriesFilter}
+    and ${notCancelled} and ${afterSeed('g."completedAt"')} ${seriesFilter}
   order by g."completedAt" desc, g."createdAt" desc
   limit 1
 `;
@@ -152,7 +160,7 @@ const highestScoringSql = seriesFilter => `
   from games g
   join series s on s.id = g."seriesId"
   where g."completedAt" is not null
-    and ${notCancelled} ${seriesFilter}
+    and ${notCancelled} and ${afterSeed('g."completedAt"')} ${seriesFilter}
   order by (g."winningTeamScore" + g."losingTeamScore") desc, g."completedAt" desc
   limit 1
 `;
@@ -163,20 +171,20 @@ const totalsSql = seriesFilter => `
       select count(*)
       from games g
       join series s on s.id = g."seriesId"
-      where g."completedAt" is not null and ${notCancelled} ${seriesFilter}
+      where g."completedAt" is not null and ${notCancelled} and ${afterSeed('g."completedAt"')} ${seriesFilter}
     ) as games,
     (
       select count(*)
       from series s
       where s."completedAt" is not null
-        and s."winningSeriesTeamId" is not null ${seriesFilter}
+        and s."winningSeriesTeamId" is not null and ${afterSeed('s."completedAt"')} ${seriesFilter}
     ) as series,
     (
       select count(*)
       from games g
       join series s on s.id = g."seriesId"
       where g."completedAt" is not null and g."losingTeamScore" = 0
-        and ${notCancelled} ${seriesFilter}
+        and ${notCancelled} and ${afterSeed('g."completedAt"')} ${seriesFilter}
     ) as skunks
 `;
 
