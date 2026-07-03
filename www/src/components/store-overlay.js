@@ -28,6 +28,8 @@ const omit = (obj, key) => {
 
 const itemTypes = ['badge', 'avatarEffect', 'hat', 'theme'];
 
+const formatPrice = price => (price ? formatNumberWithUnit(price) : 'Free');
+
 export default ({ onClose, onPurchase }) => {
   const { player } = useRootContext();
   const [cart, setCart] = useState([]);
@@ -393,17 +395,15 @@ export default ({ onClose, onPurchase }) => {
                         {viewingItem.discountedPrice ? (
                           <div className='flex items-center gap-2'>
                             <span className='text-gray-400 line-through text-sm'>
-                              {formatNumberWithUnit(viewingItem.price)}
+                              {formatPrice(viewingItem.price)}
                             </span>
                             <span className='text-orange-500 font-bold text-xl'>
-                              {formatNumberWithUnit(
-                                viewingItem.discountedPrice
-                              )}
+                              {formatPrice(viewingItem.discountedPrice)}
                             </span>
                           </div>
                         ) : (
                           <span className='text-orange-500 font-bold text-xl'>
-                            {formatNumberWithUnit(viewingItem.price)}
+                            {formatPrice(viewingItem.price)}
                           </span>
                         )}
                       </div>
@@ -517,7 +517,7 @@ export default ({ onClose, onPurchase }) => {
                           >
                             <div className='absolute top-0 right-0 z-10 bg-white/90 rounded-bl px-1.5 py-0.5 border-b border-l border-gray-100'>
                               <span className='text-orange-500 font-bold text-xs'>
-                                {formatNumberWithUnit(
+                                {formatPrice(
                                   item.discountedPrice ?? item.price
                                 )}
                               </span>
@@ -689,11 +689,11 @@ export default ({ onClose, onPurchase }) => {
                             <div className='absolute top-0 right-0 z-10 rounded-tr-xl bg-white/90 backdrop-blur-sm rounded-bl-lg px-2.5 py-1 flex items-center gap-1 border-b border-l border-gray-100'>
                               {item.discountedPrice && (
                                 <span className='text-gray-400 line-through text-xs'>
-                                  {formatNumberWithUnit(item.price)}
+                                  {formatPrice(item.price)}
                                 </span>
                               )}
                               <span className='text-orange-500 font-bold text-sm'>
-                                {formatNumberWithUnit(
+                                {formatPrice(
                                   item.discountedPrice ?? item.price
                                 )}
                               </span>
@@ -705,23 +705,24 @@ export default ({ onClose, onPurchase }) => {
                                 LIMITED
                               </div>
                             )}
-                            {item.discountedPrice && (
-                              <div className='absolute bottom-0 left-0 z-10 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-tr-lg'>
-                                SALE
-                              </div>
-                            )}
-
                             {/* Cart indicator */}
                             {cart.some(c => c.id === item.id) && (
-                              <div className='absolute bottom-0 right-0 z-10 bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-tl-lg'>
+                              <div className='absolute top-0 left-0 z-10 bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-br-lg'>
                                 IN CART
                               </div>
                             )}
 
                             <ItemPreview item={item} />
 
+                            {/* Sale tag - below hover overlay */}
+                            {item.discountedPrice && (
+                              <div className='absolute bottom-0 right-0 z-[5] bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-tl-lg'>
+                                SALE
+                              </div>
+                            )}
+
                             {/* Item name on hover */}
-                            <div className='absolute inset-x-0 bottom-0 bg-gradient-to-t from-gray-800/70 to-transparent p-2 pt-6 opacity-0 group-hover:opacity-100 transition-opacity'>
+                            <div className='absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-gray-800/70 to-transparent p-2 pt-6 opacity-0 group-hover:opacity-100 transition-opacity'>
                               <span className='text-white text-xs font-medium truncate block'>
                                 {item.name}
                               </span>

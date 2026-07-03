@@ -1,5 +1,6 @@
 import { execute } from 'pave';
 
+import guaranteedPayoutLimit from '#src/constants/guaranteed-payout-limit.js';
 import playingPayout from '#src/constants/playing-payout.js';
 import PublicError from '#src/constants/public-error.js';
 import createLoad from '#src/functions/create-load.js';
@@ -158,29 +159,62 @@ export default {
           .join('players', 'players.id', 'bets.playerId');
 
         if (bets.length) {
+          const winningBets = bets.filter(
+            bet => bet.seriesTeamId === seriesWinnerTeamId
+          );
+          const losingBets = bets.filter(
+            bet => bet.seriesTeamId !== seriesWinnerTeamId
+          );
+
+          // The pool of stakes forfeited by the losing bets. This is what funds
+          // the winning bets, keeping betting zero-sum apart from the bounded
+          // house-guaranteed floor below.
+          const losingPool = losingBets.reduce(
+            (sum, { amount }) => sum + amount,
+            0
+          );
+          const winningPool = winningBets.reduce(
+            (sum, { amount }) => sum + amount,
+            0
+          );
+
           const playerValues = [];
-          const betValues = bets.map(bet => {
-            const paidOutAmount =
-              bet.seriesTeamId === seriesWinnerTeamId
-                ? Math.round(bet.amount * bet.payRate)
-                : null;
-            if (paidOutAmount) {
-              totalPaidOut += paidOutAmount;
-              totalPlayersPaid++;
-              if (bet.playerId in playersToElo) {
-                paidPlayerAmounts[bet.playerId] = paidOutAmount;
-              } else {
-                playerValues.push([
-                  bet.playerId,
-                  paidOutAmount + bet.playerCredits
-                ]);
-              }
+          const betValues = [];
+
+          for (const bet of winningBets) {
+            // Parimutuel share: the original stake back plus a cut of the
+            // losing pool proportional to this bet's share of the winning pool.
+            const poolPayout =
+              bet.amount + Math.floor(losingPool * (bet.amount / winningPool));
+            // Odds-based payout the house guarantees, with the house-funded
+            // profit (payout above the stake) capped so the house can only
+            // ever mint a bounded number of credits per bet.
+            const guaranteedPayout =
+              bet.amount +
+              Math.min(
+                Math.round(bet.amount * (bet.payRate - 1)),
+                guaranteedPayoutLimit
+              );
+            const paidOutAmount = Math.max(poolPayout, guaranteedPayout);
+
+            totalPaidOut += paidOutAmount;
+            totalPlayersPaid++;
+            if (bet.playerId in playersToElo) {
+              paidPlayerAmounts[bet.playerId] = paidOutAmount;
             } else {
-              totalPlayersLost++;
-              totalLost += bet.amount;
+              playerValues.push([
+                bet.playerId,
+                paidOutAmount + bet.playerCredits
+              ]);
             }
-            return [bet.id, paidOutAmount, false];
-          });
+            betValues.push([bet.id, paidOutAmount, false]);
+          }
+
+          for (const bet of losingBets) {
+            totalPlayersLost++;
+            totalLost += bet.amount;
+            betValues.push([bet.id, null, false]);
+          }
 
           if (playerValues.length) {
             await tx.raw(
