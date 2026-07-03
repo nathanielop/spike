@@ -103,7 +103,7 @@ const MobileTabBar = ({ tab, setTab }) => {
   return (
     <div
       ref={containerRef}
-      className='md:hidden relative flex border-t border-gray-200 bg-white shrink-0'
+      className='md:hidden fixed bottom-0 inset-x-0 z-30 flex border-t border-gray-200 bg-white'
     >
       {visibleTabs.map(renderTab)}
       {overflowing && (
@@ -123,10 +123,10 @@ const MobileTabBar = ({ tab, setTab }) => {
       {menuOpen && (
         <>
           <div
-            className='fixed inset-0 z-30'
+            className='fixed inset-0 z-40'
             onclick={() => setMenuOpen(false)}
           />
-          <div className='absolute z-40 bottom-full right-1 mb-1 min-w-40 rounded-lg border border-gray-200 bg-white shadow-lg overflow-hidden'>
+          <div className='absolute z-50 bottom-full right-1 mb-1 min-w-40 rounded-lg border border-gray-200 bg-white shadow-lg overflow-hidden'>
             {overflowTabs.map(({ name, Icon }) => (
               <div
                 key={name}
@@ -505,7 +505,7 @@ export default ({ reload }) => {
   }
 
   return (
-    <div className='relative flex flex-col-reverse md:flex-row h-screen w-screen bg-gray-50'>
+    <div className='relative flex flex-col md:flex-row h-screen w-screen bg-gray-50'>
       {dailyRewardIsOpen && (
         <ClaimDailyRewardOverlay
           onClose={closeDailyReward}
@@ -592,7 +592,7 @@ export default ({ reload }) => {
         </div>
       </div>
       <div className='flex-1 flex flex-col overflow-y-auto'>
-        <div className='p-4 md:p-6 space-y-4'>
+        <div className='p-4 pb-24 md:p-6 space-y-4'>
           {profileDataError && <Notice>{profileDataError}</Notice>}
           {profileData && (
             <>
