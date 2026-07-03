@@ -21,6 +21,7 @@ import items from '#src/schema/root/items.js';
 import player from '#src/schema/root/player.js';
 import players from '#src/schema/root/players.js';
 import series from '#src/schema/root/series.js';
+import stats from '#src/schema/root/stats.js';
 import updateItem from '#src/schema/root/update-item.js';
 import updatePlayer from '#src/schema/root/update-player.js';
 
@@ -56,6 +57,7 @@ export default {
       players,
       player,
       series,
+      stats,
       updateItem,
       updatePlayer
     }

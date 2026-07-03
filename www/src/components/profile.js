@@ -3,7 +3,9 @@ import { useState } from 'endr';
 import { DateTime } from 'luxon';
 
 import ClaimDailyRewardOverlay from '#src/components/claim-daily-reward-overlay.js';
+import ArrowLeftIcon from '#src/components/icons/arrow-left.js';
 import BackpackIcon from '#src/components/icons/backpack.js';
+import ChartColumnIcon from '#src/components/icons/chart-column.js';
 import ChevronRightIcon from '#src/components/icons/chevron-right.js';
 import CircleCheckIcon from '#src/components/icons/circle-check.js';
 import CrosshairIcon from '#src/components/icons/crosshair.js';
@@ -15,13 +17,13 @@ import SquarePenIcon from '#src/components/icons/square-pen.js';
 import SquareIcon from '#src/components/icons/square.js';
 import StoreIcon from '#src/components/icons/store.js';
 import SwordsIcon from '#src/components/icons/swords.js';
-import TabletIcon from '#src/components/icons/tablet.js';
 import Input from '#src/components/input.js';
 import ItemPreview from '#src/components/item-preview.js';
 import LoadingArea from '#src/components/loading-area.js';
 import Notice from '#src/components/notice.js';
 import PlaceBetOverlay from '#src/components/place-bet-overlay.js';
 import PlaceBountyOverlay from '#src/components/place-bounty-overlay.js';
+import ProfileStats from '#src/components/profile-stats.js';
 import StoreOverlay from '#src/components/store-overlay.js';
 import Tooltip from '#src/components/tooltip.js';
 import UserAvatar from '#src/components/user-avatar.js';
@@ -41,9 +43,11 @@ import useToggle from '#src/hooks/use-toggle.js';
 const { window } = globalThis;
 
 const tabs = [
-  { name: 'results', Icon: SwordsIcon },
+  { name: 'home', Icon: SwordsIcon },
   { name: 'bets', Icon: ReceiptIcon },
   { name: 'inventory', Icon: BackpackIcon },
+  { name: 'leaderboard', Icon: CrosshairIcon },
+  { name: 'stats', Icon: ChartColumnIcon },
   { name: 'settings', Icon: SettingsIcon }
 ];
 
@@ -239,7 +243,7 @@ export default ({ reload }) => {
     location: { query: { bet, seriesId } = {} },
     season
   } = useRootContext();
-  const [tab, setTab] = useState(tabs[0].name);
+  const [tab, setTab] = useState('home');
   const [leaderboardTab, setLeaderboardTab] = useState('season');
   const [storeIsOpen, openStore, closeStore] = useToggle();
   const [placingBountyOnPlayer, setPlacingBountyOnPlayer] = useState(undefined);
@@ -400,7 +404,7 @@ export default ({ reload }) => {
   }
 
   return (
-    <div className='p-8 gap-4 flex grow flex-col w-screen h-screen overflow-y-auto'>
+    <div className='relative flex flex-col md:flex-row h-screen w-screen bg-gray-50'>
       {dailyRewardIsOpen && (
         <ClaimDailyRewardOverlay
           onClose={closeDailyReward}
@@ -414,109 +418,214 @@ export default ({ reload }) => {
           placingOnPlayer={placingBountyOnPlayer}
         />
       )}
-      {profileDataError && <Notice>{profileDataError}</Notice>}
-      {profileData && (
-        <>
-          <div className='flex flex-wrap gap-4 grow'>
-            <div className='flex flex-col gap-4 grow max-w-prose'>
-              {bet && (
-                <PlaceBetOverlay
-                  seriesId={seriesId}
-                  onPlaced={reloadProfileData}
-                  onClose={() => history.replace('/profile')}
-                />
+      {bet && (
+        <PlaceBetOverlay
+          seriesId={seriesId}
+          onPlaced={reloadProfileData}
+          onClose={() => history.replace('/profile')}
+        />
+      )}
+      {storeIsOpen && (
+        <StoreOverlay onPurchase={reloadProfileData} onClose={closeStore} />
+      )}
+      {/* Mobile top tab bar */}
+      <div className='md:hidden flex border-b border-gray-200 bg-white shrink-0 overflow-x-auto'>
+        {tabs.map(({ name, Icon }) => (
+          <div
+            key={name}
+            className={clsx(
+              'flex items-center gap-1.5 px-4 py-3 cursor-pointer text-sm whitespace-nowrap border-b-2 transition-colors',
+              tab === name
+                ? 'border-blue-500 text-blue-700 font-semibold'
+                : 'border-transparent text-gray-500 hover:text-gray-700'
+            )}
+            onclick={() => setTab(name)}
+          >
+            <Icon className='w-4 h-4 shrink-0' />
+            <span>{titleize(name)}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop sidebar */}
+      <div className='hidden md:flex flex-col h-full shrink-0 border-r border-gray-200 bg-white w-64'>
+        <div className='px-4 py-2 border-b border-gray-100'>
+          <img
+            src='/spike.svg'
+            alt='JTSpike'
+            className='w-full h-8 object-left object-contain'
+          />
+        </div>
+        <div className='flex-1 overflow-y-auto min-h-0'>
+          {tabs.map(({ name, Icon }) => (
+            <div
+              key={name}
+              className={clsx(
+                'flex border-l-4 items-center gap-2 px-3 py-2 cursor-pointer transition-colors text-sm',
+                tab === name
+                  ? 'bg-blue-50 border-blue-500 text-blue-700 font-semibold'
+                  : 'border-transparent text-gray-700 hover:bg-gray-50'
               )}
-              {storeIsOpen && (
-                <StoreOverlay
-                  onPurchase={reloadProfileData}
-                  onClose={closeStore}
-                />
-              )}
-              <div className='text-3xl font-bold'>Profile</div>
-              <div className='flex items-end justify-between'>
-                <div className='relative'>
-                  <UserAvatar
-                    player={profileData.player}
-                    className='h-32 w-32'
-                  />
-                  <a
-                    href='https://gravatar.com/profile'
-                    className='absolute -top-2 -right-2 z-10 bg-white rounded border hover:bg-gray-50 p-2'
-                  >
-                    <SquarePenIcon className='h-3 w-3' />
-                  </a>
-                </div>
-                <div className='font-medium text-orange-500'>
-                  {formatNumberWithUnit(profileData.player.credits, 1)} credits
-                  available
-                </div>
-              </div>
-              <div className='border leading-tight rounded w-full flex divide-x'>
-                <div className='text-center p-2 w-full'>
-                  <div>Wins</div>
-                  <div className='text-xl font-semibold'>
-                    {profileData.player.stats.wins}
-                  </div>
-                </div>
-                <div className='text-center p-2 w-full'>
-                  <div>Losses</div>
-                  <div className='text-xl font-semibold'>
-                    {profileData.player.stats.losses}
-                  </div>
-                </div>
-                <div className='text-center p-2 w-full'>
-                  <div>Win Rate</div>
-                  <div className='text-xl font-semibold'>
-                    {Math.round(profileData.player.stats.winRate * 100)}%
-                  </div>
-                </div>
-                <div className='text-center p-2 w-full'>
-                  <div>Rank</div>
-                  <div className='text-xl font-semibold'>
-                    {profileData.player.stats.rank
-                      ? titleize(profileData.player.stats.rank)
-                      : 'Unranked'}
-                  </div>
-                </div>
-              </div>
-              <div className='w-full flex'>
-                {tabs.map(({ name, Icon }) => (
-                  <div
-                    key={name}
-                    className={clsx(
-                      'w-full p-2 flex md:flex-row flex-col items-center justify-center gap-0.5 border-t first:rounded-l last:rounded-r border-b-2 first:border-l border-r cursor-pointer hover:bg-gray-50',
-                      tab === name && 'border-b-orange-500'
-                    )}
-                    onclick={() => setTab(name)}
-                  >
-                    <Icon className='h-4' />
-                    <div>{titleize(name)}</div>
-                  </div>
-                ))}
-              </div>
-              {tab === 'results' ? (
-                <div className='border rounded w-full'>
-                  <div className='grid grid-cols-4'>
-                    <div className='p-2 col-span-3'>Result</div>
-                    <div className='p-2'>Played On</div>
-                  </div>
-                  {!profileData.player.series.length && (
-                    <div className='px-4 py-12 text-center w-full border-t'>
-                      No games played yet
+              onclick={() => setTab(name)}
+            >
+              <Icon className='w-4 h-4 shrink-0' />
+              <span className='truncate flex-1'>{titleize(name)}</span>
+            </div>
+          ))}
+        </div>
+        <div className='border-t border-gray-100 shrink-0'>
+          <a
+            onclick={openStore}
+            className='flex items-center gap-2 px-4 py-2 cursor-pointer hover:bg-gray-50 transition-colors'
+          >
+            <StoreIcon className='w-4 h-4 text-gray-400' />
+            <span className='text-sm text-gray-600 flex-1'>View Store</span>
+            <ChevronRightIcon className='w-4 h-4 text-gray-400' />
+          </a>
+          <a
+            onclick={() => {
+              disk.set('grantKey', null);
+              disk.set('paveCache', null);
+              window.location.reload();
+            }}
+            className='flex items-center gap-2 px-4 py-2 cursor-pointer hover:bg-gray-50 transition-colors'
+          >
+            <LogOutIcon className='w-4 h-4 text-gray-400' />
+            <span className='text-sm text-gray-600 flex-1'>Log Out</span>
+            <ChevronRightIcon className='w-4 h-4 text-gray-400' />
+          </a>
+          {player.isAdmin && (
+            <a
+              href='/'
+              className='flex items-center gap-2 px-4 py-2 border-t cursor-pointer hover:bg-gray-50 transition-colors'
+            >
+              <ArrowLeftIcon className='w-4 h-4 text-gray-400' />
+              <span className='text-sm text-gray-600 flex-1'>Back to Home</span>
+              <ChevronRightIcon className='w-4 h-4 text-gray-400' />
+            </a>
+          )}
+        </div>
+      </div>
+      <div className='flex-1 flex flex-col overflow-y-auto'>
+        <div className='p-4 md:p-6 space-y-4'>
+          {profileDataError && <Notice>{profileDataError}</Notice>}
+          {profileData && (
+            <>
+              {tab === 'home' ? (
+                <div className='space-y-4'>
+                  <h1 className='text-2xl font-bold text-gray-800'>Profile</h1>
+                  <div className='flex items-center gap-4'>
+                    <div className='relative'>
+                      <UserAvatar
+                        player={profileData.player}
+                        className='h-20 w-20'
+                      />
+                      <a
+                        href='https://gravatar.com/profile'
+                        className='absolute -top-2 -right-2 z-10 bg-white rounded border hover:bg-gray-50 p-1.5'
+                      >
+                        <SquarePenIcon className='h-3 w-3' />
+                      </a>
                     </div>
-                  )}
-                  {profileData.player.series.map(series => (
-                    <Result key={series.id} series={series} player={player} />
-                  ))}
+                    <div>
+                      <div className='text-xl font-bold text-gray-800'>
+                        {profileData.player.name}
+                      </div>
+                      <div className='text-sm font-medium text-orange-500'>
+                        {formatNumberWithUnit(profileData.player.credits, 1)}{' '}
+                        credits
+                      </div>
+                    </div>
+                  </div>
+                  <div className='bg-white border rounded leading-tight w-full flex divide-x'>
+                    <div className='text-center p-2 w-full'>
+                      <div className='text-xs text-gray-500'>Wins</div>
+                      <div className='text-lg font-semibold'>
+                        {profileData.player.stats.wins}
+                      </div>
+                    </div>
+                    <div className='text-center p-2 w-full'>
+                      <div className='text-xs text-gray-500'>Losses</div>
+                      <div className='text-lg font-semibold'>
+                        {profileData.player.stats.losses}
+                      </div>
+                    </div>
+                    <div className='text-center p-2 w-full'>
+                      <div className='text-xs text-gray-500'>Win Rate</div>
+                      <div className='text-lg font-semibold'>
+                        {Math.round(profileData.player.stats.winRate * 100)}%
+                      </div>
+                    </div>
+                    <div className='text-center p-2 w-full'>
+                      <div className='text-xs text-gray-500'>Rank</div>
+                      <div className='text-lg font-semibold'>
+                        {profileData.player.stats.rank
+                          ? titleize(profileData.player.stats.rank)
+                          : 'Unranked'}
+                      </div>
+                    </div>
+                  </div>
+                  <div className='bg-white border rounded w-full'>
+                    <div className='grid grid-cols-4'>
+                      <div className='p-2 col-span-3'>Result</div>
+                      <div className='p-2'>Played On</div>
+                    </div>
+                    {!profileData.player.series.length && (
+                      <div className='px-4 py-12 text-center w-full border-t'>
+                        No games played yet
+                      </div>
+                    )}
+                    {profileData.player.series.map(series => (
+                      <Result key={series.id} series={series} player={player} />
+                    ))}
+                  </div>
+                </div>
+              ) : tab === 'bets' ? (
+                <div className='space-y-4'>
+                  <h1 className='text-2xl font-bold text-gray-800'>Bets</h1>
+                  <div className='bg-white border rounded w-full'>
+                    <div className='grid grid-cols-4'>
+                      <div className='p-2'>Amount</div>
+                      <div className='p-2'>Paid Out Amount</div>
+                      <div className='p-2 text-center'>Final</div>
+                      <div className='p-2'>Placed On</div>
+                    </div>
+                    {!profileData.player.bets.length && (
+                      <div className='px-4 py-12 text-center w-full border-t'>
+                        No bets placed yet
+                      </div>
+                    )}
+                    {profileData.player.bets.map(bet => (
+                      <div className='border-t grid grid-cols-4' key={bet.id}>
+                        <div className='p-2'>
+                          {formatNumberWithUnit(bet.amount)}
+                        </div>
+                        <div className='p-2'>
+                          {bet.paidOutAmount
+                            ? formatNumberWithUnit(bet.paidOutAmount)
+                            : '-'}
+                        </div>
+                        <div className='p-2 text-center'>
+                          {!bet.isActive && (
+                            <CircleCheckIcon className='inline-block align-[-0.125rem] h-5 text-green-500' />
+                          )}
+                        </div>
+                        <div className='p-2'>{formatDate(bet.createdAt)}</div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ) : tab === 'inventory' ? (
-                <div>
+                <div className='space-y-4'>
+                  <h1 className='text-2xl font-bold text-gray-800'>
+                    Inventory
+                  </h1>
                   {profileData.player.items.length ? (
-                    <div className='grid grid-cols-4 gap-4 overflow-y-auto'>
+                    <div className='grid grid-cols-3 sm:grid-cols-4 gap-4'>
                       {profileData.player.items.map(({ item, isEquipped }) => (
                         <div
                           key={item.id}
-                          className='relative cursor-pointer hover:border-orange-500 transition w-full border rounded aspect-square p-2'
+                          className='relative cursor-pointer hover:border-orange-500 transition w-full bg-white border rounded aspect-square p-2'
                           onclick={() => updateEquippedItems(item)}
                         >
                           <ItemPreview item={item} />
@@ -529,7 +638,7 @@ export default ({ reload }) => {
                       ))}
                     </div>
                   ) : (
-                    <div className='w-full p-8 space-y-1 flex flex-col justify-center items-center border rounded'>
+                    <div className='w-full p-8 space-y-1 flex flex-col justify-center items-center bg-white border rounded'>
                       <div>You don&apos;t own any items yet</div>
                       <a
                         onclick={openStore}
@@ -540,116 +649,13 @@ export default ({ reload }) => {
                     </div>
                   )}
                 </div>
-              ) : tab === 'bets' ? (
-                <div className='border rounded w-full'>
-                  <div className='grid grid-cols-4'>
-                    <div className='p-2'>Amount</div>
-                    <div className='p-2'>Paid Out Amount</div>
-                    <div className='p-2 text-center'>Final</div>
-                    <div className='p-2'>Placed On</div>
-                  </div>
-                  {!profileData.player.bets.length && (
-                    <div className='px-4 py-12 text-center w-full border-t'>
-                      No bets placed yet
-                    </div>
-                  )}
-                  {profileData.player.bets.map(bet => (
-                    <div className='border-t grid grid-cols-4' key={bet.id}>
-                      <div className='p-2'>
-                        {formatNumberWithUnit(bet.amount)}
-                      </div>
-                      <div className='p-2'>
-                        {bet.paidOutAmount
-                          ? formatNumberWithUnit(bet.paidOutAmount)
-                          : '-'}
-                      </div>
-                      <div className='p-2 text-center'>
-                        {!bet.isActive && (
-                          <CircleCheckIcon className='inline-block align-[-0.125rem] h-5 text-green-500' />
-                        )}
-                      </div>
-                      <div className='p-2'>{formatDate(bet.createdAt)}</div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <form
-                  autocomplete='off'
-                  onsubmit={ev => {
-                    ev.preventDefault();
-                    execute();
-                  }}
-                  className='border rounded p-4 text-center space-y-4 w-full'
-                >
-                  <Input
-                    placeholder='Name'
-                    required
-                    className='w-full'
-                    autocomplete='spikeball-name'
-                    value={details.name ?? ''}
-                    onchange={({ target: { value } }) =>
-                      setDetails(prev => ({ ...prev, name: value }))
-                    }
-                  />
-                  <Input
-                    placeholder='Nickname'
-                    className='w-full'
-                    autocomplete='spikeball-nickname'
-                    value={details.nickname ?? ''}
-                    onchange={({ target: { value } }) =>
-                      setDetails(prev => ({ ...prev, nickname: value }))
-                    }
-                  />
-                  <Input
-                    placeholder='Password'
-                    className='w-full'
-                    autocomplete='spikeball-password'
-                    value={details.password ?? ''}
-                    type='password'
-                    onchange={({ target: { value } }) =>
-                      setDetails(prev => ({ ...prev, password: value }))
-                    }
-                  />
-                  <Input
-                    placeholder='Confirm Password'
-                    className='w-full'
-                    autocomplete='spikeball-password-confirmation'
-                    value={details.passwordConfirmation ?? ''}
-                    type='password'
-                    onchange={({ target: { value } }) =>
-                      setDetails(prev => ({
-                        ...prev,
-                        passwordConfirmation: value
-                      }))
-                    }
-                  />
-                  <label className='relative flex items-center gap-1'>
-                    {details.isActive ? <SquareCheckIcon /> : <SquareIcon />}
-                    <div>Active</div>
-                    <input
-                      className='absolute inset-0 cursor-pointer'
-                      type='checkbox'
-                      checked={details.isActive}
-                      onchange={({ target: { checked } }) =>
-                        setDetails(prev => ({ ...prev, isActive: checked }))
-                      }
-                    />
-                  </label>
-                  <button
-                    type='submit'
-                    className='bg-orange-500 hover:bg-orange-600 text-center transition-colors text-white rounded p-2 w-full'
-                  >
-                    Update
-                  </button>
-                </form>
-              )}
-            </div>
-            <div className='grow max-w-prose'>
-              <div className='space-y-2'>
-                <div className='flex items-center gap-x-2 flex-wrap justify-between'>
-                  <div>
+              ) : tab === 'leaderboard' ? (
+                <div className='space-y-4'>
+                  <h1 className='text-2xl font-bold text-gray-800'>
+                    Leaderboard
+                  </h1>
+                  <div className='flex items-center gap-x-2 flex-wrap justify-between'>
                     <div className='flex items-center gap-2'>
-                      <div className='text-2xl font-bold'>Leaderboard</div>
                       <div className='flex'>
                         <div
                           className={clsx(
@@ -690,134 +696,182 @@ export default ({ reload }) => {
                       </div>
                     </div>
                     {leaderboardTab === 'season' && (
-                      <div className='font-light text-sm whitespace-nowrap'>
-                        Ends {new Date(season.endsAt).toLocaleDateString()}
+                      <div className='font-medium text-orange-500 text-right whitespace-nowrap'>
+                        {formatNumber(profileData.player.points)} points
                       </div>
                     )}
                   </div>
                   {leaderboardTab === 'season' && (
-                    <div className='font-medium text-orange-500 text-right whitespace-nowrap'>
-                      {formatNumber(profileData.player.points)} points
+                    <div className='font-light text-sm text-gray-500'>
+                      Ends {new Date(season.endsAt).toLocaleDateString()}
                     </div>
                   )}
-                </div>
-                <div className='border rounded w-full'>
-                  <div className='grid grid-cols-4 font-semibold'>
-                    <div className='p-2 col-span-3'>Player</div>
-                    <div className='p-2 text-right'>
-                      {leaderboardTab === 'allTime'
-                        ? 'Rank'
-                        : leaderboardTab === 'money'
-                          ? 'Credits'
-                          : leaderboardTab === 'bounties'
-                            ? 'Total Bounty'
-                            : 'Points'}
-                    </div>
-                  </div>
-                  {(leaderboardTab === 'season'
-                    ? profileData.players
-                    : leaderboardTab === 'money'
-                      ? profileData.moneyPlayers
-                      : leaderboardTab === 'allTime'
-                        ? profileData.allTimePlayers
-                        : profileData.bountyPlayers
-                  ).map((player, i) => (
-                    <div
-                      className='border-t group grid grid-cols-4'
-                      key={`${leaderboardTab}:${player.id}`}
-                    >
-                      <div className='p-2 flex items-center gap-2 col-span-3'>
-                        <UserAvatar
-                          player={player}
-                          resetShadow
-                          resetRounding
-                          textClassName='text-[5px]'
-                          className='border rounded h-6 w-6'
-                        />
-                        <div
-                          className={clsx(
-                            player.id === profileData.player.id &&
-                              'font-semibold'
-                          )}
-                        >
-                          {player.name}
-                        </div>
-                        {player.id !== profileData.player.id &&
-                          tab !== 'bounties' && (
-                            <a
-                              onclick={() => setPlacingBountyOnPlayer(player)}
-                              className='block group-hover:visible invisible cursor-pointer text-orange-500 hover:text-orange-600'
-                            >
-                              <CrosshairIcon className='h-4 inline-block text-orange-500 align-[-0.125rem]' />{' '}
-                              Place Bounty
-                            </a>
-                          )}
-                      </div>
+                  <div className='bg-white border rounded w-full'>
+                    <div className='grid grid-cols-4 font-semibold'>
+                      <div className='p-2 col-span-3'>Player</div>
                       <div className='p-2 text-right'>
-                        <Tooltip
-                          tooltip={
-                            leaderboardTab === 'allTime'
-                              ? `${formatNumber(player.elo)} - ${player.rank ? titleize(player.rank) : 'Unranked'}`
-                              : undefined
-                          }
-                        >
-                          {leaderboardTab === 'season' ? (
-                            <>
-                              {i === 0
-                                ? '🥇 '
-                                : i === 1
-                                  ? '🥈 '
-                                  : i === 2
-                                    ? '🥉 '
-                                    : ''}
-                              {formatNumber(player.points)}
-                            </>
-                          ) : leaderboardTab === 'money' ? (
-                            formatNumberWithUnit(player.credits)
-                          ) : leaderboardTab === 'bounties' ? (
-                            formatNumberWithUnit(player.totalBounties)
-                          ) : player.rank ? (
-                            titleize(player.rank)
-                          ) : (
-                            'Unranked'
-                          )}
-                        </Tooltip>
+                        {leaderboardTab === 'allTime'
+                          ? 'Rank'
+                          : leaderboardTab === 'money'
+                            ? 'Credits'
+                            : leaderboardTab === 'bounties'
+                              ? 'Total Bounty'
+                              : 'Points'}
                       </div>
                     </div>
-                  ))}
+                    {(leaderboardTab === 'season'
+                      ? profileData.players
+                      : leaderboardTab === 'money'
+                        ? profileData.moneyPlayers
+                        : leaderboardTab === 'allTime'
+                          ? profileData.allTimePlayers
+                          : profileData.bountyPlayers
+                    ).map((player, i) => (
+                      <div
+                        className='border-t group grid grid-cols-4'
+                        key={`${leaderboardTab}:${player.id}`}
+                      >
+                        <div className='p-2 flex items-center gap-2 col-span-3'>
+                          <UserAvatar
+                            player={player}
+                            resetShadow
+                            resetRounding
+                            textClassName='text-[5px]'
+                            className='border rounded h-6 w-6'
+                          />
+                          <div
+                            className={clsx(
+                              player.id === profileData.player.id &&
+                                'font-semibold'
+                            )}
+                          >
+                            {player.name}
+                          </div>
+                          {player.id !== profileData.player.id &&
+                            leaderboardTab !== 'bounties' && (
+                              <a
+                                onclick={() => setPlacingBountyOnPlayer(player)}
+                                className='block group-hover:visible invisible cursor-pointer text-orange-500 hover:text-orange-600'
+                              >
+                                <CrosshairIcon className='h-4 inline-block text-orange-500 align-[-0.125rem]' />{' '}
+                                Place Bounty
+                              </a>
+                            )}
+                        </div>
+                        <div className='p-2 text-right'>
+                          <Tooltip
+                            tooltip={
+                              leaderboardTab === 'allTime'
+                                ? `${formatNumber(player.elo)} - ${player.rank ? titleize(player.rank) : 'Unranked'}`
+                                : undefined
+                            }
+                          >
+                            {leaderboardTab === 'season' ? (
+                              <>
+                                {i === 0
+                                  ? '🥇 '
+                                  : i === 1
+                                    ? '🥈 '
+                                    : i === 2
+                                      ? '🥉 '
+                                      : ''}
+                                {formatNumber(player.points)}
+                              </>
+                            ) : leaderboardTab === 'money' ? (
+                              formatNumberWithUnit(player.credits)
+                            ) : leaderboardTab === 'bounties' ? (
+                              formatNumberWithUnit(player.totalBounties)
+                            ) : player.rank ? (
+                              titleize(player.rank)
+                            ) : (
+                              'Unranked'
+                            )}
+                          </Tooltip>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            </div>
-          </div>
-          {player.isAdmin && (
-            <a
-              href='/'
-              className='block cursor-pointer text-orange-500 hover:text-orange-600'
-            >
-              <TabletIcon className='h-4 inline-block text-orange-500 align-[-0.125rem]' />{' '}
-              Enter Tablet Mode
-            </a>
+              ) : tab === 'stats' ? (
+                <ProfileStats />
+              ) : (
+                <div className='space-y-4'>
+                  <h1 className='text-2xl font-bold text-gray-800'>Settings</h1>
+                  <form
+                    autocomplete='off'
+                    onsubmit={ev => {
+                      ev.preventDefault();
+                      execute();
+                    }}
+                    className='bg-white border rounded p-4 text-center space-y-4 w-full'
+                  >
+                    <Input
+                      placeholder='Name'
+                      required
+                      className='w-full'
+                      autocomplete='spikeball-name'
+                      value={details.name ?? ''}
+                      onchange={({ target: { value } }) =>
+                        setDetails(prev => ({ ...prev, name: value }))
+                      }
+                    />
+                    <Input
+                      placeholder='Nickname'
+                      className='w-full'
+                      autocomplete='spikeball-nickname'
+                      value={details.nickname ?? ''}
+                      onchange={({ target: { value } }) =>
+                        setDetails(prev => ({ ...prev, nickname: value }))
+                      }
+                    />
+                    <Input
+                      placeholder='Password'
+                      className='w-full'
+                      autocomplete='spikeball-password'
+                      value={details.password ?? ''}
+                      type='password'
+                      onchange={({ target: { value } }) =>
+                        setDetails(prev => ({ ...prev, password: value }))
+                      }
+                    />
+                    <Input
+                      placeholder='Confirm Password'
+                      className='w-full'
+                      autocomplete='spikeball-password-confirmation'
+                      value={details.passwordConfirmation ?? ''}
+                      type='password'
+                      onchange={({ target: { value } }) =>
+                        setDetails(prev => ({
+                          ...prev,
+                          passwordConfirmation: value
+                        }))
+                      }
+                    />
+                    <label className='relative flex items-center gap-1'>
+                      {details.isActive ? <SquareCheckIcon /> : <SquareIcon />}
+                      <div>Active</div>
+                      <input
+                        className='absolute inset-0 cursor-pointer'
+                        type='checkbox'
+                        checked={details.isActive}
+                        onchange={({ target: { checked } }) =>
+                          setDetails(prev => ({ ...prev, isActive: checked }))
+                        }
+                      />
+                    </label>
+                    <button
+                      type='submit'
+                      className='bg-orange-500 hover:bg-orange-600 text-center transition-colors text-white rounded p-2 w-full'
+                    >
+                      Update
+                    </button>
+                  </form>
+                </div>
+              )}
+            </>
           )}
-          <a
-            onclick={openStore}
-            className='block cursor-pointer text-orange-500 hover:text-orange-600'
-          >
-            <StoreIcon className='h-4 inline-block text-orange-500 align-[-0.125rem]' />{' '}
-            View Store
-          </a>
-          <a
-            onclick={() => {
-              disk.set('grantKey', null);
-              disk.set('paveCache', null);
-              window.location.reload();
-            }}
-            className='block cursor-pointer text-orange-500 hover:text-orange-600'
-          >
-            <LogOutIcon className='h-4 inline-block text-orange-500 align-[-0.125rem]' />{' '}
-            Log Out
-          </a>
-        </>
-      )}
+        </div>
+      </div>
     </div>
   );
 };
