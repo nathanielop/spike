@@ -11,10 +11,7 @@ const { setTimeout } = globalThis;
 
 const duration = 10 * 1000;
 
-const slices = [
-  50_000, 100_000, 500_000, 5_000_000, 250_000, 1_000_000, 2_500_000,
-  10_000_000, 25_000_000, 100_000_000
-];
+const slices = [25, 50, 75, 100, 250, 500, 1_000, 2_500];
 
 const shuffle = arr => {
   const array = arr.slice();
