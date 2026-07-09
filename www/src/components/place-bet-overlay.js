@@ -210,12 +210,6 @@ export default ({ onClose, onPlaced, seriesId }) => {
             </button>
           </div>
         </div>
-        <div className='border rounded flex items-center justify-between p-2 gap-2'>
-          <div>Expected Payout</div>
-          <div>
-            {payout ? formatNumber(payout, { maximumFractionDigits: 0 }) : '-'}
-          </div>
-        </div>
         <button
           className='bg-green-500 text-white p-2 rounded w-full hover:bg-green-700 transition cursor-pointer'
           disabled={!betDetails.amount || !betDetails.team || placeBetIsLoading}
