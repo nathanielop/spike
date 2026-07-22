@@ -49,7 +49,11 @@ export default ({ matchDetails, onComplete, onExit }) => {
     error: cancelGameError,
     isLoading: cancelGameIsLoading
   } = useAsync(async () => {
-    await pave.execute({ query: { deleteGame: { $: { id: game.id } } } });
+    try {
+      await pave.execute({ query: { deleteGame: { $: { id: game.id } } } });
+    } catch {
+      // noop (ignore errors for deleting to allow for the case where the game has already been completed)
+    }
     exit();
   });
   useNotification(cancelGameError);
