@@ -5,6 +5,7 @@ import { DateTime } from 'luxon';
 import LoadingArea from '#src/components/loading-area.js';
 import Notice from '#src/components/notice.js';
 import UserAvatar from '#src/components/user-avatar.js';
+import titleize from '#src/functions/titleize.js';
 import usePave from '#src/hooks/use-pave.js';
 
 const playerQ = { id: {}, name: {}, avatarUrl: { $: { size: 200 } } };
@@ -55,6 +56,55 @@ const statsFields = {
   },
   minPlayerGames: {},
   minTeamGames: {}
+};
+
+// --- Individual (ESPN-style) player view queries -------------------------
+
+const relQ = { player: playerQ, wins: {}, losses: {}, games: {} };
+
+// Header avatar needs equipped items + bounty state to render hats/badges.
+const avatarPlayerQ = {
+  id: {},
+  name: {},
+  avatarUrl: { $: { size: 400 } },
+  activeBounties: { id: {} },
+  items: {
+    item: { id: {}, type: {}, attributes: {} },
+    isEquipped: {}
+  }
+};
+
+const playerStatsFields = {
+  wins: {},
+  losses: {},
+  games: {},
+  winRate: {},
+  winStreak: {},
+  lossStreak: {},
+  longestWinStreak: {},
+  longestLossStreak: {},
+  elo: {},
+  rank: {},
+  pointsFor: {},
+  pointsAgainst: {},
+  avgPointsFor: {},
+  avgPointsAgainst: {},
+  pointDiff: {},
+  skunksDelivered: {},
+  timesSkunked: {},
+  sweepsDelivered: {},
+  timesSwept: {},
+  bestPartner: relQ,
+  nemesis: relQ,
+  victim: relQ,
+  recentResults: {
+    won: {},
+    myGames: {},
+    oppGames: {},
+    completedAt: {},
+    teammates: playerQ,
+    opponents: playerQ
+  }
 };
 
 const fmtPct = n => `${Math.round(n * 100)}%`;
@@ -236,6 +286,227 @@ const Section = ({ title, children }) => (
   </div>
 );
 
+// --- ESPN-style individual player view -----------------------------------
+
+const HeroStat = ({ label, value }) => (
+  <div className='py-2'>
+    <div className='text-xl font-bold leading-none'>{value}</div>
+    <div className='text-[10px] uppercase tracking-wide text-gray-400 mt-1'>
+      {label}
+    </div>
+  </div>
+);
+
+const StatTile = ({ label, value, sub, accent }) => (
+  <div className='bg-white border rounded-lg p-3 text-center'>
+    <div className={clsx('text-2xl font-bold', accent || 'text-gray-900')}>
+      {value}
+    </div>
+    <div className='text-[11px] uppercase tracking-wide text-gray-400 mt-0.5'>
+      {label}
+    </div>
+    {sub && (
+      <div className='text-xs text-gray-400 leading-none mt-0.5'>{sub}</div>
+    )}
+  </div>
+);
+
+const RelationCard = ({ title, subtitle, rel }) => (
+  <StatCard title={title} subtitle={subtitle}>
+    {rel ? (
+      <div className='flex items-center gap-3 px-3 py-3'>
+        <UserAvatar
+          player={rel.player}
+          resetShadow
+          resetRounding
+          textClassName='text-[5px]'
+          className='h-10 w-10 shrink-0 border rounded'
+        />
+        <div className='flex-1 min-w-0'>
+          <div className='truncate text-sm font-medium text-gray-800'>
+            {rel.player.name}
+          </div>
+          <div className='text-xs text-gray-400'>{rel.games} together</div>
+        </div>
+        <Value
+          value={`${rel.wins}–${rel.losses}`}
+          sub={fmtPct(rel.games ? rel.wins / rel.games : 0)}
+        />
+      </div>
+    ) : (
+      <Empty />
+    )}
+  </StatCard>
+);
+
+const streakLabel = ({ winStreak, lossStreak }) =>
+  winStreak > 0 ? `W${winStreak}` : lossStreak > 0 ? `L${lossStreak}` : '—';
+
+const PlayerStatsPage = ({ playerId, currentSeasonOnly, bySeries }) => {
+  const { data, isLoading, error } = usePave({
+    query: {
+      player: {
+        $: { id: playerId },
+        ...avatarPlayerQ,
+        stats: { $: { currentSeasonOnly, bySeries }, ...playerStatsFields }
+      }
+    }
+  });
+
+  const player = data?.player;
+
+  if (isLoading || (!player && !error)) return <LoadingArea />;
+  if (error) return <Notice>{error}</Notice>;
+  if (!player) return <Notice>Player not found</Notice>;
+
+  const s = player.stats;
+  if (!s) return <Empty />;
+
+  const unit = bySeries ? 'series' : 'games';
+  const diffAccent =
+    s.pointDiff > 0
+      ? 'text-green-600'
+      : s.pointDiff < 0
+        ? 'text-red-500'
+        : 'text-gray-900';
+
+  return (
+    <div className='space-y-6'>
+      <div className='rounded-xl overflow-hidden border bg-gray-900 text-white shadow-sm'>
+        <div className='flex items-center gap-4 p-4 sm:p-6'>
+          <UserAvatar
+            player={player}
+            showItems
+            className='h-24 w-24 sm:h-28 sm:w-28 shrink-0'
+          />
+          <div className='min-w-0'>
+            <div className='text-2xl sm:text-3xl font-bold truncate'>
+              {player.name}
+            </div>
+            <div className='flex items-center gap-2 text-sm text-gray-300 mt-0.5'>
+              <span>{s.rank ? titleize(s.rank) : 'Unranked'}</span>
+              <span className='text-gray-500'>&middot;</span>
+              <span>{s.elo} Elo</span>
+            </div>
+            <div className='mt-1 text-lg font-semibold'>
+              {s.wins}&ndash;{s.losses}{' '}
+              <span className='text-gray-400 text-sm font-normal'>
+                ({fmtPct(s.winRate)} win)
+              </span>
+            </div>
+          </div>
+        </div>
+        <div className='grid grid-cols-4 divide-x divide-white/10 border-t border-white/10 bg-black/20 text-center'>
+          <HeroStat label='Wins' value={s.wins} />
+          <HeroStat label='Losses' value={s.losses} />
+          <HeroStat label='Win %' value={fmtPct(s.winRate)} />
+          <HeroStat label='Streak' value={streakLabel(s)} />
+        </div>
+      </div>
+
+      <div>
+        <h2 className='text-sm font-semibold uppercase tracking-wide text-gray-500 mb-2'>
+          Scoring
+        </h2>
+        <div className='grid grid-cols-2 sm:grid-cols-4 gap-3'>
+          <StatTile label='Points For' value={s.pointsFor} />
+          <StatTile label='Points Against' value={s.pointsAgainst} />
+          <StatTile
+            label='Avg For / Against'
+            value={`${s.avgPointsFor.toFixed(1)} / ${s.avgPointsAgainst.toFixed(1)}`}
+          />
+          <StatTile
+            label='Point Diff'
+            value={`${s.pointDiff > 0 ? '+' : ''}${s.pointDiff}`}
+            accent={diffAccent}
+          />
+        </div>
+      </div>
+
+      <div>
+        <h2 className='text-sm font-semibold uppercase tracking-wide text-gray-500 mb-2'>
+          Streaks &amp; Dominance
+        </h2>
+        <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3'>
+          <StatTile label={`Longest W (${unit})`} value={s.longestWinStreak} />
+          <StatTile label={`Longest L (${unit})`} value={s.longestLossStreak} />
+          <StatTile label='Skunks Dealt' value={s.skunksDelivered} />
+          <StatTile label='Times Skunked' value={s.timesSkunked} />
+          <StatTile label='Sweeps Dealt' value={s.sweepsDelivered} />
+          <StatTile label='Times Swept' value={s.timesSwept} />
+        </div>
+      </div>
+
+      <Section title='Around the League'>
+        <RelationCard
+          title='Best Partner'
+          subtitle='Most wins alongside'
+          rel={s.bestPartner}
+        />
+        <RelationCard
+          title='Nemesis'
+          subtitle='Lost to them the most'
+          rel={s.nemesis}
+        />
+        <RelationCard
+          title='Favorite Victim'
+          subtitle='Beaten them the most'
+          rel={s.victim}
+        />
+      </Section>
+
+      <div className='space-y-2'>
+        <h2 className='text-sm font-semibold uppercase tracking-wide text-gray-500'>
+          Recent Games
+        </h2>
+        <StatCard
+          title='Game Log'
+          subtitle={`Last ${s.recentResults.length} series`}
+        >
+          {s.recentResults.length ? (
+            s.recentResults.map((g, i) => (
+              <div
+                key={i}
+                className='flex items-center gap-3 border-t px-3 py-2'
+              >
+                <div
+                  className={clsx(
+                    'w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center shrink-0 text-white',
+                    g.won ? 'bg-green-500' : 'bg-red-500'
+                  )}
+                >
+                  {g.won ? 'W' : 'L'}
+                </div>
+                <div className='flex -space-x-2 shrink-0'>
+                  {g.opponents.map(p => (
+                    <UserAvatar
+                      key={p.id}
+                      player={p}
+                      resetShadow
+                      resetRounding
+                      textClassName='text-[5px]'
+                      className='h-7 w-7 border rounded ring-2 ring-white'
+                    />
+                  ))}
+                </div>
+                <div className='flex-1 min-w-0 truncate text-sm text-gray-700'>
+                  vs {g.opponents.map(p => p.name).join(' & ')}
+                </div>
+                <Value
+                  value={`${g.myGames}–${g.oppGames}`}
+                  sub={formatDate(g.completedAt)}
+                />
+              </div>
+            ))
+          ) : (
+            <Empty />
+          )}
+        </StatCard>
+      </div>
+    </div>
+  );
+};
+
 const StatsBoard = ({ currentSeasonOnly, bySeries }) => {
   const { data, isLoading, error } = usePave({
     query: { stats: { $: { currentSeasonOnly, bySeries }, ...statsFields } }
@@ -367,12 +638,38 @@ const StatsBoard = ({ currentSeasonOnly, bySeries }) => {
 export default () => {
   const [currentSeasonOnly, setCurrentSeasonOnly] = useState(true);
   const [bySeries, setBySeries] = useState(true);
+  const [playerId, setPlayerId] = useState(null);
+
+  const { data: playersData } = usePave({
+    query: {
+      players: {
+        $: { activeOnly: false, size: 100, sortBy: { field: 'points' } },
+        id: {},
+        name: {}
+      }
+    }
+  });
+  const players = [...(playersData?.players ?? [])].sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
 
   return (
     <div className='space-y-4'>
       <div className='flex items-center justify-between gap-2 flex-wrap'>
         <h1 className='text-2xl font-bold text-gray-800'>Stats</h1>
         <div className='flex items-center gap-2 flex-wrap'>
+          <select
+            value={playerId ?? ''}
+            onchange={e => setPlayerId(e.target.value || null)}
+            className='px-2 py-1 border rounded text-xs bg-white cursor-pointer max-w-[10rem]'
+          >
+            <option value=''>League Overview</option>
+            {players.map(p => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </select>
           <div className='flex'>
             <div
               className={clsx(
@@ -415,11 +712,20 @@ export default () => {
           </div>
         </div>
       </div>
-      <StatsBoard
-        key={`${currentSeasonOnly ? 'season' : 'all'}:${bySeries ? 'series' : 'game'}`}
-        currentSeasonOnly={currentSeasonOnly}
-        bySeries={bySeries}
-      />
+      {playerId ? (
+        <PlayerStatsPage
+          key={`${playerId}:${currentSeasonOnly ? 'season' : 'all'}:${bySeries ? 'series' : 'game'}`}
+          playerId={playerId}
+          currentSeasonOnly={currentSeasonOnly}
+          bySeries={bySeries}
+        />
+      ) : (
+        <StatsBoard
+          key={`${currentSeasonOnly ? 'season' : 'all'}:${bySeries ? 'series' : 'game'}`}
+          currentSeasonOnly={currentSeasonOnly}
+          bySeries={bySeries}
+        />
+      )}
     </div>
   );
 };
