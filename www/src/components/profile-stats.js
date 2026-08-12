@@ -365,8 +365,8 @@ const StatsBoard = ({ currentSeasonOnly, bySeries }) => {
 };
 
 export default () => {
-  const [currentSeasonOnly, setCurrentSeasonOnly] = useState(false);
-  const [bySeries, setBySeries] = useState(false);
+  const [currentSeasonOnly, setCurrentSeasonOnly] = useState(true);
+  const [bySeries, setBySeries] = useState(true);
 
   return (
     <div className='space-y-4'>
