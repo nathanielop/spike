@@ -52,7 +52,9 @@ const statsFields = {
   highlights: {
     mostRecentSkunk: gameQ,
     highestScoringGame: gameQ
-  }
+  },
+  minPlayerGames: {},
+  minTeamGames: {}
 };
 
 const fmtPct = n => `${Math.round(n * 100)}%`;
@@ -234,9 +236,9 @@ const Section = ({ title, children }) => (
   </div>
 );
 
-const StatsBoard = ({ currentSeasonOnly }) => {
+const StatsBoard = ({ currentSeasonOnly, bySeries }) => {
   const { data, isLoading, error } = usePave({
-    query: { stats: { $: { currentSeasonOnly }, ...statsFields } }
+    query: { stats: { $: { currentSeasonOnly, bySeries }, ...statsFields } }
   });
 
   const stats = data?.stats;
@@ -245,22 +247,35 @@ const StatsBoard = ({ currentSeasonOnly }) => {
   if (error) return <Notice>{error}</Notice>;
   if (!stats) return null;
 
+  // Labels shift between game- and series-based framing.
+  const unit = bySeries ? 'series' : 'games';
+  const gp = bySeries ? 'SP' : 'GP';
+  const playerMin = `min. ${stats.minPlayerGames} ${unit}`;
+  const teamMin = `min. ${stats.minTeamGames} ${unit}`;
+
   return (
     <div className='space-y-6'>
       <div className='grid grid-cols-3 gap-3'>
         <Total label='Games' value={stats.totals.games} />
         <Total label='Series' value={stats.totals.series} />
-        <Total label='Skunks' value={stats.totals.skunks} />
+        <Total
+          label={bySeries ? 'Sweeps' : 'Skunks'}
+          value={stats.totals.skunks}
+        />
       </div>
 
       <Section title='Highlights'>
         <HighlightCard
-          title='Most Recent Skunk'
-          subtitle='Latest 11–0 beatdown'
+          title={bySeries ? 'Most Recent Sweep' : 'Most Recent Skunk'}
+          subtitle={
+            bySeries
+              ? 'Latest whitewash, no games lost'
+              : 'Latest 11–0 beatdown'
+          }
           game={stats.highlights.mostRecentSkunk}
         />
         <HighlightCard
-          title='Highest-Scoring Game'
+          title={bySeries ? 'Highest-Scoring Series' : 'Highest-Scoring Game'}
           subtitle='Most combined points'
           game={stats.highlights.highestScoringGame}
         />
@@ -272,24 +287,24 @@ const StatsBoard = ({ currentSeasonOnly }) => {
           subtitle: 'Allegedly on skill',
           items: stats.players.mostWins,
           value: ({ wins }) => wins,
-          sub: ({ games }) => `${games} GP`
+          sub: ({ games }) => `${games} ${gp}`
         })}
         {playerCard({
           title: 'Most Losses',
           subtitle: 'Someone has to hold the L',
           items: stats.players.mostLosses,
           value: ({ losses }) => losses,
-          sub: ({ games }) => `${games} GP`
+          sub: ({ games }) => `${games} ${gp}`
         })}
         {playerCard({
           title: 'Best Win %',
-          subtitle: 'Winners, statistically · min. 10 games',
+          subtitle: `Winners, statistically · ${playerMin}`,
           items: stats.players.bestWinPct,
           value: ({ winPct }) => fmtPct(winPct),
           sub: ({ wins, losses }) => `${wins}–${losses}`
         })}
         {playerCard({
-          title: 'Most Games Played',
+          title: bySeries ? 'Most Series Played' : 'Most Games Played',
           subtitle: 'Grass? Never touched it',
           items: stats.players.mostGamesPlayed,
           value: ({ games }) => games,
@@ -302,13 +317,13 @@ const StatsBoard = ({ currentSeasonOnly }) => {
           value: ({ streak }) => streak
         })}
         {playerCard({
-          title: 'Most Skunks Delivered',
+          title: bySeries ? 'Most Sweeps Delivered' : 'Most Skunks Delivered',
           subtitle: 'No mercy on the menu',
           items: stats.players.mostSkunksDelivered,
           value: ({ count }) => count
         })}
         {playerCard({
-          title: 'Most Skunked',
+          title: bySeries ? 'Most Swept' : 'Most Skunked',
           subtitle: 'Points are optional, apparently',
           items: stats.players.mostSkunked,
           value: ({ count }) => count
@@ -321,25 +336,25 @@ const StatsBoard = ({ currentSeasonOnly }) => {
           subtitle: 'Chemistry, or dumb luck',
           items: stats.teams.mostWins,
           value: ({ wins }) => wins,
-          sub: ({ games }) => `${games} GP`
+          sub: ({ games }) => `${games} ${gp}`
         })}
         {teamCard({
           title: 'Lost Most Together',
           subtitle: 'Misery loves a partner',
           items: stats.teams.mostLosses,
           value: ({ losses }) => losses,
-          sub: ({ games }) => `${games} GP`
+          sub: ({ games }) => `${games} ${gp}`
         })}
         {teamCard({
           title: 'Best Duo Win %',
-          subtitle: 'Actual synergy · min. 5 games',
+          subtitle: `Actual synergy · ${teamMin}`,
           items: stats.teams.bestWinPct,
           value: ({ winPct }) => fmtPct(winPct),
           sub: ({ wins, losses }) => `${wins}–${losses}`
         })}
         {teamCard({
           title: 'Worst Duo Win %',
-          subtitle: 'Maybe see other people · min. 5 games',
+          subtitle: `Maybe see other people · ${teamMin}`,
           items: stats.teams.worstWinPct,
           value: ({ winPct }) => fmtPct(winPct),
           sub: ({ wins, losses }) => `${wins}–${losses}`
@@ -351,35 +366,59 @@ const StatsBoard = ({ currentSeasonOnly }) => {
 
 export default () => {
   const [currentSeasonOnly, setCurrentSeasonOnly] = useState(false);
+  const [bySeries, setBySeries] = useState(false);
 
   return (
     <div className='space-y-4'>
       <div className='flex items-center justify-between gap-2 flex-wrap'>
         <h1 className='text-2xl font-bold text-gray-800'>Stats</h1>
-        <div className='flex'>
-          <div
-            className={clsx(
-              'px-2 py-1 border text-xs rounded-l cursor-pointer hover:bg-gray-50',
-              !currentSeasonOnly && 'shadow-inner'
-            )}
-            onclick={() => setCurrentSeasonOnly(false)}
-          >
-            All-Time
+        <div className='flex items-center gap-2 flex-wrap'>
+          <div className='flex'>
+            <div
+              className={clsx(
+                'px-2 py-1 border text-xs rounded-l cursor-pointer hover:bg-gray-50',
+                !bySeries && 'shadow-inner'
+              )}
+              onclick={() => setBySeries(false)}
+            >
+              By Game
+            </div>
+            <div
+              className={clsx(
+                'px-2 py-1 border-y border-r text-xs rounded-r cursor-pointer hover:bg-gray-50',
+                bySeries && 'shadow-inner'
+              )}
+              onclick={() => setBySeries(true)}
+            >
+              By Series
+            </div>
           </div>
-          <div
-            className={clsx(
-              'px-2 py-1 border-y border-r text-xs rounded-r cursor-pointer hover:bg-gray-50',
-              currentSeasonOnly && 'shadow-inner'
-            )}
-            onclick={() => setCurrentSeasonOnly(true)}
-          >
-            This Season
+          <div className='flex'>
+            <div
+              className={clsx(
+                'px-2 py-1 border text-xs rounded-l cursor-pointer hover:bg-gray-50',
+                !currentSeasonOnly && 'shadow-inner'
+              )}
+              onclick={() => setCurrentSeasonOnly(false)}
+            >
+              All-Time
+            </div>
+            <div
+              className={clsx(
+                'px-2 py-1 border-y border-r text-xs rounded-r cursor-pointer hover:bg-gray-50',
+                currentSeasonOnly && 'shadow-inner'
+              )}
+              onclick={() => setCurrentSeasonOnly(true)}
+            >
+              This Season
+            </div>
           </div>
         </div>
       </div>
       <StatsBoard
-        key={currentSeasonOnly ? 'season' : 'all'}
+        key={`${currentSeasonOnly ? 'season' : 'all'}:${bySeries ? 'series' : 'game'}`}
         currentSeasonOnly={currentSeasonOnly}
+        bySeries={bySeries}
       />
     </div>
   );
