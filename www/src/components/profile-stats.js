@@ -1,5 +1,4 @@
 import clsx from 'clsx';
-import { useState } from 'endr';
 import { DateTime } from 'luxon';
 
 import LoadingArea from '#src/components/loading-area.js';
@@ -7,6 +6,7 @@ import Notice from '#src/components/notice.js';
 import UserAvatar from '#src/components/user-avatar.js';
 import titleize from '#src/functions/titleize.js';
 import usePave from '#src/hooks/use-pave.js';
+import useSearchParams from '#src/hooks/use-search-params.js';
 
 const playerQ = { id: {}, name: {}, avatarUrl: { $: { size: 200 } } };
 const playerRecordQ = { player: playerQ, wins: {}, losses: {}, games: {} };
@@ -636,9 +636,19 @@ const StatsBoard = ({ currentSeasonOnly, bySeries }) => {
 };
 
 export default () => {
-  const [currentSeasonOnly, setCurrentSeasonOnly] = useState(true);
-  const [bySeries, setBySeries] = useState(true);
-  const [playerId, setPlayerId] = useState(null);
+  // Selection state lives in the URL so a specific stats view is shareable:
+  //   ?player=<id>   individual player page (absent = league overview)
+  //   ?scope=all     all-time (absent/`season` = current season)
+  //   ?mode=game     game-based stats (absent/`series` = series-based)
+  const [params, setParams] = useSearchParams();
+  const playerId = params.get('player') || null;
+  const currentSeasonOnly = params.get('scope') !== 'all';
+  const bySeries = params.get('mode') !== 'game';
+
+  const setPlayerId = id => setParams({ player: id || null });
+  const setBySeries = value => setParams({ mode: value ? null : 'game' });
+  const setCurrentSeasonOnly = value =>
+    setParams({ scope: value ? null : 'all' });
 
   const { data: playersData } = usePave({
     query: {

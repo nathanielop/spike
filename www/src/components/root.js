@@ -28,6 +28,10 @@ export default () => {
 
   const unauthenticated = !grantKey || !data?.currentGrant;
 
+  const isProfilePath =
+    urlLocation.pathname === '/profile' ||
+    urlLocation.pathname.startsWith('/profile/');
+
   useEffect(() => {
     if (unauthenticatedPaths.has(urlLocation.pathname)) {
       if (data?.currentGrant) history.replace('/');
@@ -56,8 +60,7 @@ export default () => {
         <Notifications />
         {unauthenticated ? (
           <LoginOrSignup onLogin={execute} />
-        ) : !data.currentGrant.player.isAdmin ||
-          urlLocation.pathname === '/profile' ? (
+        ) : !data.currentGrant.player.isAdmin || isProfilePath ? (
           <Profile reload={execute} />
         ) : (
           <App />

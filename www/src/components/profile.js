@@ -41,7 +41,7 @@ import usePave from '#src/hooks/use-pave.js';
 import useRootContext from '#src/hooks/use-root-context.js';
 import useToggle from '#src/hooks/use-toggle.js';
 
-const { window } = globalThis;
+const { window, Set } = globalThis;
 
 const tabs = [
   { name: 'home', Icon: SwordsIcon },
@@ -51,6 +51,18 @@ const tabs = [
   { name: 'stats', Icon: ChartColumnIcon },
   { name: 'settings', Icon: SettingsIcon }
 ];
+
+const tabNames = new Set(tabs.map(({ name }) => name));
+
+// Tabs are driven by the URL path so individual tabs are shareable:
+//   /profile            -> home
+//   /profile/<tab>      -> that tab
+const tabFromPathname = pathname => {
+  const segment = pathname.replace(/^\/profile\/?/, '').split('/')[0];
+  return tabNames.has(segment) ? segment : 'home';
+};
+
+const pathForTab = name => (name === 'home' ? '/profile' : `/profile/${name}`);
 
 // Approximate minimum width (px) a vertical tab needs before its label starts
 // to feel cramped. Used to decide how many tabs fit before spilling into the
@@ -341,11 +353,20 @@ const Result = ({ player, series }) => {
 export default ({ reload }) => {
   const {
     player,
-    location: { query: { bet, seriesId } = {} },
+    location,
+    location: { pathname, query: { bet, seriesId } = {} },
     season
   } = useRootContext();
-  const [tab, setTab] = useState('home');
-  const [leaderboardTab, setLeaderboardTab] = useState('season');
+  const tab = tabFromPathname(pathname);
+  const setTab = name => history.push(pathForTab(name));
+
+  const leaderboardTab = location.query?.board ?? 'season';
+  const setLeaderboardTab = board =>
+    history.push(
+      `/profile/leaderboard${board === 'season' ? '' : `?board=${board}`}`,
+      false
+    );
+
   const [storeIsOpen, openStore, closeStore] = useToggle();
   const [placingBountyOnPlayer, setPlacingBountyOnPlayer] = useState(undefined);
 
@@ -523,7 +544,7 @@ export default ({ reload }) => {
         <PlaceBetOverlay
           seriesId={seriesId}
           onPlaced={reloadProfileData}
-          onClose={() => history.replace('/profile')}
+          onClose={() => history.replace(pathname)}
         />
       )}
       {storeIsOpen && (
